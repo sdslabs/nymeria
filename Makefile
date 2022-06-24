@@ -23,7 +23,7 @@ vendor:
 	@echo "Vendor downloaded successfully"
 
 build:
-	@${GO} build -o nymeria ./cmd/server/main.go
+	@${GO} build -o nymeria ./cmd/nymeria/main.go
 	@echo "Binary built successfully"
 
 run:
