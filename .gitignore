@@ -16,3 +16,4 @@ vendor/
 
 # Exclude the binary
 nymeria
+!nymeria/
