@@ -14,19 +14,19 @@ Enter the directory and download the vendor files
 
 ```sh
 $ cd nymeria/
-$ go mod vendor
+$ make vendor
 ```
 
 Build the binary using the command.
 
 ```sh
-$ go build -o nymeria ./cmd/server/main.go
+$ make build
 ```
 
 Run the binary using the command
 
 ```sh
-$ ./nymeria
+$ make run
 ```
 
 Add new packages to the repository using the command
