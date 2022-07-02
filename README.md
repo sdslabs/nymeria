@@ -32,7 +32,7 @@ $ make run
 To perform lint and formatting of the code, install golangci-lint using the command
 
 ```sh
-$ make install-golangci-lint
+$ make install-golangcilint
 ```
 
 To lint the code, run the command
