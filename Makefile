@@ -31,7 +31,7 @@ run:
 
 dev: build run
 
-install-golangcilint:
+install-golangci-lint:
 	@curl -sSfL \
 	 	https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
 	 	sh -s -- -b $(GOPATH_BIN) v1.46.2
