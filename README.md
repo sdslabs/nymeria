@@ -7,48 +7,48 @@ Complete reimplementation of `Login` in Go using ory.sh in our applications.
 Clone the repository
 
 ```sh
-$ git clone git@github.com:sdslabs/nymeria.git
+ git clone git@github.com:sdslabs/nymeria.git
 ```
 
 Enter the directory and download the vendor files
 
 ```sh
-$ cd nymeria/
-$ make vendor
+ cd nymeria/
+ make vendor
 ```
 
 Build the binary using the command.
 
 ```sh
-$ make build
+ make build
 ```
 
 Run the binary using the command
 
 ```sh
-$ make run
+ make run
 ```
 
 To perform lint and formatting of the code, install golangci-lint using the command
 
 ```sh
-$ make install-golangci-lint
+ make install-golangci-lint
 ```
 
 To lint the code, run the command
 
 ```sh
-$ make lint
+ make lint
 ```
 
 To format the code, run the command
 
 ```sh
-$ make format
+ make format
 ```
 
 Add new packages to the repository using the command
 
 ```sh
-$ go get -u <package_path>
+ go get -u <package_path>
 ```
