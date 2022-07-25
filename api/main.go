@@ -9,11 +9,14 @@ import (
 
 func Start() {
 	r := gin.Default()
+
 	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "pong",
 		})
 	})
+
+	r.GET("/login", HandleGetRegisterationFlow)
 
 	if err := r.Run(); err != nil {
 		fmt.Println(err)
