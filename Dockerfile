@@ -10,4 +10,6 @@ RUN make vendor
 
 RUN make build
 
-RUN make run
+EXPOSE 8080
+
+CMD ["make","run"]
