@@ -1,0 +1,34 @@
+{
+    "$id":"",
+    "$schema":"",
+
+
+    "title":"roles",
+    "type": "object",
+    "properties":{
+
+        "user_id":{
+            "type":"number",
+            "title":"User ID"
+            
+        },
+
+        "app_id":{
+            "type":"number",
+            "title":"App ID"
+            
+        },
+
+        "role":{
+            "type":"string",
+            "title":"role"
+        },
+
+        "active": {
+            "type": "boolean",
+            "title": "active"
+        }
+    },
+    "required":["user_id" , "app_id"]
+    
+}
