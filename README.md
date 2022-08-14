@@ -56,5 +56,5 @@ Add new packages to the repository using the command
 To run nymeria using docker, run the following command
 
 ```sh
-    docker-compose up --build -d
+ docker-compose up --build -d
 ```
