@@ -9,7 +9,7 @@ import (
 	"github.com/sdslabs/nymeria/pkg/requests"
 )
 
-func InitializeRegisterationFlowWrapper() (string, string, string, error) {
+func InitializeRegistrationFlowWrapper() (string, string, string, error) {
 	respBody := new(InitializeRegistration)
 	setCookie, err := requests.GetInitializeFlowJSON("http://localhost:4433/self-service/registration/browser", respBody)
 
@@ -44,20 +44,20 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 
 	client := &http.Client{}
 
-	req, err := http.NewRequest(http.MethodPost, "localhost:4433/self-service/registration", bytes.NewReader(jsonData))
+	req, err := http.NewRequest(http.MethodPost, "http://localhost:4433/self-service/registration", bytes.NewReader(jsonData))
 	if err != nil {
 		return err
 	}
 
 	req.Header.Set("Cookie", cookie)
-	req.Header.Set("Accept", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	q := req.URL.Query()
 	q.Add("flow", flowID)
 	req.URL.RawQuery = q.Encode()
 
 	resp, err := client.Do(req)
-
+	fmt.Println("Hello")
 	if err != nil {
 		return err
 	}

@@ -55,5 +55,5 @@ type Traits struct {
 	Name  struct {
 		First string `json:"first"`
 		Last  string `json:"last"`
-	} `json:"name:"`
+	} `json:"name"`
 }
