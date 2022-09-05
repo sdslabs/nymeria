@@ -1,6 +1,11 @@
 package registration
 
 import (
+	"bytes"
+	"encoding/json"
+	"fmt"
+	"net/http"
+
 	"github.com/sdslabs/nymeria/pkg/requests"
 )
 
@@ -24,6 +29,39 @@ func InitializeRegisterationFlowWrapper() (string, string, string, error) {
 	return setCookie, respBody.ID, csrf_token, nil
 }
 
-func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrf_token string, data Traits) {
+func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, data Traits) error {
+	requestBody := new(SubmitRegistrationBody)
+	requestBody.Method = "password"
+	requestBody.Password = "jngkjenrjg"
+	requestBody.CsrfToken = csrfToken
+	requestBody.Data = data
 
+	jsonData, err := json.Marshal(requestBody)
+
+	if err != nil {
+		return err
+	}
+
+	client := &http.Client{}
+
+	req, err := http.NewRequest(http.MethodPost, "localhost:4433/self-service/registration", bytes.NewReader(jsonData))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Cookie", cookie)
+	req.Header.Set("Accept", "application/json")
+
+	q := req.URL.Query()
+	q.Add("flow", flowID)
+	req.URL.RawQuery = q.Encode()
+
+	resp, err := client.Do(req)
+
+	if err != nil {
+		return err
+	}
+
+	fmt.Println(resp)
+	return nil
 }
