@@ -1,4 +1,4 @@
-package registeration
+package registration
 
 import "time"
 
