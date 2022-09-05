@@ -6,6 +6,6 @@ import (
 )
 
 func HandleGetRegisterationFlow(c *gin.Context) {
-	cookie, flowID, csrf_token, err := registration.InitializeRegisterationFlowWrapper()
+	//cookie, flowID, csrf_token, err := registration.InitializeRegisterationFlowWrapper()
 
 }

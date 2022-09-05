@@ -43,3 +43,17 @@ type Label struct {
 	Text string `json:"text"`
 	Type string `json:"type"`
 }
+
+type SubmitRegistrationBody struct {
+	Method    string `json:"method"`
+	Password  string `json:"password"`
+	CsrfToken string `json:"csrf_token"`
+	Data      Traits `json:"traits"`
+}
+type Traits struct {
+	Email string `json:"email"`
+	Name  struct {
+		First string `json:"first"`
+		Last  string `json:"last"`
+	} `json:"name:"`
+}

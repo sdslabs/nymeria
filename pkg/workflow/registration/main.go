@@ -23,3 +23,7 @@ func InitializeRegisterationFlowWrapper() (string, string, string, error) {
 
 	return setCookie, respBody.ID, csrf_token, nil
 }
+
+func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrf_token string, data Traits) {
+
+}
