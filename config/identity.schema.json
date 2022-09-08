@@ -1,0 +1,86 @@
+{
+    "$id":"user.json",
+    "$schema":"https://github.com/sdslabs/nymeria/blob/json-schema/user.json",
+
+
+    "title":"users",
+    "type": "object",
+    "properties":{
+
+        "id":{
+            "title":"ID",
+            "type":"number"
+        },
+
+        "full_name": {
+            "type": "object",
+            "properties": {
+                "first": {
+                    "title": "First Name",
+                    "type": "string"
+                },
+                "last": {
+                    "title": "Last Name",
+                    "type": "string"
+                }
+            }
+        },
+
+        "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+        },
+
+        "email": {
+            "type": "string",
+            "format": "email",
+            "title": "E-Mail ID",
+            "minLength": 6
+        },
+
+        "verified": {
+            "type": "boolean",
+            "title": "Verified"
+        },
+
+        "active": {
+            "type": "boolean",
+            "title": "active"
+        },
+
+        "password":{
+            "type":"string",
+            "title":"Password"
+        },
+
+        "phone_number": {
+            "type": "number",
+            "title":"Phone Number",
+            "minimum": 1000000000,
+            "maximum": 9999999999
+        },
+
+        "github_id":{
+            "type":"string",
+            "title":"Github ID"
+        },
+
+        "dribble_id":{
+            "type":"string",
+            "title":"Github ID"
+        },
+
+        "img_url":{
+            "type":"string",
+            "title":"Profile Image URL"
+        }
+    },
+    "required":[
+        "id",
+        "email",
+        "username"
+    ],
+    "additionalProperties": false
+    
+}

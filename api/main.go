@@ -5,6 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/nymeria/pkg/controller"
 )
 
 func Start() {
@@ -14,6 +15,9 @@ func Start() {
 			"message": "pong",
 		})
 	})
+
+	r.GET("/register", controller.Registration)
+	
 
 	if err := r.Run(); err != nil {
 		fmt.Println(err)
