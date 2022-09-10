@@ -1,24 +1,37 @@
 package api
 
 import (
-	"fmt"
-	"net/http"
 
-	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/nymeria/pkg/controller"
+    "github.com/gin-gonic/gin"
+	m"github.com/sdslabs/nymeria/pkg/middleware"
+	c"github.com/sdslabs/nymeria/pkg/controller"
+	//client "github.com/ory/kratos-client-go"
 )
 
+
 func Start() {
-	r := gin.Default()
-	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "pong",
-		})
-	})
 
+<<<<<<< HEAD
 	r.GET("/register", controller.Registration)
+=======
+    r := gin.Default()
+    k := m.NewMiddleware()
 
-	if err := r.Run(); err != nil {
-		fmt.Println(err)
-	}
+    r.Use(k.Session())
+
+    r.GET("/ping", func(c *gin.Context) {
+        c.JSON(200, gin.H{
+            "message": "pong",
+        })
+    })
+
+	r.GET("/create-identity", c.CreateIdentity)
+	r.GET("/get-identity", c.GetIdentity)
+	r.GET("/delete-identity", c.DeleteIdentity)
+
+	
+	r.Run()
+>>>>>>> e06a244 (Added identities controllers)
+
+    // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
