@@ -5,7 +5,6 @@ import (
     "github.com/gin-gonic/gin"
 	m"github.com/sdslabs/nymeria/pkg/middleware"
 	c"github.com/sdslabs/nymeria/pkg/controller"
-	//client "github.com/ory/kratos-client-go"
 )
 
 
@@ -24,7 +23,7 @@ func Start() {
 
 	r.GET("/create-identity", c.CreateIdentity)
 	r.GET("/get-identity", c.GetIdentity)
-	r.GET("/delete-identity", c.DeleteIdentity)
+	//r.GET("/delete-identity", c.DeleteIdentity)
 
 	
 	r.Run()
