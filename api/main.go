@@ -26,11 +26,14 @@ func Start() {
 
 	r.GET("/create-identity", c.CreateIdentity)
 	r.GET("/get-identity", c.GetIdentity)
-	//r.GET("/delete-identity", c.DeleteIdentity)
+	r.GET("/delete-identity", c.DeleteIdentity)
 
 	
 	r.Run()
+<<<<<<< HEAD
 >>>>>>> e06a244 (Added identities controllers)
 
+=======
+>>>>>>> a204a8e (implemented delete identities controller)
     // listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
