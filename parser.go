@@ -12,5 +12,4 @@ func main() {
 	fmt.Println(v.GetString("url.frontend_url"))
 	fmt.Println(v.GetString("url.backend_url"))
 
-	
 }
