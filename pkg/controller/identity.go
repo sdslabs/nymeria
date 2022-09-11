@@ -8,20 +8,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	client "github.com/ory/kratos-client-go"
+    m "github.com/sdslabs/nymeria/pkg/middleware"
 )
 
 func CreateIdentity(c *gin.Context) {
-    configuration := client.NewConfiguration()
-    configuration.Servers = []client.ServerConfiguration{
-        {
-            URL: "http://127.0.0.1:4434", // Kratos Admin API
-        },
-    }
-    apiClient := client.NewAPIClient(configuration)
+    apiClient := m.NewAdminMiddleware()
     adminCreateIdentityBody := *client.NewAdminCreateIdentityBody(
         "default",
         map[string]interface{}{
-            "id": 23,
+            "id": 24,
             "name": "Dhaval Kapil",
             "username": "XvampireX",
             "email": "dhavalkapil@gmail.com",
@@ -41,19 +36,12 @@ func CreateIdentity(c *gin.Context) {
         fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.AdminCreateIdentity``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
-    // response from `AdminCreateIdentity`: Identity
     fmt.Fprintf(os.Stdout, "Created identity with ID: %v\n", createdIdentity.Id)
 
 }
 
 func GetIdentity(c *gin.Context){
-    configuration := client.NewConfiguration()
-    configuration.Servers = []client.ServerConfiguration{
-        {
-            URL: "http://127.0.0.1:4434", // Kratos Admin API
-        },
-    }
-    apiClient := client.NewAPIClient(configuration)
+    apiClient := m.NewAdminMiddleware()
     createdIdentity := "80b8317c-a1be-4510-b415-987f28b7667b"
 	getIdentity, r, err := apiClient.V0alpha2Api.AdminGetIdentity(context.Background(), createdIdentity).Execute()
     
@@ -71,21 +59,15 @@ func GetIdentity(c *gin.Context){
     fmt.Fprintf(os.Stdout, "Identity details for id %v. Traits: %v\n", createdIdentity, identity)
 }
 
-// func DeleteIdentity(c *gin.Context){
-//     configuration := client.NewConfiguration()
-//     configuration.Servers = []client.ServerConfiguration{
-//         {
-//             URL: "http://127.0.0.1:4434", // Kratos Admin API
-//         },
-//     }
-//     apiClient := client.NewAPIClient(configuration)
+func DeleteIdentity(c *gin.Context){
+    apiClient := m.NewAdminMiddleware()
 
-//     identity := "32ff6997-04b0-46e4-a368-aa6d415bc410"
+    identity := "5e2d9d8c-8367-478b-b183-268bd4a88bf1"
 
-// 	r, err := apiClient.V0alpha2Api.AdminDeleteIdentity(context.Background(), identity).Execute()
-//     if err != nil {
-//         fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.AdminDeleteIdentity``: %v\n", err)
-//         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-//     }
-//     fmt.Println("Successfully Removed identity")
-// }
+	r, err := apiClient.V0alpha2Api.AdminDeleteIdentity(context.Background(), identity).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.AdminDeleteIdentity``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
+    fmt.Println("Successfully Removed identity")
+}

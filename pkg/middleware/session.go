@@ -23,6 +23,17 @@ func NewMiddleware() *kratosMiddleware {
         client: client.NewAPIClient(configuration),
     }
 }
+func NewAdminMiddleware() *client.APIClient {
+    configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Public API
+        },
+    }
+
+    apiClient := client.NewAPIClient(configuration)
+    return apiClient
+}
 func (k *kratosMiddleware) Session() gin.HandlerFunc {
     return func(c *gin.Context) {
         session, err := k.validateSession(c.Request)
