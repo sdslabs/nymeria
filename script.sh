@@ -1,0 +1,1 @@
+docker exec -it kratos_mysqld_1 /bin/sh
