@@ -5,7 +5,6 @@ import(
 	"os"
 	"fmt"
 	"github.com/gin-gonic/gin"
-	//m"github.com/sdslabs/nymeria/pkg/middleware"
 	client "github.com/ory/kratos-client-go"
 )
 
@@ -20,11 +19,18 @@ func CreateIdentity(c *gin.Context) {
     adminCreateIdentityBody := *client.NewAdminCreateIdentityBody(
         "default",
         map[string]interface{}{
-            "email": "foo2@example.com",
-            "name": map[string]string{
-                "first": "foo2",
-                "last":  "bar2",
-            },
+            "id": 23,
+            "name": "Dhaval Kapil",
+            "username": "XvampireX",
+            "email": "dhavalkapil@gmail.com",
+            "phone": 123456789,
+            "password": "NULL",
+            "image_url": "https://accounts.sdslabs.co/image/vampire",
+            "activation": true,
+            "verified": 2,
+            "created_at": "2012-04-21T18:25:43-05:00",
+            "github_id": "NULL",
+            "dribble_id": "NULL",
         },
     ) // AdminCreateIdentityBody |  (optional)
 
