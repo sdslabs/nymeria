@@ -1,0 +1,85 @@
+{
+    "$id": "https://schemas.ory.sh/presets/kratos/quickstart/email-password/identity.schema.json",
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "Person",
+    "type": "object",
+    "properties": {
+      "traits": {
+        "type": "object",
+        "properties": {
+          "id" : {
+            "title":"ID",
+            "type":"number"
+          },
+          "name": {
+            "title":"Name",
+            "type":"string"
+          },
+          "username":{
+            "title":"Username",
+            "type":"string"
+          },
+          "email": {
+            "type": "string",
+            "format": "email",
+            "title": "E-Mail",
+            "minLength": 3,
+            "ory.sh/kratos": {
+              "credentials": {
+                "password": {
+                  "identifier": true
+                }
+              },
+              "verification": {
+                "via": "email"
+              },
+              "recovery": {
+                "via": "email"
+              }
+            }
+          },
+          "phone_number": {
+            "type": "string",
+            "title":"Phone Number"
+          },
+          "password":{
+            "type":"string",
+            "title":"Password"
+          },
+          "img_url":{
+            "type":"string",
+            "title":"Profile Image URL"
+          },
+          "active": {
+            "type": "boolean",
+            "title": "Active"
+          },
+          "verified": {
+            "type": "integer",
+            "title": "Verified"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          },
+          "github_id":{
+              "type":"string",
+              "title":"Github ID"
+          },
+          "dribble_id":{
+              "type":"string",
+              "title":"Github ID"
+          }
+        },
+        
+  
+        "required": [
+          "email",
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    }
+  }
+  
