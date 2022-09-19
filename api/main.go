@@ -1,7 +1,6 @@
 package api
 
 import (
-
     "github.com/gin-gonic/gin"
 	m"github.com/sdslabs/nymeria/pkg/middleware"
 	c"github.com/sdslabs/nymeria/pkg/controller/admin"
@@ -21,7 +20,8 @@ func Start() {
         })
     })
 
-	r.POST("/create-identity", c.CreateIdentity)
+	//r.POST("/create-identity", c.CreateIdentity)
+    r.POST("/create-identity", c.CreateIdentity)
 	r.GET("/get-identity", c.GetIdentity)
 	r.POST("/delete-identity", c.DeleteIdentity)
 

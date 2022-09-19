@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"os"
+    "strconv"
 
 	"github.com/gin-gonic/gin"
 	client "github.com/ory/kratos-client-go"
@@ -13,21 +14,24 @@ import (
 
 func CreateIdentity(c *gin.Context) {
     apiClient := m.NewAdminMiddleware()
+    id, _ := strconv.Atoi(c.PostForm("id"))
+    verified, _ := strconv.Atoi(c.PostForm("verified"))
+    active,_ := strconv.ParseBool(c.PostForm("active"))
     adminCreateIdentityBody := *client.NewAdminCreateIdentityBody(
         "default",
         map[string]interface{}{
-            "id": 24,
-            "name": "Dhaval Kapil",
-            "username": "XvampireX",
-            "email": "dhavalkapil@gmail.com",
-            "phone": 123456789,
-            "password": "NULL",
-            "image_url": "https://accounts.sdslabs.co/image/vampire",
-            "activation": true,
-            "verified": 2,
-            "created_at": "2012-04-21T18:25:43-05:00",
-            "github_id": "NULL",
-            "dribble_id": "NULL",
+            "id": id,
+            "name": c.PostForm("name"),
+            "username": c.PostForm("username"),
+            "email": c.PostForm("email"),
+            "phone_number": c.PostForm("phone_number"),
+            "password": c.PostForm("password"),
+            "img_url": c.PostForm("img_url"),
+            "active": active,
+            "verified": verified,
+            "created_at": c.PostForm("created_at"),
+            "github_id": c.PostForm("github_id"),
+            "dribble_id": c.PostForm("dribble_id"),
         },
     ) // AdminCreateIdentityBody |  (optional)
 
@@ -70,4 +74,8 @@ func DeleteIdentity(c *gin.Context){
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
     }
     fmt.Println("Successfully Removed identity")
+}
+
+func GetAllIdentity(c *gin.Context){
+
 }
