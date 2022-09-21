@@ -21,6 +21,3 @@ nymeria
 
 # miscellaneous
 .vscode/
-
-# Env files
-.env
