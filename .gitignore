@@ -21,3 +21,6 @@ nymeria
 
 # miscellaneous
 .vscode/
+
+# Exclude air temp directory
+target/
