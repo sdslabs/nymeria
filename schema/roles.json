@@ -21,14 +21,12 @@
 
         "role":{
             "type":"string",
-            "title":"role"
+            "title":"Role"
         },
 
         "active": {
             "type": "boolean",
-            "title": "active"
+            "title": "Active"
         }
-    },
-    "required":["user_id" , "app_id"]
-    
+    }
 }
