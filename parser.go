@@ -1,36 +1,37 @@
 package main
 
 import (
-	"fmt"
-	"io/ioutil"
-	"github.com/spf13/viper"
-	"gopkg.in/yaml.v2"
+    "fmt"
+    "gopkg.in/yaml.v2"
+    "io/ioutil"
+    "log"
 )
 
-type config struct {
-	url struct  {
-		frontend_url string `yaml:"frontend_url"`;
-		backend_url string `yaml:"backend_url"`;
-	} `yaml:"url"`
+type conf struct {
+	Url struct{
+    Frontend_url string `yaml:"frontend_url"`
+    Backend_url string `yaml:"backend_url"`
+	} `yaml: "url"`
+}
+
+func (c *conf) getConf() *conf {
+
+    yamlFile, err := ioutil.ReadFile("config.yaml")
+    if err != nil {
+        log.Printf("yamlFile.Get err   #%v ", err)
+    }
+    err = yaml.Unmarshal(yamlFile, c)
+    if err != nil {
+		log.Fatalf("Unmarshal: %v", err)
+    }
+
+    return c
 }
 
 func main() {
-	vi := viper.New()
-	vi.SetConfigFile("config.yaml")
-	vi.ReadInConfig()
-	fmt.Println(vi.GetString("url.frontend_url"))
-	
-	C := &config{}
-	source,err1 := ioutil.ReadFile("config.yaml")
-	if err1 != nil {
-		fmt.Println(err1)
-	}
-	
-	err := yaml.Unmarshal([]byte(source),&C)
-	if err != nil {
-		fmt.Println("unable to decode into struct, %v", err)
-	}
+    var c conf
+    c.getConf()
 
-	fmt.Println(C.url.backend_url)
-
+    fmt.Println(c.Url.Frontend_url)
+	fmt.Println(c.Url.Backend_url)
 }
