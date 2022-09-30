@@ -13,4 +13,8 @@ jobs:
       with:
         go-version-file: './go.mod'
 
-    - run: go version
+    - name: Install golangci lint
+      run: make install-golangci-lint
+
+    - name: Check lint
+      run: make lint
