@@ -1,7 +1,7 @@
 package config
 
 type Config struct {
-	Url URL `yaml:"url"`
+	URL URL `yaml:"url"`
 }
 
 type URL struct {
