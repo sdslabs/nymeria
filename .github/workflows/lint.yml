@@ -1,10 +1,10 @@
-name: golang Lint
+name: golang lint
 
 on: [push,pull_request]
 
 jobs:
   lint:
-    name: linux64 Lint
+    name: linux64
     runs-on: ubuntu-latest
     steps:
 
