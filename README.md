@@ -52,3 +52,16 @@ Add new packages to the repository using the command
 ```sh
  go get -u <package_path>
 ```
+
+Hot reloading support
+- run the following command to install `air` (hot reload support)
+
+```sh
+ make install-air
+```
+
+- run the following command to run nymeria with `air` (hot reload support)
+
+```sh
+ make dev
+```
