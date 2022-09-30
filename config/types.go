@@ -1,10 +1,10 @@
 package config
 
 type Config struct {
-	Url Url `yaml:"url"`
+	Url URL `yaml:"url"`
 }
 
-type Url struct {
-	Frontend_url string `yaml:"frontend_url"`
-	Backend_url  string `yaml:"kratos_url"`
+type URL struct {
+	FrontendURL string `yaml:"frontend_url"`
+	BackendURL  string `yaml:"kratos_url"`
 }
