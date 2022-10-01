@@ -14,6 +14,7 @@ func Start() {
 			"message": "pong",
 		})
 	})
+	r.GET("/login", HandleGetLoginFLow)
 
 	if err := r.Run(); err != nil {
 		fmt.Println(err)

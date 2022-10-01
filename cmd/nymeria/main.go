@@ -1,17 +1,17 @@
 package main
 
-// import (
-// 	"github.com/sdslabs/nymeria/api"
-// )
-
-// func main() {
-// 	api.Start()
-// }
-
 import (
-	"github.com/sdslabs/nymeria/pkg/workflow/login"
+	"github.com/sdslabs/nymeria/api"
 )
 
 func main() {
-	login.InitializeLoginFlowWrapper()
+	api.Start()
 }
+
+// import (
+// 	"github.com/sdslabs/nymeria/pkg/workflow/login"
+// )
+
+// func main() {
+// 	login.InitializeLoginFlowWrapper()
+// }
