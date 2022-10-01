@@ -7,11 +7,3 @@ import (
 func main() {
 	api.Start()
 }
-
-// import (
-// 	"github.com/sdslabs/nymeria/pkg/workflow/login"
-// )
-
-// func main() {
-// 	login.InitializeLoginFlowWrapper()
-// }

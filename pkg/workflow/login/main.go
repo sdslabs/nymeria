@@ -43,11 +43,13 @@ func InitializeLoginFlowWrapper() (string, string, string, error) {
 	return cookie, resp.Id, csrf_token, nil
 }
 
-func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, data Traits) error {
-	flow := flowID                                                                                                                                                                                                                          // string | The Login Flow ID  The value for this parameter comes from `flow` URL Query parameter sent to your application (e.g. `/login?flow=abcde`).
-	submitSelfServiceLoginFlowBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithLookupSecretMethodBody: client.NewSubmitSelfServiceLoginFlowWithLookupSecretMethodBody("LookupSecret_example", "Method_example")} // SubmitSelfServiceLoginFlowBody |
-	xSessionToken := csrfToken
-	cookies := cookie // string | The Session Token of the Identity performing the settings flow. (optional)                                                                                                                                                                                                                      // string | HTTP Cookies  When using the SDK in a browser app, on the server side you must include the HTTP Cookie Header sent by the client to your server here. This ensures that CSRF and session cookies are respected. (optional)
+func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, data Traits) error {
+	flow := flowID
+	cookies := cookie
+	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithPasswordMethodBody: client.NewSubmitSelfServiceLoginFlowWithPasswordMethodBody("", "Password", pass)} // SubmitSelfServiceLoginFlowBody |
+
+	csrf_token := csrfToken
+	submitDataBody.SubmitSelfServiceLoginFlowWithPasswordMethodBody.SetCsrfToken(csrf_token)
 
 	configuration := client.NewConfiguration()
 	configuration.Servers = []client.ServerConfiguration{
@@ -56,12 +58,11 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, data
 		},
 	}
 	apiClient := client.NewAPIClient(configuration)
-	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flow).SubmitSelfServiceLoginFlowBody(submitSelfServiceLoginFlowBody).XSessionToken(xSessionToken).Cookie(cookies).Execute()
+	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flow).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookies).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceLoginFlow``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `SubmitSelfServiceLoginFlow`: SuccessfulSelfServiceLoginWithoutBrowser
 	fmt.Fprintf(os.Stdout, "Response from `V0alpha2Api.SubmitSelfServiceLoginFlow`: %v\n", resp)
 	return nil
 }
