@@ -2,31 +2,43 @@ package registration
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
 	"fmt"
 	"net/http"
 
-	"github.com/sdslabs/nymeria/pkg/requests"
+	client "github.com/ory/kratos-client-go"
 )
 
 func InitializeRegistrationFlowWrapper() (string, string, string, error) {
-	respBody := new(InitializeRegistration)
-	setCookie, err := requests.GetInitializeFlowJSON("http://localhost:4433/self-service/registration/browser", respBody)
+	returnTo := "http://127.0.0.1:4455/ping"
 
+	configuration := client.NewConfiguration()
+	configuration.Servers = []client.ServerConfiguration{
+		{
+			URL: "http://127.0.0.1:4433",
+		},
+	}
+
+	apiClient := client.NewAPIClient(configuration)
+	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceRegistrationFlowForBrowsers(context.Background()).ReturnTo(returnTo).Execute()
 	if err != nil {
 		return "", "", "", err
 	}
 
 	var csrf_token string
 
-	for _, node := range respBody.UI.Nodes {
-		if node.Attributes.Name == "csrf_token" {
-			csrf_token = node.Attributes.Value
+	for _, node := range resp.Ui.Nodes {
+
+		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
+			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
+			csrf_token, _ = csrf_token_interface.(string)
 			break
 		}
 	}
 
-	return setCookie, respBody.ID, csrf_token, nil
+	var setCookie string = r.Header.Get("Set-Cookie")
+	return setCookie, resp.Id, csrf_token, nil
 }
 
 func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, data Traits) error {

@@ -18,7 +18,7 @@ func GetInitializeFlowJSON(url string, target interface{}) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
+	l
 	defer resp.Body.Close()
 
 	setCookie := resp.Header.Get("Set-Cookie")
