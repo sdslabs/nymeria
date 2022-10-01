@@ -29,6 +29,7 @@ func CreateIdentity(c *gin.Context) {
             "img_url": c.PostForm("img_url"),
             "active": active,
             "verified": verified,
+            "role": c.PostForm("role"),
             "created_at": c.PostForm("created_at"),
             "github_id": c.PostForm("github_id"),
             "dribble_id": c.PostForm("dribble_id"),
