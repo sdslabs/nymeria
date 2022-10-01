@@ -19,5 +19,11 @@ v1.46.2/
 nymeria
 !nymeria/
 
+# Exclude the config file
+config.yaml
+
 # miscellaneous
 .vscode/
+
+# Exclude air temp directory
+target/

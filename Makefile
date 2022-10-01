@@ -29,7 +29,8 @@ build:
 run:
 	@./nymeria
 
-dev: build run
+dev:
+	@$(GOPATH_BIN)/air -c .air.toml
 
 install-golangci-lint:
 	@curl -sSfL \
@@ -50,3 +51,10 @@ clean:
 	@rm nymeria
 	@rm -rf vendor/
 	@echo "Clean successful"
+
+install-air:
+	@echo "Make sure your GOPATH and GOPATH_BIN is set"
+	@curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(GOPATH_BIN)
+	@echo "Air installed successfully"	
+
+	
