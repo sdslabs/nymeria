@@ -8,7 +8,7 @@ import (
 	client "github.com/ory/kratos-client-go"
 )
 
-func InitializeLoginFlowWrapper() (string, string, interface{}, error) {
+func InitializeLoginFlowWrapper() (string, string, string, error) {
 	refresh := true                     // bool | Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session. (optional)
 	aal := "aal1"                       // string | Request a Specific AuthenticationMethod Assurance Level  Use this parameter to upgrade an existing session's authenticator assurance level (AAL). This allows you to ask for multi-factor authentication. When an identity sign in using e.g. username+password, the AAL is 1. If you wish to \"upgrade\" the session's security by asking the user to perform TOTP / WebAuth/ ... you would set this to \"aal2\". (optional)
 	returnTo := "http://localhost:4455" // string | The URL to return the browser to after the flow was completed. (optional)
