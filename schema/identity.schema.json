@@ -58,6 +58,10 @@
             "type": "integer",
             "title": "Verified"
           },
+          "role": {
+            "type": "string",
+            "title": "Role"
+          },
           "created_at": {
             "type": "string",
             "format": "date-time",
@@ -69,7 +73,7 @@
           },
           "dribble_id":{
               "type":"string",
-              "title":"Github ID"
+              "title":"Dribble ID"
           }
         },
         
