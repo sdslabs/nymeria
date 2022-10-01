@@ -16,7 +16,9 @@ func Start() {
 		})
 	})
 
-	r.POST("/register", HandleGetRegistrationFlow)
+	r.GET("/register", HandleGetRegistrationFlow)
+
+	r.POST("/register", HandlePostRegistrationFlow)
 
 	if err := r.Run(); err != nil {
 		fmt.Println(err)

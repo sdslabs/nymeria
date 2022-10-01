@@ -1,11 +1,9 @@
 package registration
 
 import (
-	"bytes"
 	"context"
-	"encoding/json"
 	"fmt"
-	"net/http"
+	"os"
 
 	client "github.com/ory/kratos-client-go"
 )
@@ -41,39 +39,33 @@ func InitializeRegistrationFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, data Traits) error {
-	requestBody := new(SubmitRegistrationBody)
-	requestBody.Method = "password"
-	requestBody.Password = "jngkjenrjg"
-	requestBody.CsrfToken = csrfToken
-	requestBody.Data = data
-
-	jsonData, err := json.Marshal(requestBody)
-
-	if err != nil {
-		return err
+func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, pass string, data Traits) error {
+	trait := map[string]interface{}{
+		"email": data.Email,
+		"name":  data.Name,
 	}
 
-	client := &http.Client{}
-
-	req, err := http.NewRequest(http.MethodPost, "http://localhost:4433/self-service/registration", bytes.NewReader(jsonData))
-	if err != nil {
-		return err
+	configuration := client.NewConfiguration()
+	configuration.Servers = []client.ServerConfiguration{
+		{
+			URL: "http://127.0.0.1:4433",
+		},
 	}
 
-	req.Header.Set("Cookie", cookie)
-	req.Header.Set("Content-Type", "application/json")
-
-	q := req.URL.Query()
-	q.Add("flow", flowID)
-	req.URL.RawQuery = q.Encode()
-
-	resp, err := client.Do(req)
-	fmt.Println("Hello")
-	if err != nil {
-		return err
+	submitDataBody := client.SubmitSelfServiceRegistrationFlowBody{
+		SubmitSelfServiceRegistrationFlowWithPasswordMethodBody: client.NewSubmitSelfServiceRegistrationFlowWithPasswordMethodBody("password", pass, trait),
 	}
 
-	fmt.Println(resp)
+	submitDataBody.SubmitSelfServiceRegistrationFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
+
+	fmt.Println("SubmitRegistrationFlow", cookie, "test", csrfToken)
+	apiClient := client.NewAPIClient(configuration)
+	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRegistrationFlow(context.Background()).Flow(flowID).SubmitSelfServiceRegistrationFlowBody(submitDataBody).Cookie(cookie).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRegistrationFlow``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+	// response from `SubmitSelfServiceRegistrationFlow`: SuccessfulSelfServiceRegistrationWithoutBrowser
+	fmt.Fprintf(os.Stdout, "Response from `V0alpha2Api.SubmitSelfServiceRegistrationFlow`: %v\n", resp)
 	return nil
 }
