@@ -4,23 +4,35 @@ import (
     "context"
     "errors"
     "net/http"
-
-    "github.com/gin-gonic/gin"
-    client "github.com/ory/kratos-client-go"
 )
 
-func (k *kratosMiddleware) validateAdmin(r *http.Request) (*client.Session, error) {
+func isAdmin(id string) (bool, error) {
+    
+}
+
+func (k *kratosMiddleware) validateAdmin(r *http.Request) (bool, error) {
     cookie, err := r.Cookie("ory_kratos_session")
     if err != nil {
-        return nil, err
+        return false, err
     }
     if cookie == nil {
-        return nil, errors.New("no session found in cookie")
+        return false, errors.New("no session found in cookie")
     }
     resp, _, err := k.client.V0alpha2Api.ToSession(context.Background()).Cookie(cookie.String()).Execute()
     if err != nil {
-        return nil, err
+        return false, err
     }
-    return resp, nil
+    
+	admin, err := isAdmin(resp.Identity.Id)
+
+	if(err != nil) {
+		return false, err
+	}
+
+	if(admin != true) {
+		return false, errors.New("User is not an admin") 
+	}
+	
+	return admin, nil
 }
 
