@@ -58,8 +58,8 @@
             "type": "integer",
             "title": "Verified"
           },
-          "role":{
-            "type": "string",
+          "isAdmin":{
+            "type": "boolean",
             "title": "Role"
           },
           "created_at": {

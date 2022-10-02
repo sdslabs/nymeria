@@ -17,6 +17,8 @@ func Start() {
 			"message": "pong",
 		})
 	})
+	r.GET("/login", HandleGetLoginFlow)
+	r.POST("/login", HandlePostLoginFlow)
 
 	r.POST("/create-identity", c.CreateIdentity)
 	r.GET("/get-identity", c.GetIdentity)
