@@ -39,7 +39,7 @@ func InitializeRegistrationFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, pass string, data Traits) error {
+func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, password string, data Traits) (string, error) {
 	trait := map[string]interface{}{
 		"email": data.Email,
 		"name":  data.Name,
@@ -53,19 +53,18 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 	}
 
 	submitDataBody := client.SubmitSelfServiceRegistrationFlowBody{
-		SubmitSelfServiceRegistrationFlowWithPasswordMethodBody: client.NewSubmitSelfServiceRegistrationFlowWithPasswordMethodBody("password", pass, trait),
+		SubmitSelfServiceRegistrationFlowWithPasswordMethodBody: client.NewSubmitSelfServiceRegistrationFlowWithPasswordMethodBody("password", password, trait),
 	}
 
 	submitDataBody.SubmitSelfServiceRegistrationFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
 
-	fmt.Println("SubmitRegistrationFlow", cookie, "test", csrfToken)
 	apiClient := client.NewAPIClient(configuration)
-	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRegistrationFlow(context.Background()).Flow(flowID).SubmitSelfServiceRegistrationFlowBody(submitDataBody).Cookie(cookie).Execute()
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRegistrationFlow(context.Background()).Flow(flowID).SubmitSelfServiceRegistrationFlowBody(submitDataBody).Cookie(cookie).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRegistrationFlow``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-	// response from `SubmitSelfServiceRegistrationFlow`: SuccessfulSelfServiceRegistrationWithoutBrowser
-	fmt.Fprintf(os.Stdout, "Response from `V0alpha2Api.SubmitSelfServiceRegistrationFlow`: %v\n", resp)
-	return nil
+
+	responseCookies := r.Header["Set-Cookie"]
+	return responseCookies[1], nil
 }

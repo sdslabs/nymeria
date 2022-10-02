@@ -15,11 +15,6 @@ func HandleGetRegistrationFlow(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	// t := &registration.Traits{
-	// 	Email: "rohith@gmail.com",
-	// }
-	// t.Name.First = "Rohith"
-	// t.Name.Last = "Varma"
 
 	c.SetCookie("registration_flow", cookie, 3600, "/", "localhost", false, true)
 
@@ -31,7 +26,7 @@ func HandleGetRegistrationFlow(c *gin.Context) {
 }
 
 func HandlePostRegistrationFlow(c *gin.Context) {
-	var t registration.SubmitRegistrationAPIBody
+	var t registration.SubmitRegistrationBody
 	err := c.BindJSON(&t)
 
 	if err != nil {
@@ -44,17 +39,16 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-	fmt.Println(cookie)
-
-	err = registration.SubmitRegistrationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Traits)
+	session, err := registration.SubmitRegistrationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Traits)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{
-		"flowID": "test",
+		"status": "created",
 	})
 
 }
