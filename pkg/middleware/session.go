@@ -23,6 +23,7 @@ func NewMiddleware() *kratosMiddleware {
         client: client.NewAPIClient(configuration),
     }
 }
+
 func NewAdminMiddleware() *client.APIClient {
     configuration := client.NewConfiguration()
     configuration.Servers = []client.ServerConfiguration{
@@ -34,6 +35,7 @@ func NewAdminMiddleware() *client.APIClient {
     apiClient := client.NewAPIClient(configuration)
     return apiClient
 }
+
 func (k *kratosMiddleware) Session() gin.HandlerFunc {
     return func(c *gin.Context) {
         session, err := k.validateSession(c.Request)
@@ -48,6 +50,7 @@ func (k *kratosMiddleware) Session() gin.HandlerFunc {
         c.Next()
     }
 }
+
 func (k *kratosMiddleware) validateSession(r *http.Request) (*client.Session, error) {
     cookie, err := r.Cookie("ory_kratos_session")
     if err != nil {

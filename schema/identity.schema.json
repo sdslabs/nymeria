@@ -58,7 +58,7 @@
             "type": "integer",
             "title": "Verified"
           },
-          "role": {
+          "role":{
             "type": "string",
             "title": "Role"
           },
