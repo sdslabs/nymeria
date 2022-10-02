@@ -1,6 +1,6 @@
 module github.com/sdslabs/nymeria
 
-go 1.19
+go 1.17
 
 require (
 	github.com/gin-gonic/gin v1.8.1
@@ -15,7 +15,6 @@ require (
 	github.com/go-playground/validator/v10 v10.11.0 // indirect
 	github.com/goccy/go-json v0.9.7 // indirect
 	github.com/golang/protobuf v1.5.0 // indirect
-	github.com/imdario/mergo v0.3.13 // indirect
 	github.com/json-iterator/go v1.1.12 // indirect
 	github.com/leodido/go-urn v1.2.1 // indirect
 	github.com/mattn/go-isatty v0.0.16 // indirect
