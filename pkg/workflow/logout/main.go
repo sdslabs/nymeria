@@ -26,9 +26,7 @@ func InitializeLogoutFlowWrapper (cookie string) (*client.SelfServiceLogoutUrl, 
 	return resp, nil
 }
 
-func SubmitLogoutFlowWrapper (logoutUrl *client.SelfServiceLogoutUrl, returnToUrl string) {
-	token := logoutUrl.LogoutToken
-	
+func SubmitLogoutFlowWrapper (token string, returnToUrl string) (error){
 	configuration := client.NewConfiguration()
     
 	apiClient := client.NewAPIClient(configuration)
@@ -38,5 +36,8 @@ func SubmitLogoutFlowWrapper (logoutUrl *client.SelfServiceLogoutUrl, returnToUr
 	if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceLogoutFlow``: %v\n", err)
         fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", resp)
+        return err
     }
+
+    return nil
 }
