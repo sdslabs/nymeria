@@ -42,10 +42,8 @@ func InitializeLoginFlowWrapper() (string, string, string, error) {
 	return cookie, resp.Id, csrf_token, nil
 }
 
-func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, data Traits) error {
-	flow := flowID
-	cookies := cookie
-	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithPasswordMethodBody: client.NewSubmitSelfServiceLoginFlowWithPasswordMethodBody("abc", "Password", pass)} // SubmitSelfServiceLoginFlowBody |
+func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, identifier string) error {
+	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithPasswordMethodBody: client.NewSubmitSelfServiceLoginFlowWithPasswordMethodBody(identifier, "password", pass)} // SubmitSelfServiceLoginFlowBody |
 
 	csrf_token := csrfToken
 	submitDataBody.SubmitSelfServiceLoginFlowWithPasswordMethodBody.SetCsrfToken(csrf_token)
@@ -57,7 +55,7 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 		},
 	}
 	apiClient := client.NewAPIClient(configuration)
-	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flow).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookies).Execute()
+	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
 	if err != nil {
 		fmt.Println(r)
 		return err

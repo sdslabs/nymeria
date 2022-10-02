@@ -15,10 +15,6 @@ func HandleGetLoginFlow(c *gin.Context) {
 		fmt.Println(err)
 		return
 	}
-	// t := &login.Traits{
-	// 	Email:    "rohith@gmail.com",
-	// 	Password: "jngkjenrjg",
-	// }
 
 	c.SetCookie("login_flow", cookie, 3600, "/", "localhost", false, true)
 
@@ -37,15 +33,13 @@ func HandlePostLoginFlow(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-	cookie, err := c.Cookie("registration_flow")
+	cookie, err := c.Cookie("login_flow")
 
 	if err != nil {
 		fmt.Println(err)
 	}
 
-	fmt.Println(cookie)
-
-	err = login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Traits)
+	err = login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier)
 
 	if err != nil {
 		fmt.Println(err)

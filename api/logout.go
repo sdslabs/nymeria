@@ -9,17 +9,23 @@ import (
 )
 
 func HandleGetLogoutFlow(c *gin.Context) {
-	cookie := "choco chip"
+	cookie, err := c.Cookie("sdslabs_session")
+
+	if err != nil {
+		fmt.Println(err)
+
+	}
+
 	logoutUrl, err := logout.InitializeLogoutFlowWrapper(cookie)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
-	
+
 	c.JSON(http.StatusOK, gin.H{
 		"logoutToken": logoutUrl.LogoutToken,
-		"url": logoutUrl.LogoutUrl,
+		"url":         logoutUrl.LogoutUrl,
 	})
 }
 
@@ -31,7 +37,8 @@ func HandlePostLogoutFlow(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-	err = logout.SubmitLogoutFlowWrapper(t.LogoutToken,t.LogoutUrl)
+	fmt.Println(t.LogoutToken)
+	err = logout.SubmitLogoutFlowWrapper(t.LogoutToken, t.LogoutUrl)
 
 	if err != nil {
 		fmt.Println(err)

@@ -9,8 +9,8 @@ type Traits struct {
 }
 
 type SubmitLoginAPIBody struct {
-	FlowID    string `json:"flowID"`
-	CsrfToken string `json:"csrf_token"`
-	Password  string `json:"password"`
-	Traits    Traits `json:"traits"`
+	FlowID     string `json:"flowID"`
+	CsrfToken  string `json:"csrf_token"`
+	Password   string `json:"password"`
+	Identifier string `json:"identifier"`
 }
