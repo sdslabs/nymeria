@@ -1,26 +1,36 @@
 package api
 
 import (
-	"fmt"
-	"net/http"
-
 	"github.com/gin-gonic/gin"
+	c "github.com/sdslabs/nymeria/pkg/controller/admin"
+	m "github.com/sdslabs/nymeria/pkg/middleware"
 )
 
 func Start() {
 	r := gin.Default()
+	k := m.NewMiddleware()
+
+	r.Use(k.Session())
 
 	r.GET("/ping", func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
+		c.JSON(200, gin.H{
 			"message": "pong",
 		})
 	})
+	r.GET("/login", HandleGetLoginFlow)
+	r.POST("/login", HandlePostLoginFlow)
+
+	r.POST("/create-identity", c.CreateIdentity)
+	r.GET("/get-identity", c.GetIdentity)
+	r.POST("/delete-identity", c.DeleteIdentity)
+
+	r.GET("/register", HandleGetRegistrationFlow)
+	r.POST("/register", HandlePostRegistrationFlow)
 
 	r.GET("/logout", HandleGetLogoutFlow)
 
 	r.POST("/logout", HandlePostLogoutFlow)
 
-	if err := r.Run(); err != nil {
-		fmt.Println(err)
-	}
+	r.Run()
+	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

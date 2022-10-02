@@ -48,7 +48,7 @@ format:
 	@echo "Format successful"
 
 clean:
-	@rm nymeria
+	@rm -f nymeria
 	@rm -rf vendor/
 	@echo "Clean successful"
 
