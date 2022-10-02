@@ -39,15 +39,16 @@ func HandlePostLoginFlow(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-	err = login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier)
+	session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier)
 
 	if err != nil {
 		fmt.Println(err)
 		return
 	}
 
+	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{
-		"flowID": "test",
+		"status": "logged in",
 	})
 
 }

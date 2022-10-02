@@ -37,8 +37,13 @@ func HandlePostLogoutFlow(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-	fmt.Println(t.LogoutToken)
-	err = logout.SubmitLogoutFlowWrapper(t.LogoutToken, t.LogoutUrl)
+	cookie, err := c.Cookie("sdslabs_session")
+
+	if err != nil {
+		fmt.Println(err)
+
+	}
+	err = logout.SubmitLogoutFlowWrapper(cookie, t.LogoutToken, t.LogoutUrl)
 
 	if err != nil {
 		fmt.Println(err)

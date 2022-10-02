@@ -3,7 +3,7 @@ package logout
 import (
 	"context"
 	"fmt"
-	"os"
+	"net/http"
 
 	client "github.com/ory/kratos-client-go"
 )
@@ -18,36 +18,36 @@ func InitializeLogoutFlowWrapper(cookie string) (*client.SelfServiceLogoutUrl, e
 
 	apiClient := client.NewAPIClient(configuration)
 
-	resp, r, err := apiClient.V0alpha2Api.CreateSelfServiceLogoutFlowUrlForBrowsers(context.Background()).Cookie(cookie).Execute()
+	resp, _, err := apiClient.V0alpha2Api.CreateSelfServiceLogoutFlowUrlForBrowsers(context.Background()).Cookie(cookie).Execute()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.CreateSelfServiceLogoutFlowUrlForBrowsers``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return resp, err
+		return nil, err
 	}
-
-	fmt.Fprintf(os.Stdout, "Response from `V0alpha2Api.CreateSelfServiceLogoutFlowUrlForBrowsers`: %v\n", resp)
 
 	return resp, nil
 }
 
-func SubmitLogoutFlowWrapper(token string, returnToUrl string) error {
-	configuration := client.NewConfiguration()
-	configuration.Servers = []client.ServerConfiguration{
-		{
-			URL: "http://127.0.0.1:4433",
-		},
+func SubmitLogoutFlowWrapper(cookie string, token string, returnToUrl string) error {
+	client := &http.Client{}
+	req, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:4433/self-service/logout", nil)
+	if err != nil {
+		fmt.Println(err)
 	}
 
-	apiClient := client.NewAPIClient(configuration)
-	fmt.Println("testing", token)
-	resp, err := apiClient.V0alpha2Api.SubmitSelfServiceLogoutFlow(context.Background()).Token(token).ReturnTo(returnToUrl).Execute()
+	q := req.URL.Query()
+	q.Add("token", token)
+
+	req.URL.RawQuery = q.Encode()
+	req.Header.Set("Cookie", cookie)
+	req.Header.Set("Accept", "application/json")
+
+	resp, err := client.Do(req)
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceLogoutFlow``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", resp)
-		return err
+		fmt.Println(err)
 	}
+
+	fmt.Println(resp.StatusCode)
 
 	return nil
 }
