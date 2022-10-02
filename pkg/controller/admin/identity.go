@@ -47,7 +47,8 @@ func CreateIdentity(c *gin.Context) {
 
 func GetIdentity(c *gin.Context) {
 	apiClient := m.NewAdminMiddleware()
-	createdIdentity := "80b8317c-a1be-4510-b415-987f28b7667b"
+	createdIdentity := c.Query("identity")
+	fmt.Println(createdIdentity)
 	getIdentity, r, err := apiClient.V0alpha2Api.AdminGetIdentity(context.Background(), createdIdentity).Execute()
 
 	if err != nil {
@@ -67,7 +68,7 @@ func GetIdentity(c *gin.Context) {
 func DeleteIdentity(c *gin.Context) {
 	apiClient := m.NewAdminMiddleware()
 
-	identity := "5e2d9d8c-8367-478b-b183-268bd4a88bf1"
+	identity := c.PostForm("identity")
 
 	r, err := apiClient.V0alpha2Api.AdminDeleteIdentity(context.Background(), identity).Execute()
 	if err != nil {
@@ -75,8 +76,4 @@ func DeleteIdentity(c *gin.Context) {
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 	fmt.Println("Successfully Removed identity")
-}
-
-func GetAllIdentity(c *gin.Context) {
-
 }
