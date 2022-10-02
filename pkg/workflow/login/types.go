@@ -6,7 +6,6 @@ type Traits struct {
 		First string `json:"first"`
 		Last  string `json:"last"`
 	} `json:"name"`
-	Password string `json:"password"`
 }
 
 type SubmitLoginAPIBody struct {

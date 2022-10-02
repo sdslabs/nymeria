@@ -9,14 +9,14 @@ import (
 )
 
 func InitializeLoginFlowWrapper() (string, string, string, error) {
-	refresh := true                     // bool | Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session. (optional)
-	aal := "aal1"                       // string | Request a Specific AuthenticationMethod Assurance Level  Use this parameter to upgrade an existing session's authenticator assurance level (AAL). This allows you to ask for multi-factor authentication. When an identity sign in using e.g. username+password, the AAL is 1. If you wish to \"upgrade\" the session's security by asking the user to perform TOTP / WebAuth/ ... you would set this to \"aal2\". (optional)
-	returnTo := "http://localhost:4455" // string | The URL to return the browser to after the flow was completed. (optional)
+	refresh := false                         // bool | Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session. (optional)
+	aal := "aal1"                            // string | Request a Specific AuthenticationMethod Assurance Level  Use this parameter to upgrade an existing session's authenticator assurance level (AAL). This allows you to ask for multi-factor authentication. When an identity sign in using e.g. username+password, the AAL is 1. If you wish to \"upgrade\" the session's security by asking the user to perform TOTP / WebAuth/ ... you would set this to \"aal2\". (optional)
+	returnTo := "http://127.0.0.1:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
 
 	configuration := client.NewConfiguration()
 	configuration.Servers = []client.ServerConfiguration{
 		{
-			URL: "http://127.0.0.1:4455",
+			URL: "http://127.0.0.1:4433",
 		},
 	}
 	apiClient := client.NewAPIClient(configuration)
@@ -24,8 +24,7 @@ func InitializeLoginFlowWrapper() (string, string, string, error) {
 	cookie := fullr.Header.Get("Set-Cookie")
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.InitializeSelfServiceLoginFlowForBrowsers``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", fullr)
+		return "", "", "", err
 	}
 	// response from `InitializeSelfServiceLoginFlowForBrowsers`: SelfServiceLoginFlow
 	fmt.Fprintf(os.Stdout, "Response from `V0alpha2Api.InitializeSelfServiceLoginFlowForBrowsers`: %v\n", resp)
@@ -46,7 +45,7 @@ func InitializeLoginFlowWrapper() (string, string, string, error) {
 func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, data Traits) error {
 	flow := flowID
 	cookies := cookie
-	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithPasswordMethodBody: client.NewSubmitSelfServiceLoginFlowWithPasswordMethodBody("", "Password", pass)} // SubmitSelfServiceLoginFlowBody |
+	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithPasswordMethodBody: client.NewSubmitSelfServiceLoginFlowWithPasswordMethodBody("abc", "Password", pass)} // SubmitSelfServiceLoginFlowBody |
 
 	csrf_token := csrfToken
 	submitDataBody.SubmitSelfServiceLoginFlowWithPasswordMethodBody.SetCsrfToken(csrf_token)
@@ -54,14 +53,14 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 	configuration := client.NewConfiguration()
 	configuration.Servers = []client.ServerConfiguration{
 		{
-			URL: "http://127.0.0.1:4455",
+			URL: "http://127.0.0.1:4433",
 		},
 	}
 	apiClient := client.NewAPIClient(configuration)
 	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flow).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookies).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceLoginFlow``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		fmt.Println(r)
+		return err
 	}
 	fmt.Fprintf(os.Stdout, "Response from `V0alpha2Api.SubmitSelfServiceLoginFlow`: %v\n", resp)
 	return nil

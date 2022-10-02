@@ -20,7 +20,7 @@ func HandleGetLoginFlow(c *gin.Context) {
 	// 	Password: "jngkjenrjg",
 	// }
 
-	c.SetCookie("registration_flow", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("login_flow", cookie, 3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
