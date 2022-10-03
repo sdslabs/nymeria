@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	client "github.com/ory/kratos-client-go"
+	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleStatus(c *gin.Context) {
@@ -17,14 +18,7 @@ func HandleStatus(c *gin.Context) {
 
 	}
 
-	configuration := client.NewConfiguration()
-	configuration.Servers = []client.ServerConfiguration{
-		{
-			URL: "http://127.0.0.1:4433",
-		},
-	}
-
-	apiClient := client.NewAPIClient(configuration)
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	resp, _, err := apiClient.V0alpha2Api.ToSession(context.Background()).Cookie(cookie).Execute()
 	if err != nil {
 		fmt.Println(err)

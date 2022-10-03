@@ -7,7 +7,8 @@ import (
 	"gopkg.in/yaml.v2"
 )
 
-func (c *Config) GetConf() *Config {
+func getConf() *NymeriaCfg {
+	c := &NymeriaCfg{}
 
 	yamlFile, err := ioutil.ReadFile("config.yaml")
 	if err != nil {
@@ -20,3 +21,7 @@ func (c *Config) GetConf() *Config {
 
 	return c
 }
+
+var (
+	NymeriaConfig = getConf()
+)

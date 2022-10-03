@@ -6,19 +6,13 @@ import (
 	"os"
 
 	client "github.com/ory/kratos-client-go"
+	"github.com/sdslabs/nymeria/config"
 )
 
 func InitializeRegistrationFlowWrapper() (string, string, string, error) {
 	returnTo := "http://127.0.0.1:4455/ping"
 
-	configuration := client.NewConfiguration()
-	configuration.Servers = []client.ServerConfiguration{
-		{
-			URL: "http://127.0.0.1:4433",
-		},
-	}
-
-	apiClient := client.NewAPIClient(configuration)
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceRegistrationFlowForBrowsers(context.Background()).ReturnTo(returnTo).Execute()
 	if err != nil {
 		return "", "", "", err
@@ -48,7 +42,7 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 	configuration := client.NewConfiguration()
 	configuration.Servers = []client.ServerConfiguration{
 		{
-			URL: "http://127.0.0.1:4433",
+			URL: config.NymeriaConfig.URL.KratosURL,
 		},
 	}
 

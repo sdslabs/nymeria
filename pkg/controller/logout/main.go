@@ -6,17 +6,11 @@ import (
 	"net/http"
 
 	client "github.com/ory/kratos-client-go"
+	"github.com/sdslabs/nymeria/config"
 )
 
 func InitializeLogoutFlowWrapper(cookie string) (*client.SelfServiceLogoutUrl, error) {
-	configuration := client.NewConfiguration()
-	configuration.Servers = []client.ServerConfiguration{
-		{
-			URL: "http://127.0.0.1:4433",
-		},
-	}
-
-	apiClient := client.NewAPIClient(configuration)
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
 	resp, _, err := apiClient.V0alpha2Api.CreateSelfServiceLogoutFlowUrlForBrowsers(context.Background()).Cookie(cookie).Execute()
 

@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/nymeria/pkg/workflow/login"
+	"github.com/sdslabs/nymeria/pkg/controller/login"
 )
 
 func HandleGetLoginFlow(c *gin.Context) {

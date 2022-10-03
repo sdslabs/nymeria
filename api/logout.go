@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	logout "github.com/sdslabs/nymeria/pkg/workflow/logout"
+	"github.com/sdslabs/nymeria/pkg/controller/logout"
 )
 
 func HandleGetLogoutFlow(c *gin.Context) {

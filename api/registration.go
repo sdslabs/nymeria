@@ -5,7 +5,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/nymeria/pkg/workflow/registration"
+	"github.com/sdslabs/nymeria/pkg/controller/registration"
 )
 
 func HandleGetRegistrationFlow(c *gin.Context) {
