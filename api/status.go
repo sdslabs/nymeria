@@ -8,14 +8,18 @@ import (
 	"github.com/gin-gonic/gin"
 	client "github.com/ory/kratos-client-go"
 	"github.com/sdslabs/nymeria/config"
+	"go.uber.org/zap"
 )
 
 func HandleStatus(c *gin.Context) {
 	cookie, err := c.Cookie("sdslabs_session")
 
 	if err != nil {
-		fmt.Println(err)
-
+		zap.L().Error("Session cookie not found", zap.Error(err))
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error": "session not found",
+		})
+		return
 	}
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
@@ -24,8 +28,7 @@ func HandleStatus(c *gin.Context) {
 		fmt.Println(err)
 	}
 
-	fmt.Println(resp)
-	fmt.Println(cookie)
+	zap.L().Info("Session", zap.String("cookie", cookie))
 	c.JSON(http.StatusOK, gin.H{
 		"flowID": resp.Active,
 	})

@@ -2,7 +2,6 @@ package logout
 
 import (
 	"context"
-	"fmt"
 	"net/http"
 
 	client "github.com/ory/kratos-client-go"
@@ -25,7 +24,7 @@ func SubmitLogoutFlowWrapper(cookie string, token string, returnToUrl string) er
 	client := &http.Client{}
 	req, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:4433/self-service/logout", nil)
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
 
 	q := req.URL.Query()
@@ -35,13 +34,11 @@ func SubmitLogoutFlowWrapper(cookie string, token string, returnToUrl string) er
 	req.Header.Set("Cookie", cookie)
 	req.Header.Set("Accept", "application/json")
 
-	resp, err := client.Do(req)
+	_, err = client.Do(req)
 
 	if err != nil {
-		fmt.Println(err)
+		return err
 	}
-
-	fmt.Println(resp.StatusCode)
 
 	return nil
 }

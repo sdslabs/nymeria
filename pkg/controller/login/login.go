@@ -2,8 +2,6 @@ package login
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	client "github.com/ory/kratos-client-go"
 	"github.com/sdslabs/nymeria/config"
@@ -21,8 +19,6 @@ func InitializeLoginFlowWrapper() (string, string, string, error) {
 	if err != nil {
 		return "", "", "", err
 	}
-	// response from `InitializeSelfServiceLoginFlowForBrowsers`: SelfServiceLoginFlow
-	fmt.Fprintf(os.Stdout, "Response from `V0alpha2Api.InitializeSelfServiceLoginFlowForBrowsers`: %v\n", resp)
 
 	var csrf_token string
 
@@ -40,13 +36,11 @@ func InitializeLoginFlowWrapper() (string, string, string, error) {
 func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, identifier string) (string, error) {
 	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithPasswordMethodBody: client.NewSubmitSelfServiceLoginFlowWithPasswordMethodBody(identifier, "password", pass)} // SubmitSelfServiceLoginFlowBody |
 
-	csrf_token := csrfToken
-	submitDataBody.SubmitSelfServiceLoginFlowWithPasswordMethodBody.SetCsrfToken(csrf_token)
+	submitDataBody.SubmitSelfServiceLoginFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
 	if err != nil {
-		fmt.Println(r)
 		return "", err
 	}
 

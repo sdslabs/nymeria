@@ -39,20 +39,13 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 		"name":  data.Name,
 	}
 
-	configuration := client.NewConfiguration()
-	configuration.Servers = []client.ServerConfiguration{
-		{
-			URL: config.NymeriaConfig.URL.KratosURL,
-		},
-	}
-
 	submitDataBody := client.SubmitSelfServiceRegistrationFlowBody{
 		SubmitSelfServiceRegistrationFlowWithPasswordMethodBody: client.NewSubmitSelfServiceRegistrationFlowWithPasswordMethodBody("password", password, trait),
 	}
 
 	submitDataBody.SubmitSelfServiceRegistrationFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
 
-	apiClient := client.NewAPIClient(configuration)
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRegistrationFlow(context.Background()).Flow(flowID).SubmitSelfServiceRegistrationFlowBody(submitDataBody).Cookie(cookie).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRegistrationFlow``: %v\n", err)
