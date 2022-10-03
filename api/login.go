@@ -6,13 +6,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/nymeria/pkg/controller/login"
+	"go.uber.org/zap"
 )
 
 func HandleGetLoginFlow(c *gin.Context) {
 	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper()
 
 	if err != nil {
-		fmt.Println(err)
+		zap.L().Fatal("Error", zap.Error(err))
 		return
 	}
 
