@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/sdslabs/nymeria/pkg/controller/login"
+	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/login"
 	"go.uber.org/zap"
 )
 
