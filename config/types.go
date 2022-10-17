@@ -1,7 +1,8 @@
 package config
 
 type NymeriaCfg struct {
-	URL URL `yaml:"url"`
+	Env string `yaml:"env"`
+	URL URL    `yaml:"url"`
 }
 
 type URL struct {

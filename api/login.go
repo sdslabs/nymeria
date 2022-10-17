@@ -9,10 +9,10 @@ import (
 )
 
 func HandleGetLoginFlow(c *gin.Context) {
+	zap.L().Info("Hey")
 	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper()
 
 	if err != nil {
-		zap.L().Error("Kratos get login flow failed", zap.Error(err))
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error",
 		})
