@@ -4,15 +4,16 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/login"
-	"go.uber.org/zap"
 )
 
 func HandleGetLoginFlow(c *gin.Context) {
-	zap.L().Info("Hey")
+	log.Logger.Debug("Get Login")
 	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper()
 
 	if err != nil {
+		log.ErrorLogger("Intialize Login Failed", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error",
 		})
@@ -32,7 +33,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 	err := c.BindJSON(&t)
 
 	if err != nil {
-		zap.L().Error("Unable to process json body", zap.Error(err))
+		log.ErrorLogger("Unable to process json body", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Unable to process request body",
 		})
@@ -42,7 +43,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 	cookie, err := c.Cookie("login_flow")
 
 	if err != nil {
-		zap.L().Error("Cookie not found", zap.Error(err))
+		log.ErrorLogger("Cookie not found", err)
 		c.JSON(http.StatusBadRequest, gin.H{
 			"error": "csrf cookie not found",
 		})
@@ -52,7 +53,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 	session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier)
 
 	if err != nil {
-		zap.L().Error("Kratos post login flow failed", zap.Error(err))
+		log.ErrorLogger("Kratos post login flow failed", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error",
 		})

@@ -4,15 +4,15 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/logout"
-	"go.uber.org/zap"
 )
 
 func HandleGetLogoutFlow(c *gin.Context) {
 	cookie, err := c.Cookie("sdslabs_session")
 
 	if err != nil {
-		zap.L().Error("Session cookie not found", zap.Error(err))
+		log.ErrorLogger("Session cookie not found", err)
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "session not found",
 		})
@@ -22,7 +22,7 @@ func HandleGetLogoutFlow(c *gin.Context) {
 	logoutUrl, err := logout.InitializeLogoutFlowWrapper(cookie)
 
 	if err != nil {
-		zap.L().Error("Kratos get logout flow failed", zap.Error(err))
+		log.ErrorLogger("Kratos get logout flow failed", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error",
 		})
@@ -40,7 +40,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 	err := c.BindJSON(&t)
 
 	if err != nil {
-		zap.L().Error("Unable to process json body", zap.Error(err))
+		log.ErrorLogger("Unable to process json body", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "Unable to process request body",
 		})
@@ -50,7 +50,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 	cookie, err := c.Cookie("sdslabs_session")
 
 	if err != nil {
-		zap.L().Error("Session cookie not found", zap.Error(err))
+		log.ErrorLogger("Session cookie not found", err)
 		c.JSON(http.StatusUnauthorized, gin.H{
 			"error": "session not found",
 		})
@@ -59,7 +59,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 	err = logout.SubmitLogoutFlowWrapper(cookie, t.LogoutToken, t.LogoutUrl)
 
 	if err != nil {
-		zap.L().Error("Kratos get logout flow failed", zap.Error(err))
+		log.ErrorLogger("Kratos get logout flow failed", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error",
 		})

@@ -17,6 +17,12 @@ func getLogger() *logrus.Logger {
 	return logger
 }
 
+func ErrorLogger(msg string, err error) {
+	Logger.WithFields(map[string]interface{}{
+		"error": err,
+	}).Error(msg)
+}
+
 var (
 	Logger = getLogger()
 )
