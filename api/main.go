@@ -32,6 +32,8 @@ func Start() {
 
 	r.GET("/status", HandleStatus)
 
+	r.GET("/recovery", HandleGetRecoveryFlow)
+
 	r.Run()
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
