@@ -30,5 +30,39 @@ func HandleGetRecoveryFlow(c *gin.Context) {
 }
 
 func HandlePostRecoveryFlow(c *gin.Context) {
-	
+	var t recovery.SubmitRecoveryAPIBody
+	err := c.BindJSON(&t)
+
+
+	if err != nil {
+		log.ErrorLogger("Unable to process json body", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Unable to process request body",
+		})
+		return
+	}
+
+	cookie, err := c.Cookie("recovery_flow")
+
+	if err != nil {
+		log.ErrorLogger("Cookie not found", err)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error": "csrf cookie not found",
+		})
+		return
+	}
+
+	recoveryToken, err := recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.RecoveryToken, t.CsrfToken, t.Email, t.Method)
+
+	if err != nil {
+		log.ErrorLogger("POST Recovery flow failed", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"token" : recoveryToken,
+	})
 }

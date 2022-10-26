@@ -27,12 +27,12 @@ func Start() {
 	r.POST("/register", HandlePostRegistrationFlow)
 
 	r.GET("/logout", HandleGetLogoutFlow)
-
 	r.POST("/logout", HandlePostLogoutFlow)
 
 	r.GET("/status", HandleStatus)
 
 	r.GET("/recovery", HandleGetRecoveryFlow)
+	r.POST("/recovery", HandlePostRecoveryFlow)
 
 	r.Run()
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")

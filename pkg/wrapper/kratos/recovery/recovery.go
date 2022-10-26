@@ -2,6 +2,8 @@ package recovery
 
 import (
 	"context"
+	"fmt"
+	"os"
 
 	client "github.com/ory/kratos-client-go"
 	"github.com/sdslabs/nymeria/config"
@@ -33,8 +35,23 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error){
 	return cookie, resp.Id, csrf_token, nil
 }
 
-func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, password string, data Traits) (string, error) {
-	//apiClient := client.NewAPIClient(config.KratosClientConfig)
+func SubmitRecoveryFlowWrapper(cookie string, flowID string, token string, csrfToken string, email string, method string) (string, error) {
+	
+	submitFlowBody := client.SubmitSelfServiceRecoveryFlowBody{
+		SubmitSelfServiceRecoveryFlowWithLinkMethodBody : client.NewSubmitSelfServiceRecoveryFlowWithLinkMethodBody(email, method,),
+	}
 
-	return "",nil
+	submitFlowBody.SubmitSelfServiceRecoveryFlowWithLinkMethodBody.SetCsrfToken(csrfToken)
+
+
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRecoveryFlow(context.Background()).Flow(flowID).SubmitSelfServiceRecoveryFlowBody(submitFlowBody).Token(token).Cookie(cookie).Execute()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRecoveryFlow``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
+
+	responseCookie := r.Header["Set-Cookie"]
+	return responseCookie[1],nil
 }
