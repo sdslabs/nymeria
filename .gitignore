@@ -27,3 +27,6 @@ config.yaml
 
 # Exclude air temp directory
 target/
+
+#Exclude values.yaml
+/config/values.yaml
