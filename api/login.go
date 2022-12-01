@@ -14,8 +14,7 @@ import (
 
 func HandleGetLoginFlow(c *gin.Context) {
 	log.Logger.Debug("Get Login")
-
-	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper()
+	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal1")
 
 	if err != nil {
 		log.ErrorLogger("Initialize Login Failed", err)
@@ -64,7 +63,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 		return
 	}
 
-	session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier)
+	_, session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier) // _ is USERID
 
 	if err != nil {
 		log.ErrorLogger("Post login flow failed", err)

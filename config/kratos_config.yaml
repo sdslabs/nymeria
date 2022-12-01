@@ -2,6 +2,11 @@ selfservice:
     strategies:
       password:
         enabled: true
+        
+      totp:
+        config:
+          issuer: sdslabs.co # subject to change after discussion
+        enabled: true
   
     settings:
       privileged_session_max_age: 20m
@@ -9,7 +14,8 @@ selfservice:
         profile:
           hooks:
             -
-              hook: verify
+              hook: verify  
+      required_aal: aal1
   
     registration:
       request_lifespan: 10m
@@ -21,6 +27,10 @@ selfservice:
             -
               hook: verify
 
+session:
+  whoami:
+    required_aal: highest_available
+    
 identity:
     traits:
         default_schema_url: file:///etc/config/kratos/identity.schema.json
