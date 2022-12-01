@@ -12,8 +12,7 @@ import (
 
 func HandleGetLoginFlow(c *gin.Context) {
 	log.Logger.Debug("Get Login")
-	
-	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper()
+	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal1")
 
 	if err != nil {
 		log.ErrorLogger("Intialize Login Failed", err)
@@ -62,7 +61,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 		return
 	}
 
-	session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier)
+	_, session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier) // _ is USERID
 
 	if err != nil {
 		log.ErrorLogger("Post login flow failed", err)
@@ -76,6 +75,11 @@ func HandlePostLoginFlow(c *gin.Context) {
 	}
 
 	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
+
+	// Apply a check here to check whether the TOTP is enabled or not using the indentity functions.
+	// iterate through the credentials and find out if there is any field with the value totp, if yes then initialise the mfa login flow
+	// replace _ with somevariable and send that variable to the totp flow if it exists, account name is needed nothing else
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged in",
 	})

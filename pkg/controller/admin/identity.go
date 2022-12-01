@@ -41,6 +41,8 @@ func CreateIdentity(c *gin.Context) {
 			"created_at":   c.PostForm("created_at"),
 			"github_id":    c.PostForm("github_id"),
 			"dribble_id":   c.PostForm("dribble_id"),
+			"totp_enabled": false,
+			"totp_url":     "",
 		},
 	) // AdminCreateIdentityBody |  (optional)
 

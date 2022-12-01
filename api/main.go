@@ -1,12 +1,18 @@
 package api
 
 import (
+	"database/sql"
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 	c "github.com/sdslabs/nymeria/pkg/controller/admin"
 	 "github.com/sdslabs/nymeria/pkg/middleware"
 )
 
+var db *sql.DB
+
 func Start() {
+	fmt.Println(db)
 	r := gin.Default()
 	// k := m.NewMiddleware()
 
@@ -19,6 +25,8 @@ func Start() {
 	})
 	r.GET("/login", HandleGetLoginFlow)
 	r.POST("/login", HandlePostLoginFlow)
+	r.GET("/mfa", HandleGetMFAFlow)
+	r.POST("/mfa", HandlePostMFAFlow)
 
 	r.POST("/create-identity", c.CreateIdentity)
 	r.GET("/get-identity", c.GetIdentity)

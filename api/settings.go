@@ -1,10 +1,7 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/nymeria/log"
@@ -13,69 +10,64 @@ import (
 
 func HandleGetSettingsFlow(c *gin.Context) {
 	log.Logger.Debug("Get Settings")
-
-	auth_cookie, _ := c.Cookie("sdslabs_session")
-	fmt.Println(auth_cookie)
-	cookie, flowID, csrf_token, err := settings.InitializeSettingsFlowWrapper(auth_cookie)
+	get_cookie, err := c.Cookie("sdslabs_session")
 
 	if err != nil {
-		log.ErrorLogger("Intialize Settings Failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
-			"message": "Intialize Settings Failed",
+		log.ErrorLogger("Intialize Settings flow Failed", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Session expired",
+		})
+		return
+	}
+
+	flow, cookie, err := settings.InitializeSettingsFlowWrapper(get_cookie)
+
+	flowID := flow.Id
+
+	if err != nil {
+		log.ErrorLogger("Intialize Settings flow Failed", err)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "internal server error",
 		})
 		return
 	}
 
 	c.SetCookie("settings_flow", cookie, 3600, "/", "localhost", false, true)
 
+	var csrf_token string
+
+	for _, node := range flow.Ui.Nodes {
+		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
+			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
+			csrf_token, _ = csrf_token_interface.(string)
+			break
+		}
+	}
+
+	var qr string
+
+	for _, node := range flow.Ui.Nodes {
+		if node.Attributes.UiNodeInputAttributes.Name == "totp_qr" {
+			qr_interface := node.Attributes.UiNodeInputAttributes.Value
+			qr, _ = qr_interface.(string)
+			break
+		}
+	}
+
+	var secret string
+
+	for _, node := range flow.Ui.Nodes {
+		if node.Attributes.UiNodeInputAttributes.Name == "totp_secret_key" {
+			secret_interface := node.Attributes.UiNodeInputAttributes.Value
+			secret, _ = secret_interface.(string)
+			break
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
 		"csrf_token": csrf_token,
-	})
-}
-
-func HandlePostSettingsFlow(c *gin.Context) {
-	var t settings.SubmitSettingsWithPasswordBody
-	err := c.Bind(&t)
-
-	if err != nil {
-		log.ErrorLogger("Unable to process json body", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
-			"message": "Unable to process json body",
-		})
-		return
-	}
-
-	cookie, err := c.Cookie("settings_flow")
-	fmt.Println(cookie)
-
-	if err != nil {
-		log.ErrorLogger("Cookie not found", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
-			"message": "Cookie not found",
-		})
-		return
-	}
-
-	_, err = settings.SubmitSettingsFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password)
-
-	if err != nil {
-		log.ErrorLogger("Post Settings flow failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
-			"message": "Post Settings flow failed",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Password Reset Successful",
+		"qr":         qr,
+		"secret":     secret,
 	})
 }

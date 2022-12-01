@@ -20,6 +20,9 @@
             "credentials": {
               "password": {
                 "identifier": true
+              },
+              "totp": {
+                "account_name": true
               }
             },
             "verification": {
@@ -42,26 +45,18 @@
           "type": "string",
           "title": "Profile Image URL"
         },
-        "active": {
-          "type": "boolean",
-          "title": "Active"
+        "totp_enabled":{
+            "type": "boolean",
+            "title":"Whether TOTP enabled or not"
         },
-        "verified": {
-          "type": "boolean",
-          "title": "Verified"
-        },
-        "role": {
-          "type": "string",
-          "title": "Role"
-        },
-        "created_at": {
-          "type": "string",
-          "format": "date-time",
-          "title": "Created At"
+        "totp_url":{
+            "type": "string",
+            "title": "TOTP URL"
         }
-      },
 
-      "required": [
+    },
+    "required":[
+        "id",
         "email",
         "name",
         "phone_number",
