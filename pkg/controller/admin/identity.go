@@ -4,11 +4,13 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
 
 	"github.com/gin-gonic/gin"
 	client "github.com/ory/client-go"
+	"github.com/sdslabs/nymeria/log"
 )
 
 func CreateIdentity(c *gin.Context) {
@@ -44,10 +46,15 @@ func CreateIdentity(c *gin.Context) {
 
 	createdIdentity, r, err := apiClient.V0alpha2Api.AdminCreateIdentity(context.Background()).AdminCreateIdentityBody(adminCreateIdentityBody).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.AdminCreateIdentity``: %v\n", err)
+		log.ErrorLogger("Error while calling `AdminCreateIdentity`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "INternal server error",
+		})
 	}
-	fmt.Fprintf(os.Stdout, "Created identity with ID: %v\n", createdIdentity.Id)
+	c.JSON(http.StatusOK, gin.H{
+		"identity": createdIdentity.Id,
+	})
 
 }
 
@@ -65,8 +72,11 @@ func GetIdentity(c *gin.Context) {
 	getIdentity, r, err := apiClient.V0alpha2Api.AdminGetIdentity(context.Background(), createdIdentity).Execute()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.AdminGetIdentity``: %v\n", err)
+		log.ErrorLogger("Error while calling `AdminGetIdentity`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "INternal server error",
+		})
 	}
 
 	jsonString, _ := json.Marshal(getIdentity.Traits)
@@ -76,7 +86,13 @@ func GetIdentity(c *gin.Context) {
 		fmt.Println(err)
 	}
 	fmt.Fprintf(os.Stdout, "Identity details for id %v. Traits: %v\n", createdIdentity, identity)
+	c.JSON(http.StatusOK, gin.H{
+		"Identity": createdIdentity,
+		"Traits": identity,
+	})
 }
+
+
 
 func DeleteIdentity(c *gin.Context) {
 	configuration := client.NewConfiguration()
@@ -91,8 +107,13 @@ func DeleteIdentity(c *gin.Context) {
 
 	r, err := apiClient.V0alpha2Api.AdminDeleteIdentity(context.Background(), identity).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.AdminDeleteIdentity``: %v\n", err)
+		log.ErrorLogger("Error while calling `AdminDeleteIdentity`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "INternal server error",
+		})
 	}
-	fmt.Println("Successfully Removed identity")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "removed identity",
+	})
 }
