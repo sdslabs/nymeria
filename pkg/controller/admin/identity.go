@@ -8,12 +8,18 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	client "github.com/ory/kratos-client-go"
-	m "github.com/sdslabs/nymeria/pkg/middleware"
+	client "github.com/ory/client-go"
 )
 
 func CreateIdentity(c *gin.Context) {
-	apiClient := m.NewAdminMiddleware()
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
+
 	id, _ := strconv.Atoi(c.PostForm("id"))
 	verified, _ := strconv.Atoi(c.PostForm("verified"))
 	active, _ := strconv.ParseBool(c.PostForm("active"))
@@ -46,7 +52,14 @@ func CreateIdentity(c *gin.Context) {
 }
 
 func GetIdentity(c *gin.Context) {
-	apiClient := m.NewAdminMiddleware()
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
+
 	createdIdentity := c.Query("identity")
 	fmt.Println(createdIdentity)
 	getIdentity, r, err := apiClient.V0alpha2Api.AdminGetIdentity(context.Background(), createdIdentity).Execute()
@@ -66,7 +79,13 @@ func GetIdentity(c *gin.Context) {
 }
 
 func DeleteIdentity(c *gin.Context) {
-	apiClient := m.NewAdminMiddleware()
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
 
 	identity := c.PostForm("identity")
 

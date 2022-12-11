@@ -6,7 +6,7 @@ import (
     "net/http"
 
     "github.com/gin-gonic/gin"
-    client "github.com/ory/kratos-client-go"
+    client "github.com/ory/client-go"
 )
 type kratosMiddleware struct {
     client *client.APIClient
