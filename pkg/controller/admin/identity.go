@@ -117,3 +117,59 @@ func DeleteIdentity(c *gin.Context) {
 		"message": "removed identity",
 	})
 }
+
+func ListIdentity(c *gin.Context) {
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
+
+	identities, r, err := apiClient.V0alpha2Api.AdminListIdentities(context.Background()).Execute()
+
+	if err != nil {
+		log.ErrorLogger("Error while calling `AdminListIdentities`", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H {
+			"error" : "Internal server error",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H {
+		"identities": identities,
+	})
+}
+
+func UpdateBanIdentity(c *gin.Context) {
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
+
+	identity := c.PostForm("identity")
+
+	adminUpdateIdentityBody := *client.NewAdminUpdateIdentityBody(
+		"default",
+		"active",
+		map[string]interface{}{
+			"active": 		true,
+		},
+	) // AdminCreateIdentityBody |  (optional)
+
+	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity).AdminUpdateIdentityBody(adminUpdateIdentityBody).Execute()
+
+	 if err != nil {
+		log.ErrorLogger("Error while calling `AdminUpIdentities`", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H {
+			"error" : "Internal server error",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H {
+		"identities": id,
+	})
+}
