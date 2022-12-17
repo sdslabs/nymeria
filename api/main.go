@@ -23,7 +23,7 @@ func Start() {
 	r.GET("/get-identity", c.GetIdentity)
 	r.POST("/delete-identity", c.DeleteIdentity)
 	r.GET("/list-identity", c.ListIdentity)
-	r.PUT("/update-identity/ban", c.UpdateBanIdentity)
+	r.GET("/update-identity/ban", c.UpdateBanIdentity)
 
 	r.GET("/register", HandleGetRegistrationFlow)
 	r.POST("/register", HandlePostRegistrationFlow)

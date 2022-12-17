@@ -7,6 +7,7 @@ import (
 	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	client "github.com/ory/client-go"
@@ -152,21 +153,21 @@ func UpdateBanIdentity(c *gin.Context) {
 
 	identity := c.PostForm("identity")
 
-	adminUpdateIdentityBody := *client.NewAdminUpdateIdentityBody(
-		"default",
-		"active",
-		map[string]interface{}{
-			"active": 		true,
+	jsonPatch := []client.JsonPatch{
+		{	
+			From: nil,
+			Op: "replace",
+			Path: "/active",
+			Value: false,
 		},
-	) // AdminCreateIdentityBody |  (optional)
+	}
+	id, r, err := apiClient.V0alpha2Api.AdminPatchIdentity(context.Background(), identity).JsonPatch(jsonPatch).Execute()
 
-	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity).AdminUpdateIdentityBody(adminUpdateIdentityBody).Execute()
-
-	 if err != nil {
-		log.ErrorLogger("Error while calling `AdminUpIdentities`", err)
+	if err != nil {
+		log.ErrorLogger("Error while calling `AdminPatchIdentities`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 		c.JSON(http.StatusInternalServerError, gin.H {
-			"error" : "Internal server error",
+			"error" : err.Error(),
 		})
 	}
 	c.JSON(http.StatusOK, gin.H {
