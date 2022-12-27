@@ -5,7 +5,7 @@ import (
 	"fmt"
 	"os"
 
-	client "github.com/ory/kratos-client-go"
+	client "github.com/ory/client-go"
 	"github.com/sdslabs/nymeria/config"
 )
 
@@ -24,5 +24,21 @@ func SubmitOIDCRegistrationFlowWrapper(provider string, cookie string, flowID st
 	}
 
 	responseCookies := r.Header["Set-Cookie"]
+	return responseCookies[1], nil
+}
+
+func SubmitOIDCLoginFlowWrapper(provider string, cookie string, flowID string, csrfToken string) (string, error) {
+	submitOIDCLoginFlowBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithOidcMethodBody: client.NewSubmitSelfServiceLoginFlowWithOidcMethodBody("oidc", provider)} // SubmitSelfServiceLoginFlowBody |
+
+	submitOIDCLoginFlowBody.SubmitSelfServiceLoginFlowWithOidcMethodBody.SetCsrfToken(csrfToken)
+
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitOIDCLoginFlowBody).XSessionToken("").Cookie(cookie).Execute()
+	if err != nil {
+		return "", err
+	}
+
+	responseCookies := r.Header["Set-Cookie"]
+
 	return responseCookies[1], nil
 }
