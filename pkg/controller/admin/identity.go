@@ -4,16 +4,25 @@ import (
 	"context"
 	"encoding/json"
 	"fmt"
+	"net/http"
 	"os"
 	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
-	client "github.com/ory/kratos-client-go"
-	m "github.com/sdslabs/nymeria/pkg/middleware"
+	client "github.com/ory/client-go"
+	"github.com/sdslabs/nymeria/log"
 )
 
 func CreateIdentity(c *gin.Context) {
-	apiClient := m.NewAdminMiddleware()
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
+
 	id, _ := strconv.Atoi(c.PostForm("id"))
 	verified, _ := strconv.Atoi(c.PostForm("verified"))
 	active, _ := strconv.ParseBool(c.PostForm("active"))
@@ -38,22 +47,37 @@ func CreateIdentity(c *gin.Context) {
 
 	createdIdentity, r, err := apiClient.V0alpha2Api.AdminCreateIdentity(context.Background()).AdminCreateIdentityBody(adminCreateIdentityBody).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.AdminCreateIdentity``: %v\n", err)
+		log.ErrorLogger("Error while calling `AdminCreateIdentity`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "INternal server error",
+		})
 	}
-	fmt.Fprintf(os.Stdout, "Created identity with ID: %v\n", createdIdentity.Id)
+	c.JSON(http.StatusOK, gin.H{
+		"identity": createdIdentity.Id,
+	})
 
 }
 
 func GetIdentity(c *gin.Context) {
-	apiClient := m.NewAdminMiddleware()
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
+
 	createdIdentity := c.Query("identity")
 	fmt.Println(createdIdentity)
 	getIdentity, r, err := apiClient.V0alpha2Api.AdminGetIdentity(context.Background(), createdIdentity).Execute()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.AdminGetIdentity``: %v\n", err)
+		log.ErrorLogger("Error while calling `AdminGetIdentity`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "INternal server error",
+		})
 	}
 
 	jsonString, _ := json.Marshal(getIdentity.Traits)
@@ -63,17 +87,90 @@ func GetIdentity(c *gin.Context) {
 		fmt.Println(err)
 	}
 	fmt.Fprintf(os.Stdout, "Identity details for id %v. Traits: %v\n", createdIdentity, identity)
+	c.JSON(http.StatusOK, gin.H{
+		"Identity": createdIdentity,
+		"Traits": identity,
+	})
 }
 
+
+
 func DeleteIdentity(c *gin.Context) {
-	apiClient := m.NewAdminMiddleware()
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
 
 	identity := c.PostForm("identity")
 
 	r, err := apiClient.V0alpha2Api.AdminDeleteIdentity(context.Background(), identity).Execute()
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.AdminDeleteIdentity``: %v\n", err)
+		log.ErrorLogger("Error while calling `AdminDeleteIdentity`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "INternal server error",
+		})
 	}
-	fmt.Println("Successfully Removed identity")
+	c.JSON(http.StatusOK, gin.H{
+		"message": "removed identity",
+	})
+}
+
+func ListIdentity(c *gin.Context) {
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
+
+	identities, r, err := apiClient.V0alpha2Api.AdminListIdentities(context.Background()).Execute()
+
+	if err != nil {
+		log.ErrorLogger("Error while calling `AdminListIdentities`", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H {
+			"error" : "Internal server error",
+		})
+	}
+	c.JSON(http.StatusOK, gin.H {
+		"identities": identities,
+	})
+}
+
+func UpdateBanIdentity(c *gin.Context) {
+	configuration := client.NewConfiguration()
+    configuration.Servers = []client.ServerConfiguration{
+        {
+            URL: "http://127.0.0.1:4434", // Kratos Admin API
+        },
+    }
+    apiClient := client.NewAPIClient(configuration)
+
+	identity := c.PostForm("identity")
+
+	jsonPatch := []client.JsonPatch{
+		{	
+			From: nil,
+			Op: "replace",
+			Path: "/active",
+			Value: false,
+		},
+	}
+	id, r, err := apiClient.V0alpha2Api.AdminPatchIdentity(context.Background(), identity).JsonPatch(jsonPatch).Execute()
+
+	if err != nil {
+		log.ErrorLogger("Error while calling `AdminPatchIdentities`", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H {
+			"error" : err.Error(),
+		})
+	}
+	c.JSON(http.StatusOK, gin.H {
+		"identities": id,
+	})
 }

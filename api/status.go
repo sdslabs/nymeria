@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	client "github.com/ory/kratos-client-go"
+	client "github.com/ory/client-go"
 	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 )
