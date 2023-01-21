@@ -2,10 +2,7 @@ package login
 
 type Traits struct {
 	Email string `json:"email"`
-	Name  struct {
-		First string `json:"first"`
-		Last  string `json:"last"`
-	} `json:"name"`
+	Name  string `json:"name"`
 }
 
 type SubmitLoginAPIBody struct {
