@@ -13,12 +13,10 @@ func InitializeLoginFlowWrapper() (string, string, string, error) {
 	returnTo := "http://127.0.0.1:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	resp, httpRes, err := apiClient.V0alpha2Api.InitializeSelfServiceLoginFlowForBrowsers(context.Background()).Refresh(refresh).Aal(aal).ReturnTo(returnTo).Execute()
+	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceLoginFlowForBrowsers(context.Background()).Refresh(refresh).Aal(aal).ReturnTo(returnTo).Execute()
 	if err != nil {
 		return "", "", "", err
 	}
-
-	cookie := httpRes.Header.Get("Host")
 
 	var csrf_token string
 
@@ -30,7 +28,8 @@ func InitializeLoginFlowWrapper() (string, string, string, error) {
 		}
 	}
 
-	return cookie, resp.Id, csrf_token, nil
+	var setCookie string = r.Header.Get("Set-Cookie")
+	return setCookie, resp.Id, csrf_token, nil
 }
 
 func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, identifier string) (string, error) {
