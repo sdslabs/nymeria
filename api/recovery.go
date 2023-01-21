@@ -5,14 +5,14 @@ import (
 	"strconv"
 	"strings"
 
-	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/recovery"
-	"github.com/sdslabs/nymeria/log"
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/nymeria/log"
+	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/recovery"
 )
 
 func HandleGetRecoveryFlow(c *gin.Context) {
 	log.Logger.Debug("Get Recovery")
-	
+
 	cookie, flowID, csrf_token, err := recovery.InitializeRecoveryFlowWrapper()
 
 	if err != nil {
@@ -36,7 +36,6 @@ func HandleGetRecoveryFlow(c *gin.Context) {
 func HandlePostRecoveryFlow(c *gin.Context) {
 	var t recovery.SubmitRecoveryAPIBody
 	err := c.BindJSON(&t)
-
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
@@ -73,6 +72,6 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"token" : recoveryToken,
+		"token": recoveryToken,
 	})
 }

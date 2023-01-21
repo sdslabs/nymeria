@@ -17,7 +17,7 @@ func HandleGetRegistrationFlow(c *gin.Context) {
 		log.ErrorLogger("Kratos get registration flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Kratos get registration flow failed",
 		})
 		return
@@ -40,7 +40,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		log.ErrorLogger("Unable to process json body", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unable to process json body",
 		})
 		return
@@ -52,7 +52,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		log.ErrorLogger("Cookie not found", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "cookie not found",
 		})
 		return
@@ -64,7 +64,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		log.ErrorLogger("Kratos post registration flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Kratos post registration flow failed",
 		})
 		return

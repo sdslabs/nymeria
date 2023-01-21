@@ -35,16 +35,16 @@ dev:
 install-golangci-lint:
 	@curl -sSfL \
 	 	https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
-	 	sh -s -- -b $(GOPATH_BIN) v1.46.2
+	 	sh -s -- -b $(GOPATH_BIN) v1.48.0
 
 lint:
 	@$(GO) vet $(GO_PACKAGES)
-	@$(GOLANGCI_LINT) run
+	@golangci-lint run -c golangci.yaml
 	@echo "Lint successful"
 
 format:
 	@$(GO) fmt $(GO_PACKAGES)
-	@$(GOLANGCI_LINT) run --fix
+	@golangci-lint run -c golangci.yaml
 	@echo "Format successful"
 
 clean:
