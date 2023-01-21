@@ -2,6 +2,8 @@ package api
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/nymeria/log"
@@ -13,8 +15,10 @@ func HandleGetRegistrationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Kratos get registration flow failed", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Kratos get registration flow failed",
 		})
 		return
 	}
@@ -34,8 +38,10 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Unable to process request body",
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Unable to process json body",
 		})
 		return
 	}
@@ -44,8 +50,10 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "csrf cookie not found",
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "cookie not found",
 		})
 		return
 	}
@@ -54,8 +62,10 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Kratos post registration flow failed", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Kratos post registration flow failed",
 		})
 		return
 	}

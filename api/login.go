@@ -16,8 +16,11 @@ func HandleGetLoginFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Intialize Login Failed", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Intialize Login Failed",
 		})
 		return
 	}
@@ -36,8 +39,11 @@ func HandlePostLoginFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Unable to process request body",
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Unable to process json body",
 		})
 		return
 	}
@@ -46,8 +52,11 @@ func HandlePostLoginFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "csrf cookie not found",
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Cookie not found",
 		})
 		return
 	}
@@ -58,9 +67,9 @@ func HandlePostLoginFlow(c *gin.Context) {
 		log.ErrorLogger("Kratos post login flow failed", err)
 
 		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
-		
 		c.JSON(errCode, gin.H{
 			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Kratos post login flow failed",
 		})
 		return
 	}
