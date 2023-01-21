@@ -55,7 +55,8 @@ func Start() {
 	r.POST("/recovery", HandlePostRecoveryFlow)
 
 	r.GET("/settings", HandleGetSettingsFlow)
-	r.POST("/settings", HandlePostSettingsFlow)
+	r.POST("/enabletotp", HandleEnableTOTP)
+	r.POST("/disabletotp", HandleDisableTOTP)
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
 

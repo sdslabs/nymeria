@@ -63,7 +63,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 		return
 	}
 
-	_, session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier) // _ is USERID
+	identity, session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier) // _ is USERID
 
 	if err != nil {
 		log.ErrorLogger("Post login flow failed", err)
@@ -76,7 +76,25 @@ func HandlePostLoginFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
+
+	creds := identity.GetCredentials()
+
+	keys := make([]string, len(creds))
+	i := 0
+	for k := range creds {
+		keys[i] = k
+		i++
+	}
+
+	for method := range keys {
+		if keys[method] == "totp" {
+			c.JSON(http.StatusOK, gin.H{
+				"status": "redirect to /mfa GET",
+			})
+			return
+		}
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged in",
 	})
