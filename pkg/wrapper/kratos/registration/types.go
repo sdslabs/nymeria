@@ -10,4 +10,5 @@ type SubmitRegistrationBody struct {
 type Traits struct {
 	Email string `json:"email"`
 	Name  string `json:"name"`
+	PhoneNumber string `json:"phone_number"`
 }
