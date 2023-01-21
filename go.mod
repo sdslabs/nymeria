@@ -5,7 +5,6 @@ go 1.17
 require (
 	github.com/gin-gonic/gin v1.8.1
 	github.com/ory/client-go v0.2.0-alpha.48
-	github.com/ory/kratos-client-go v0.10.1
 	github.com/sirupsen/logrus v1.9.0
 	gopkg.in/yaml.v2 v2.4.0
 )
