@@ -17,7 +17,7 @@ func HandleGetLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Session cookie not found", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Session cookie not found",
 		})
 		return
@@ -29,7 +29,7 @@ func HandleGetLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Kratos get logout flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Kratos get logout flow failed",
 		})
 		return
@@ -49,7 +49,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Unable to process json body", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unable to process json body",
 		})
 		return
@@ -61,7 +61,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Session cookie not found", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Session cookie not found",
 		})
 		return
@@ -72,7 +72,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Kratos get logout flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Kratos get logout flow failed",
 		})
 		return

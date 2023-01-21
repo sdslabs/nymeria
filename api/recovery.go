@@ -2,21 +2,25 @@ package api
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
 
-	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/recovery"
-	"github.com/sdslabs/nymeria/log"
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/nymeria/log"
+	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/recovery"
 )
 
 func HandleGetRecoveryFlow(c *gin.Context) {
 	log.Logger.Debug("Get Recovery")
-	
+
 	cookie, flowID, csrf_token, err := recovery.InitializeRecoveryFlowWrapper()
 
 	if err != nil {
 		log.ErrorLogger("Intialize Recovery Failed", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Intialize Recovery Failed",
 		})
 		return
 	}
@@ -33,11 +37,12 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 	var t recovery.SubmitRecoveryAPIBody
 	err := c.BindJSON(&t)
 
-
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "Unable to process request body",
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Unable to process json body",
 		})
 		return
 	}
@@ -46,8 +51,10 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
-		c.JSON(http.StatusBadRequest, gin.H{
-			"error": "csrf cookie not found",
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "Cookie not found",
 		})
 		return
 	}
@@ -56,13 +63,15 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("POST Recovery flow failed", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": strings.Split(err.Error(), " ")[1],
+			"message": "POST Recovery flow failed",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"token" : recoveryToken,
+		"token": recoveryToken,
 	})
 }

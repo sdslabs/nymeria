@@ -15,12 +15,12 @@ import (
 
 func CreateIdentity(c *gin.Context) {
 	configuration := client.NewConfiguration()
-    configuration.Servers = []client.ServerConfiguration{
-        {
-            URL: "http://127.0.0.1:4434", // Kratos Admin API
-        },
-    }
-    apiClient := client.NewAPIClient(configuration)
+	configuration.Servers = []client.ServerConfiguration{
+		{
+			URL: "http://127.0.0.1:4434", // Kratos Admin API
+		},
+	}
+	apiClient := client.NewAPIClient(configuration)
 
 	id, _ := strconv.Atoi(c.PostForm("id"))
 	verified, _ := strconv.Atoi(c.PostForm("verified"))
@@ -60,12 +60,12 @@ func CreateIdentity(c *gin.Context) {
 
 func GetIdentity(c *gin.Context) {
 	configuration := client.NewConfiguration()
-    configuration.Servers = []client.ServerConfiguration{
-        {
-            URL: "http://127.0.0.1:4434", // Kratos Admin API
-        },
-    }
-    apiClient := client.NewAPIClient(configuration)
+	configuration.Servers = []client.ServerConfiguration{
+		{
+			URL: "http://127.0.0.1:4434", // Kratos Admin API
+		},
+	}
+	apiClient := client.NewAPIClient(configuration)
 
 	createdIdentity := c.Query("identity")
 	fmt.Println(createdIdentity)
@@ -88,20 +88,18 @@ func GetIdentity(c *gin.Context) {
 	fmt.Fprintf(os.Stdout, "Identity details for id %v. Traits: %v\n", createdIdentity, identity)
 	c.JSON(http.StatusOK, gin.H{
 		"Identity": createdIdentity,
-		"Traits": identity,
+		"Traits":   identity,
 	})
 }
 
-
-
 func DeleteIdentity(c *gin.Context) {
 	configuration := client.NewConfiguration()
-    configuration.Servers = []client.ServerConfiguration{
-        {
-            URL: "http://127.0.0.1:4434", // Kratos Admin API
-        },
-    }
-    apiClient := client.NewAPIClient(configuration)
+	configuration.Servers = []client.ServerConfiguration{
+		{
+			URL: "http://127.0.0.1:4434", // Kratos Admin API
+		},
+	}
+	apiClient := client.NewAPIClient(configuration)
 
 	identity := c.PostForm("identity")
 
@@ -120,43 +118,43 @@ func DeleteIdentity(c *gin.Context) {
 
 func ListIdentity(c *gin.Context) {
 	configuration := client.NewConfiguration()
-    configuration.Servers = []client.ServerConfiguration{
-        {
-            URL: "http://127.0.0.1:4434", // Kratos Admin API
-        },
-    }
-    apiClient := client.NewAPIClient(configuration)
+	configuration.Servers = []client.ServerConfiguration{
+		{
+			URL: "http://127.0.0.1:4434", // Kratos Admin API
+		},
+	}
+	apiClient := client.NewAPIClient(configuration)
 
 	identities, r, err := apiClient.V0alpha2Api.AdminListIdentities(context.Background()).Execute()
 
 	if err != nil {
 		log.ErrorLogger("Error while calling `AdminListIdentities`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		c.JSON(http.StatusInternalServerError, gin.H {
-			"error" : "Internal server error",
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal server error",
 		})
 	}
-	c.JSON(http.StatusOK, gin.H {
+	c.JSON(http.StatusOK, gin.H{
 		"identities": identities,
 	})
 }
 
 func UpdateBanIdentity(c *gin.Context) {
 	configuration := client.NewConfiguration()
-    configuration.Servers = []client.ServerConfiguration{
-        {
-            URL: "http://127.0.0.1:4434", // Kratos Admin API
-        },
-    }
-    apiClient := client.NewAPIClient(configuration)
+	configuration.Servers = []client.ServerConfiguration{
+		{
+			URL: "http://127.0.0.1:4434", // Kratos Admin API
+		},
+	}
+	apiClient := client.NewAPIClient(configuration)
 
 	identity := c.PostForm("identity")
 
 	jsonPatch := []client.JsonPatch{
-		{	
-			From: nil,
-			Op: "replace",
-			Path: "/active",
+		{
+			From:  nil,
+			Op:    "replace",
+			Path:  "/active",
 			Value: false,
 		},
 	}
@@ -165,11 +163,11 @@ func UpdateBanIdentity(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Error while calling `AdminPatchIdentities`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		c.JSON(http.StatusInternalServerError, gin.H {
-			"error" : err.Error(),
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
 		})
 	}
-	c.JSON(http.StatusOK, gin.H {
+	c.JSON(http.StatusOK, gin.H{
 		"identities": id,
 	})
 }

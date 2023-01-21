@@ -9,7 +9,7 @@ import (
 	"github.com/sdslabs/nymeria/config"
 )
 
-func InitializeRecoveryFlowWrapper() (string, string, string, error){
+func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 
 	returnTo := "http://127.0.0.1:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
 
@@ -36,13 +36,12 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error){
 }
 
 func SubmitRecoveryFlowWrapper(cookie string, flowID string, token string, csrfToken string, email string, method string) (string, error) {
-	
+
 	submitFlowBody := client.SubmitSelfServiceRecoveryFlowBody{
-		SubmitSelfServiceRecoveryFlowWithLinkMethodBody : client.NewSubmitSelfServiceRecoveryFlowWithLinkMethodBody(email, method,),
+		SubmitSelfServiceRecoveryFlowWithLinkMethodBody: client.NewSubmitSelfServiceRecoveryFlowWithLinkMethodBody(email, method),
 	}
 
 	submitFlowBody.SubmitSelfServiceRecoveryFlowWithLinkMethodBody.SetCsrfToken(csrfToken)
-
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRecoveryFlow(context.Background()).Flow(flowID).SubmitSelfServiceRecoveryFlowBody(submitFlowBody).Token(token).Cookie(cookie).Execute()
@@ -53,5 +52,5 @@ func SubmitRecoveryFlowWrapper(cookie string, flowID string, token string, csrfT
 	}
 
 	responseCookie := r.Header["Set-Cookie"]
-	return responseCookie[1],nil
+	return responseCookie[1], nil
 }
