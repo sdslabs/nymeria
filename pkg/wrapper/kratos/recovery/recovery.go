@@ -20,9 +20,12 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 		return "", "", "", err
 	}
 
+	
+
 	var csrf_token string
 
 	for _, node := range resp.Ui.Nodes {
+		fmt.Println(node.Attributes.UiNodeInputAttributes)
 		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
 			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
 			csrf_token, _ = csrf_token_interface.(string)
@@ -43,13 +46,12 @@ func SubmitRecoveryFlowWrapper(cookie string, flowID string, token string, csrfT
 	submitFlowBody.SubmitSelfServiceRecoveryFlowWithLinkMethodBody.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRecoveryFlow(context.Background()).Flow(flowID).SubmitSelfServiceRecoveryFlowBody(submitFlowBody).Token(token).Cookie(cookie).Execute()
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRecoveryFlow(context.Background()).Flow(flowID).SubmitSelfServiceRecoveryFlowBody(submitFlowBody).Cookie(cookie).Execute()
+
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRecoveryFlow``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
-
-	responseCookie := r.Header["Set-Cookie"]
-	return responseCookie[1], nil
+	return "", nil
 }

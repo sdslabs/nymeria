@@ -12,6 +12,7 @@ import (
 
 func HandleGetLoginFlow(c *gin.Context) {
 	log.Logger.Debug("Get Login")
+	
 	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper()
 
 	if err != nil {
@@ -64,7 +65,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 	session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier)
 
 	if err != nil {
-		log.ErrorLogger("Kratos post login flow failed", err)
+		log.ErrorLogger("Post login flow failed", err)
 
 		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
 		c.JSON(errCode, gin.H{

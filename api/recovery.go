@@ -59,7 +59,7 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 		return
 	}
 
-	recoveryToken, err := recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.RecoveryToken, t.CsrfToken, t.Email, t.Method)
+	_, err = recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.RecoveryToken, t.CsrfToken, t.Email, t.Method)
 
 	if err != nil {
 		log.ErrorLogger("POST Recovery flow failed", err)
@@ -70,8 +70,7 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 		})
 		return
 	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"token": recoveryToken,
+		"message": "Mail sent with recovery code",
 	})
 }
