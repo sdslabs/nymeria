@@ -47,7 +47,7 @@
           "title": "Active"
         },
         "verified": {
-          "type": "integer",
+          "type": "boolean",
           "title": "Verified"
         },
         "role": {
