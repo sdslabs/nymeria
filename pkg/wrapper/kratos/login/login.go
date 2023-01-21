@@ -32,7 +32,7 @@ func InitializeLoginFlowWrapper(aal string) (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, identifier string) (string, string, error) {
+func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, identifier string) (client.Identity, string, error) {
 	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithPasswordMethodBody: client.NewSubmitSelfServiceLoginFlowWithPasswordMethodBody(identifier, "password", pass)} // SubmitSelfServiceLoginFlowBody |
 
 	submitDataBody.SubmitSelfServiceLoginFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
@@ -40,13 +40,13 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
 	if err != nil {
-		return "", "", err
+		return *client.NewIdentityWithDefaults(), "", err
 	}
 
 	fmt.Println(r.Header)
 	responseCookies := r.Header["Set-Cookie"]
 
-	return resp.Session.Id, responseCookies[1], nil
+	return resp.Session.Identity, responseCookies[1], nil
 }
 
 func SubmitMFALoginFlowWrapper(cookie string, flowID string, csrfToken string, totp string) (string, string, error) {

@@ -21,3 +21,21 @@ func InitializeSettingsFlowWrapper(req_cookie string) (client.SelfServiceSetting
 
 	return *resp, cookie, nil
 }
+
+func SubmitSettingsFlowWrapper(cookie string, flowID string, csrfToken string, TOTPcode string, TOTPUnlink bool) (string, string, error) {
+	submitDataBody := client.SubmitSelfServiceSettingsFlowBody{SubmitSelfServiceSettingsFlowWithTotpMethodBody: client.NewSubmitSelfServiceSettingsFlowWithTotpMethodBody("totp")} // SubmitSelfServiceLoginFlowBody |
+
+	submitDataBody.SubmitSelfServiceSettingsFlowWithTotpMethodBody.SetCsrfToken(csrfToken)
+	submitDataBody.SubmitSelfServiceSettingsFlowWithTotpMethodBody.SetTotpCode(TOTPcode)
+	submitDataBody.SubmitSelfServiceSettingsFlowWithTotpMethodBody.SetTotpUnlink(TOTPUnlink)
+
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).SubmitSelfServiceSettingsFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
+	if err != nil {
+		return "", "", err
+	}
+
+	responseCookies := r.Header["Set-Cookie"]
+
+	return resp.Id, responseCookies[1], nil
+}

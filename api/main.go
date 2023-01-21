@@ -6,7 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	c "github.com/sdslabs/nymeria/pkg/controller/admin"
-	 "github.com/sdslabs/nymeria/pkg/middleware"
+	"github.com/sdslabs/nymeria/pkg/middleware"
 )
 
 var db *sql.DB
@@ -18,7 +18,7 @@ func Start() {
 
 	// r.Use(k.Session())
 
-	r.GET("/ping",middleware.OnlyAdmin, func(c *gin.Context) {
+	r.GET("/ping", middleware.OnlyAdmin, func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
@@ -46,7 +46,8 @@ func Start() {
 	r.POST("/recovery", HandlePostRecoveryFlow)
 
 	r.GET("/settings", HandleGetSettingsFlow)
-	r.POST("/settings", HandlePostSettingsFlow)
+	r.POST("/enabletotp", HandleEnableTOTP)
+	r.POST("/disabletotp", HandleDisableTOTP)
 
 	r.Run(":9999")
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
