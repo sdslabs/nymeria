@@ -1,6 +1,6 @@
 {
   "$id": "user.json",
-  "$schema":"https://github.com/sdslabs/nymeria/blob/json-schema/user.json",
+  "$schema": "https://github.com/sdslabs/nymeria/blob/json-schema/user.json",
   "title": "users",
   "type": "object",
   "properties": {
@@ -47,7 +47,7 @@
           "title": "Active"
         },
         "verified": {
-          "type": "integer",
+          "type": "boolean",
           "title": "Verified"
         },
         "role": {
@@ -61,7 +61,14 @@
         }
       },
 
-      "required": ["email", "name"],
+      "required": [
+        "email",
+        "name",
+        "phone_number",
+        "role",
+        "active",
+        "created_at"
+      ],
       "additionalProperties": false
     }
   }
