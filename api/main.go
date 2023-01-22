@@ -53,11 +53,19 @@ func Start() {
 	r.GET("/settings", HandleGetSettingsFlow)
 	r.POST("/settings", HandlePostSettingsFlow)
 
+<<<<<<< HEAD
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
 
 	r.GET("/get_profile", GetProfile)
 
 	r.Run(":9898")
+=======
+	// r.GET("/application", HandleGetApplication)
+	r.POST("/application", HandlePostApplication)
+	// r.PUT("/application", HandlePutApplication)
+	// r.DELETE("/application", HandleDeleteApplication)
+	r.Run(":9999")
+>>>>>>> Adding applications support
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

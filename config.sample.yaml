@@ -1,5 +1,13 @@
 env: dev # dev|prod
+
 url:
-    frontend_url: ""
-    kratos_url: ""
-    domain: ""
+    frontend_url: "http://localhost:4455"
+    kratos_url: "http://localhost:4433"
+
+db:
+    dsn: ""
+    host: "localhost"
+    port: 5432
+    user: "postgres"
+    password: "pass"
+    db_name: "kratos_db"
