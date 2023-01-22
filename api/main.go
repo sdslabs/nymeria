@@ -36,6 +36,9 @@ func Start() {
 	r.GET("/recovery", HandleGetRecoveryFlow)
 	r.POST("/recovery", HandlePostRecoveryFlow)
 
+	r.GET("/settings", HandleGetSettingsFlow)
+	r.POST("/settings", HandlePostSettingsFlow)
+
 	r.Run(":9999")
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

@@ -57,6 +57,7 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRegistrationFlow``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		return "", err
 	}
 
 	responseCookies := r.Header["Set-Cookie"]

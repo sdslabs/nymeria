@@ -52,6 +52,8 @@ func SubmitRecoveryFlowWrapper(cookie string, flowID string, token string, csrfT
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRecoveryFlow``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		return "", err
 	}
+
 	return "", nil
 }
