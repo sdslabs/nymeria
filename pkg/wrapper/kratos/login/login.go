@@ -2,7 +2,6 @@ package login
 
 import (
 	"context"
-	"fmt"
 
 	client "github.com/ory/client-go"
 	"github.com/sdslabs/nymeria/config"
@@ -44,7 +43,6 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 		return "", err
 	}
 
-	fmt.Println(r.Header)
 	responseCookies := r.Header["Set-Cookie"]
 
 	return responseCookies[1], nil

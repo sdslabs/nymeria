@@ -32,6 +32,7 @@ func InitializeSettingsFlowWrapper(auth_cookie string) (string, string, string, 
 	}
 
 	var setCookie string = r.Header.Get("Set-Cookie")
+	
 	return setCookie,resp.Id, csrf_token, nil
 }
 

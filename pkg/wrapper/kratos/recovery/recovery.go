@@ -25,7 +25,6 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 	var csrf_token string
 
 	for _, node := range resp.Ui.Nodes {
-		fmt.Println(node.Attributes.UiNodeInputAttributes)
 		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
 			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
 			csrf_token, _ = csrf_token_interface.(string)

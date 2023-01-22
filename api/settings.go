@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -15,7 +14,7 @@ func HandleGetSettingsFlow(c *gin.Context) {
 	log.Logger.Debug("Get Settings")
 
 	auth_cookie, _ := c.Cookie("sdslabs_session")
-	fmt.Println(auth_cookie)
+
 	cookie, flowID, csrf_token, err := settings.InitializeSettingsFlowWrapper(auth_cookie)
 
 	if err != nil {
@@ -51,7 +50,6 @@ func HandlePostSettingsFlow(c *gin.Context) {
 	}
 
 	cookie, err := c.Cookie("settings_flow")
-	fmt.Println(cookie)
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
