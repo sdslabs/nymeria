@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/logout"
 )
@@ -17,7 +18,7 @@ func HandleGetLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Session cookie not found", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Session cookie not found",
 		})
 		return
@@ -29,15 +30,15 @@ func HandleGetLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Kratos get logout flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Kratos get logout flow failed",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"logoutToken": logoutUrl.LogoutToken,
-		"url":         logoutUrl.LogoutUrl,
+		"logout_token": logoutUrl.LogoutToken,
+		"logout_url":   logoutUrl.LogoutUrl,
 	})
 }
 
@@ -49,7 +50,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Unable to process json body", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Unable to process json body",
 		})
 		return
@@ -61,7 +62,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Session cookie not found", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Session cookie not found",
 		})
 		return
@@ -72,7 +73,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 		log.ErrorLogger("Kratos get logout flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Kratos get logout flow failed",
 		})
 		return

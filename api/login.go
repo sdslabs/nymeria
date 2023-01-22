@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/login"
 )
@@ -15,17 +16,17 @@ func HandleGetLoginFlow(c *gin.Context) {
 	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal1")
 
 	if err != nil {
-		log.ErrorLogger("Intialize Login Failed", err)
+		log.ErrorLogger("Initialize Login Failed", err)
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
-			"message": "Intialize Login Failed",
+			"error":   err.Error(),
+			"message": "Initialize Login Failed",
 		})
 		return
 	}
 
-	c.SetCookie("login_flow", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("login_flow", cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
@@ -42,7 +43,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Unable to process json body",
 		})
 		return
@@ -55,7 +56,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Cookie not found",
 		})
 		return
@@ -68,33 +69,16 @@ func HandlePostLoginFlow(c *gin.Context) {
 
 		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Kratos post login flow failed",
 		})
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
-
-	creds := identity.GetCredentials()
-
-	keys := make([]string, len(creds))
-	i := 0
-	for k := range creds {
-		keys[i] = k
-		i++
-	}
-
-	for method := range keys {
-		if keys[method] == "totp" {
-			c.JSON(http.StatusOK, gin.H{
-				"status": "redirect to /mfa GET",
-			})
-			return
-		}
-	}
+	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged in",
+		"person": identity,
 	})
 
 }

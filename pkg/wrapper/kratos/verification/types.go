@@ -1,8 +1,7 @@
-package recovery
+package verification
 
-type SubmitRecoveryAPIBody struct {
+type SubmitVerificationBody struct {
 	CsrfToken string `json:"csrf_token"`
 	FlowID    string `json:"flowID"`
 	Email     string `json:"email"`
-	Method    string `json:"method"`
 }

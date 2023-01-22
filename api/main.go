@@ -1,20 +1,30 @@
 package api
 
 import (
-	"database/sql"
-	"fmt"
+	"net/http"
+	"time"
 
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
 	c "github.com/sdslabs/nymeria/pkg/controller/admin"
 	"github.com/sdslabs/nymeria/pkg/middleware"
 )
 
-var db *sql.DB
 
 func Start() {
-	fmt.Println(db)
 	r := gin.Default()
-	// k := m.NewMiddleware()
+	// Set up CORS middleware
+	config := cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"},
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
+		AllowCredentials: true,
+		MaxAge:           12 * time.Hour,
+	}
+
+	r.Use(cors.New(config))
 
 	// r.Use(k.Session())
 
@@ -46,9 +56,22 @@ func Start() {
 	r.POST("/recovery", HandlePostRecoveryFlow)
 
 	r.GET("/settings", HandleGetSettingsFlow)
-	r.POST("/enabletotp", HandleEnableTOTP)
-	r.POST("/disabletotp", HandleDisableTOTP)
+	r.POST("/settings", HandlePostSettingsFlow)
+	r.GET("/verification", HandleGetVerificationFlow)
+	r.POST("/verification", HandlePostVerificationFlow)
 
-	r.Run(":9999")
+	r.POST("/get_profile", middleware.HandleAppAuthorization, HandlePostProfile)
+	r.POST("/verify_app", middleware.HandleAppAuthorization, func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Authorized",
+		})
+	})
+	r.GET("/application", HandleGetApplication)
+	r.POST("/application", HandlePostApplication)
+	r.PUT("/application", HandlePutApplication)
+	r.DELETE("/application", HandleDeleteApplication)
+
+	r.POST("/update-client-secret", HandleUpdateClientSecret)
+	r.Run(":9898")
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

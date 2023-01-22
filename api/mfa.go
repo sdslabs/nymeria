@@ -4,13 +4,14 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/login"
 )
 
 func HandleGetMFAFlow(c *gin.Context) {
 	log.Logger.Debug("Get MFA")
-	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal2")
+	flow_cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal2")
 
 	if err != nil {
 		log.ErrorLogger("Intialize MFA Failed", err)
@@ -20,7 +21,7 @@ func HandleGetMFAFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("login_flow", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("mfa", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
@@ -29,8 +30,8 @@ func HandleGetMFAFlow(c *gin.Context) {
 }
 
 func HandlePostMFAFlow(c *gin.Context) {
-	var t login.SubmitMFAAPIBody
-	err := c.BindJSON(&t)
+	var req_body login.SubmitLoginWithMFABody
+	err := c.BindJSON(&req_body)
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
@@ -40,7 +41,7 @@ func HandlePostMFAFlow(c *gin.Context) {
 		return
 	}
 
-	cookie, err := c.Cookie("login_flow")
+	flow_cookie, err := c.Cookie("mfa")
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
@@ -50,7 +51,7 @@ func HandlePostMFAFlow(c *gin.Context) {
 		return
 	}
 
-	_, session, err := login.SubmitMFALoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.TOTP)
+	identity, session, err := login.SubmitLoginWithMFAWrapper(flow_cookie, req_body.FlowID, req_body.CsrfToken, req_body.TOTP)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post MFA flow failed", err)
@@ -60,9 +61,10 @@ func HandlePostMFAFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
+	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, false, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "MFA Successful",
+		"user":   identity,
 	})
 
 }

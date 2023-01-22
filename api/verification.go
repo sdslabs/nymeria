@@ -9,34 +9,35 @@ import (
 
 	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
-	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/registration"
+	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/verification"
 )
 
-func HandleGetRegistrationFlow(c *gin.Context) {
-	cookie, flowID, csrf_token, err := registration.InitializeRegistrationFlowWrapper()
+func HandleGetVerificationFlow(c *gin.Context) {
+	log.Logger.Debug("Get Verification")
+
+	cookie, flowID, csrf_token, err := verification.InitializeVerificationFlowWrapper()
 
 	if err != nil {
-		log.ErrorLogger("Kratos get registration flow failed", err)
+		log.ErrorLogger("Initialize Verification Failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Kratos get registration flow failed",
+			"message": "Initialize Verification Failed",
 		})
 		return
 	}
 
-	c.SetCookie("registration_flow", cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+	c.SetCookie("verification_flow", cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
 		"csrf_token": csrf_token,
 	})
-
 }
 
-func HandlePostRegistrationFlow(c *gin.Context) {
-	var t registration.SubmitRegistrationBody
-	err := c.BindJSON(&t)
+func HandlePostVerificationFlow(c *gin.Context) {
+	var t verification.SubmitVerificationBody
+	err := c.Bind(&t)
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
@@ -48,33 +49,31 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		return
 	}
 
-	cookie, err := c.Cookie("registration_flow")
+	cookie, err := c.Cookie("verification_flow")
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "cookie not found",
+			"message": "Cookie not found",
 		})
 		return
 	}
 
-	session, err := registration.SubmitRegistrationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Traits)
+	_, err = verification.SubmitVerificationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email)
 
 	if err != nil {
-		log.ErrorLogger("Kratos post registration flow failed", err)
+		log.ErrorLogger("Post Verification flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Kratos post registration flow failed",
+			"message": "Post Settings flow failed",
 		})
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
-		"status": "created",
+		"message": "Account Verification Successful",
 	})
-
 }

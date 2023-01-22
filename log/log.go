@@ -1,8 +1,9 @@
 package log
 
 import (
-	"github.com/sdslabs/nymeria/config"
 	"github.com/sirupsen/logrus"
+
+	"github.com/sdslabs/nymeria/config"
 )
 
 func getLogger() *logrus.Logger {
