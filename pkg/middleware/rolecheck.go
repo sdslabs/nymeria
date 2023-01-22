@@ -2,36 +2,52 @@ package middleware
 
 import (
 	"context"
-	"errors"
+	"fmt"
+	"os"
+	"strings"
 	"net/http"
+
+	"github.com/gin-gonic/gin"
+	client "github.com/ory/client-go"
+	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/log"
 )
 
-// func isAdmin(id string) (bool, error) {
 
-// }
-
-func (k *kratosMiddleware) validateAdmin(r *http.Request) (bool, error) {
-	cookie, err := r.Cookie("ory_kratos_session")
+func GetSession(c *gin.Context) (*client.Session, error) {
+	cookie, err := c.Cookie("sdslabs_session")
 	if err != nil {
-		return false, err
+		log.ErrorLogger("Cookie not found", err)
+		c.JSON(http.StatusUnauthorized, gin.H{
+			"error":   strings.Split(err.Error(), " ")[1],
+			"message": "cookie not found",
+		})
+		return nil, err
 	}
-	if cookie == nil {
-		return false, errors.New("no session found in cookie")
-	}
-	_, _, err = k.client.V0alpha2Api.ToSession(context.Background()).Cookie(cookie.String()).Execute()
+ 	apiClient := client.NewAPIClient(config.KratosClientConfig)
+    resp, r, err := apiClient.V0alpha2Api.ToSession(context.Background()).Cookie(cookie).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.ToSession``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		return nil,err
+    }
+    return resp, nil
+}
+
+func OnlyAdmin(c *gin.Context) {
+	session, err := GetSession(c)
 	if err != nil {
-		return false, err
+		c.Abort()
+		return
 	}
-
-	admin, err := true, nil //isAdmin(resp.Identity.Id)
-
-	if err != nil {
-		return false, err
+    log.Logger.Debug(session)
+    identity := session.GetIdentity()
+    traits := identity.GetTraits()
+	role:=traits.(map[string]interface{})["role"]
+	if role == "admin" {
+		c.Next()
+		return
 	}
-
-	// if admin != true {
-	// 	return false, errors.New("user is not an admin")
-	// }
-
-	return admin, nil
+	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+    c.Abort()
 }
