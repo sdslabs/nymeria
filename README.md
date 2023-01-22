@@ -17,10 +17,10 @@ Enter the directory and download the vendor files
  make vendor
 ```
 
-Copy the contents of `config.example.yaml` to `config.yaml`
+Copy the contents of `config.sample.yaml` to `config.yaml`
 
 ```sh
-cp config.example.yaml config.yaml
+cp config.sample.yaml config.yaml
 ```
 
 Build the binary using the command.
