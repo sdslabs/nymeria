@@ -76,27 +76,10 @@ func HandlePostLoginFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
-
-	creds := identity.GetCredentials()
-
-	keys := make([]string, len(creds))
-	i := 0
-	for k := range creds {
-		keys[i] = k
-		i++
-	}
-
-	for method := range keys {
-		if keys[method] == "totp" {
-			c.JSON(http.StatusOK, gin.H{
-				"status": "redirect to /mfa GET",
-			})
-			return
-		}
-	}
+	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged in",
+		"person": identity,
 	})
 
 }

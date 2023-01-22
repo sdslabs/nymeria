@@ -46,6 +46,7 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 		"verified":     false,
 		"role":         "user",
 		"created_at":   timeStamp,
+		"totp_enabled": false,
 	}
 
 	submitDataBody := client.SubmitSelfServiceRegistrationFlowBody{

@@ -12,7 +12,7 @@ type SubmitLoginAPIBody struct {
 	Identifier string `json:"identifier"`
 }
 
-type SubmitMFAAPIBody struct {
+type SubmitLoginWithMFABody struct {
 	FlowID    string `json:"flowID"`
 	CsrfToken string `json:"csrf_token"`
 	TOTP      string `json:"totp"`
