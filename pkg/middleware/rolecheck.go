@@ -40,7 +40,6 @@ func OnlyAdmin(c *gin.Context) {
 		c.Abort()
 		return
 	}
-    log.Logger.Debug(session)
     identity := session.GetIdentity()
     traits := identity.GetTraits()
 	role:=traits.(map[string]interface{})["role"]
@@ -50,4 +49,38 @@ func OnlyAdmin(c *gin.Context) {
 	}
 	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
     c.Abort()
+}
+
+func OnlyUser(c *gin.Context) {
+	session, err := GetSession(c)
+	if err != nil {
+		c.Abort()
+		return
+	}
+	identity := session.GetIdentity()
+	traits := identity.GetTraits()
+	role:=traits.(map[string]interface{})["role"]
+	if role == "user" {
+		c.Next()
+		return
+	}
+	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	c.Abort()
+}
+
+func SuperAdmin(c *gin.Context) {
+	session, err := GetSession(c)
+	if err != nil {
+		c.Abort()
+		return
+	}
+	identity := session.GetIdentity()
+	traits := identity.GetTraits()
+	role:=traits.(map[string]interface{})["role"]
+	if role == "superadmin" {
+		c.Next()
+		return
+	}
+	c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
+	c.Abort()
 }

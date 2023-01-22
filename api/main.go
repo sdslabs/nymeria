@@ -3,6 +3,7 @@ package api
 import (
 	"github.com/gin-gonic/gin"
 	c "github.com/sdslabs/nymeria/pkg/controller/admin"
+	 "github.com/sdslabs/nymeria/pkg/middleware"
 )
 
 func Start() {
@@ -11,7 +12,7 @@ func Start() {
 
 	// r.Use(k.Session())
 
-	r.GET("/ping", func(c *gin.Context) {
+	r.GET("/ping",middleware.OnlyAdmin, func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
