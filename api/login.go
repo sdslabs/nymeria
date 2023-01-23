@@ -12,7 +12,7 @@ import (
 
 func HandleGetLoginFlow(c *gin.Context) {
 	log.Logger.Debug("Get Login")
-	
+
 	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper()
 
 	if err != nil {
@@ -20,7 +20,7 @@ func HandleGetLoginFlow(c *gin.Context) {
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Intialize Login Failed",
 		})
 		return
@@ -43,7 +43,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Unable to process json body",
 		})
 		return
@@ -56,7 +56,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Cookie not found",
 		})
 		return
@@ -69,7 +69,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 
 		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Kratos post login flow failed",
 		})
 		return

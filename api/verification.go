@@ -1,31 +1,34 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/nymeria/log"
-	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/recovery"
+	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/verification"
 )
 
-func HandleGetRecoveryFlow(c *gin.Context) {
-	log.Logger.Debug("Get Recovery")
+func HandleGetVerificationFlow(c *gin.Context) {
+	log.Logger.Debug("Get Verification")
 
-	cookie, flowID, csrf_token, err := recovery.InitializeRecoveryFlowWrapper()
+	auth_cookie, _ := c.Cookie("sdslabs_session")
+
+	cookie, flowID, csrf_token, err := verification.InitializeVerificationFlowWrapper(auth_cookie)
 
 	if err != nil {
-		log.ErrorLogger("Intialize Recovery Failed", err)
+		log.ErrorLogger("Intialize Verification Failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Intialize Recovery Failed",
+			"message": "Intialize Verification Failed",
 		})
 		return
 	}
 
-	c.SetCookie("recovery_flow", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("verification_flow", cookie, 3600, "/", "localhost", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
@@ -33,9 +36,9 @@ func HandleGetRecoveryFlow(c *gin.Context) {
 	})
 }
 
-func HandlePostRecoveryFlow(c *gin.Context) {
-	var t recovery.SubmitRecoveryAPIBody
-	err := c.BindJSON(&t)
+func HandlePostVerificationFlow(c *gin.Context) {
+	var t verification.SubmitVerificationBody
+	err := c.Bind(&t)
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
@@ -47,7 +50,11 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 		return
 	}
 
-	cookie, err := c.Cookie("recovery_flow")
+	cookie, err := c.Cookie("verification_flow")
+	session, err := c.Cookie("sdslabs_session")
+
+	fmt.Println(cookie)
+	fmt.Println(session)
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
@@ -59,20 +66,19 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 		return
 	}
 
-	session, err := recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.RecoveryToken, t.CsrfToken, t.Email, t.Method)
+	_, err = verification.SubmitVerificationFlowWrapper(cookie, session, t.FlowID, t.CsrfToken, t.Email, t.Method)
 
 	if err != nil {
-		log.ErrorLogger("POST Recovery flow failed", err)
+		log.ErrorLogger("Post Verification flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "POST Recovery flow failed",
+			"message": "Post Settings flow failed",
 		})
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Mail sent with recovery code",
+		"message": "Account Verification Successful",
 	})
 }

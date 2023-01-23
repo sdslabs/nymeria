@@ -15,14 +15,14 @@ func HandleGetSettingsFlow(c *gin.Context) {
 	log.Logger.Debug("Get Settings")
 
 	auth_cookie, _ := c.Cookie("sdslabs_session")
-	fmt.Println(auth_cookie)
+
 	cookie, flowID, csrf_token, err := settings.InitializeSettingsFlowWrapper(auth_cookie)
 
 	if err != nil {
 		log.ErrorLogger("Intialize Settings Failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Intialize Settings Failed",
 		})
 		return
@@ -44,32 +44,35 @@ func HandlePostSettingsFlow(c *gin.Context) {
 		log.ErrorLogger("Unable to process json body", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Unable to process json body",
 		})
 		return
 	}
 
 	cookie, err := c.Cookie("settings_flow")
+	session, err := c.Cookie("sdslabs_session")
+
 	fmt.Println(cookie)
+	fmt.Println(session)
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Cookie not found",
 		})
 		return
 	}
 
-	_, err = settings.SubmitSettingsFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password)
+	_, err = settings.SubmitSettingsFlowWrapper(cookie, session, t.FlowID, t.CsrfToken, t.Password)
 
 	if err != nil {
 		log.ErrorLogger("Post Settings flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
-			"error": strings.Split(err.Error(), " ")[1],
+			"error":   err.Error(),
 			"message": "Post Settings flow failed",
 		})
 		return

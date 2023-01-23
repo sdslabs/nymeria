@@ -2,7 +2,6 @@ package login
 
 import (
 	"context"
-	"fmt"
 
 	client "github.com/ory/client-go"
 	"github.com/sdslabs/nymeria/config"
@@ -39,12 +38,12 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 	submitDataBody.SubmitSelfServiceLoginFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).Cookie(cookie).Execute()
 	if err != nil {
 		return "", err
 	}
 
-	fmt.Println(r.Header)
+	
 	responseCookies := r.Header["Set-Cookie"]
 
 	return responseCookies[1], nil

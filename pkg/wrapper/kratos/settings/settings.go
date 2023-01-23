@@ -35,14 +35,14 @@ func InitializeSettingsFlowWrapper(auth_cookie string) (string, string, string, 
 	return setCookie,resp.Id, csrf_token, nil
 }
 
-func SubmitSettingsFlowWrapper(cookie string, flowID string, csrfToken string, pass string) (string, error) {
+func SubmitSettingsFlowWrapper(cookie string, session string, flowID string, csrfToken string, pass string) (string, error) {
 	submitDataBody := client.SubmitSelfServiceSettingsFlowBody{
 		SubmitSelfServiceSettingsFlowWithPasswordMethodBody: client.NewSubmitSelfServiceSettingsFlowWithPasswordMethodBody("password", pass)}
 
 	submitDataBody.SubmitSelfServiceSettingsFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
 	
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).SubmitSelfServiceSettingsFlowBody(submitDataBody).Cookie(cookie).Execute()
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).SubmitSelfServiceSettingsFlowBody(submitDataBody).XSessionToken(session).Cookie(cookie).Execute()
 
 	if err != nil {
         fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceSettingsFlow``: %v\n", err)
