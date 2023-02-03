@@ -2,20 +2,20 @@ package settings
 
 import (
 	"context"
-	"os"
 	"fmt"
-	
+	"os"
+
 	client "github.com/ory/client-go"
 	"github.com/sdslabs/nymeria/config"
 )
 
-func InitializeSettingsFlowWrapper(auth_cookie string) (string, string, string, error){
+func InitializeSettingsFlowWrapper(auth_cookie string) (string, string, string, error) {
 	returnTo := "http://127.0.0.1:4455/ping"
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-    resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceSettingsFlowForBrowsers(context.Background()).ReturnTo(returnTo).Cookie(auth_cookie).Execute()
-	
+	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceSettingsFlowForBrowsers(context.Background()).ReturnTo(returnTo).Cookie(auth_cookie).Execute()
+
 	if err != nil {
 		return "", "", "", err
 	}
@@ -32,7 +32,7 @@ func InitializeSettingsFlowWrapper(auth_cookie string) (string, string, string, 
 	}
 
 	var setCookie string = r.Header.Get("Set-Cookie")
-	return setCookie,resp.Id, csrf_token, nil
+	return setCookie, resp.Id, csrf_token, nil
 }
 
 func SubmitSettingsFlowWrapper(cookie string, session string, flowID string, csrfToken string, pass string) (string, error) {
@@ -40,15 +40,15 @@ func SubmitSettingsFlowWrapper(cookie string, session string, flowID string, csr
 		SubmitSelfServiceSettingsFlowWithPasswordMethodBody: client.NewSubmitSelfServiceSettingsFlowWithPasswordMethodBody("password", pass)}
 
 	submitDataBody.SubmitSelfServiceSettingsFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
-	
+
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).SubmitSelfServiceSettingsFlowBody(submitDataBody).XSessionToken(session).Cookie(cookie).Execute()
 
 	if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceSettingsFlow``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceSettingsFlow``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 		return "", err
-    }
+	}
 
 	return "", nil
 }

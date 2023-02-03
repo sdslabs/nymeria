@@ -37,13 +37,13 @@ func InitializeRegistrationFlowWrapper() (string, string, string, error) {
 func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, password string, data Traits) (string, error) {
 	timeStamp := middleware.CurrentTimeStamp()
 	trait := map[string]interface{}{
-		"email": data.Email,
-		"name":  data.Name,
+		"email":        data.Email,
+		"name":         data.Name,
 		"phone_number": data.PhoneNumber,
-		"active": true,
-		"verified": false,
-		"role": "user",
-		"created_at": timeStamp,
+		"active":       true,
+		"verified":     false,
+		"role":         "user",
+		"created_at":   timeStamp,
 	}
 
 	submitDataBody := client.SubmitSelfServiceRegistrationFlowBody{

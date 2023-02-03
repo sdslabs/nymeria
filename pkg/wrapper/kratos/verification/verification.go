@@ -1,15 +1,15 @@
 package verification
 
 import (
-	"fmt"
 	"context"
+	"fmt"
 	"os"
 
 	client "github.com/ory/client-go"
 	"github.com/sdslabs/nymeria/config"
 )
 
-func InitializeVerificationFlowWrapper(auth_cookie string) (string, string, string, error){
+func InitializeVerificationFlowWrapper(auth_cookie string) (string, string, string, error) {
 	returnTo := "http://127.0.0.1:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
@@ -34,7 +34,7 @@ func InitializeVerificationFlowWrapper(auth_cookie string) (string, string, stri
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitVerificationFlowWrapper(cookie string, session string, flowID string, csrfToken string, email string, method string)(string, error){
+func SubmitVerificationFlowWrapper(cookie string, session string, flowID string, csrfToken string, email string, method string) (string, error) {
 
 	submitFlowBody := client.SubmitSelfServiceVerificationFlowBody{
 		SubmitSelfServiceVerificationFlowWithLinkMethodBody: client.NewSubmitSelfServiceVerificationFlowWithLinkMethodBody(email, method),
@@ -45,7 +45,6 @@ func SubmitVerificationFlowWrapper(cookie string, session string, flowID string,
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
 	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceVerificationFlow(context.Background()).Flow(flowID).SubmitSelfServiceVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
-
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)

@@ -20,8 +20,6 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 		return "", "", "", err
 	}
 
-	
-
 	var csrf_token string
 
 	for _, node := range resp.Ui.Nodes {
@@ -47,7 +45,6 @@ func SubmitRecoveryFlowWrapper(cookie string, flowID string, token string, csrfT
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRecoveryFlow(context.Background()).Flow(flowID).SubmitSelfServiceRecoveryFlowBody(submitFlowBody).Cookie(cookie).Execute()
-
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRecoveryFlow``: %v\n", err)

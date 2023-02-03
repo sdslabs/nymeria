@@ -26,7 +26,7 @@ func HandleGetLoginFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("login_flow", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("login_flow", cookie, 3600, "/", "", false, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
@@ -75,7 +75,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
+	c.SetCookie("sdslabs_session", session, 3600, "/", "", false, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged in",
 	})

@@ -43,7 +43,6 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 		return "", err
 	}
 
-	
 	responseCookies := r.Header["Set-Cookie"]
 
 	return responseCookies[1], nil
