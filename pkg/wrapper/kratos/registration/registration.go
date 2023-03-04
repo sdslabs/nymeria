@@ -40,6 +40,7 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 		"email":        data.Email,
 		"name":         data.Name,
 		"password": 	password,
+		"phone_number": data.PhoneNumber,
 		"active":       true,
 		"verified":     false,
 		"role":         "user",
