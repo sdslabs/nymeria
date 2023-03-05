@@ -1,6 +1,9 @@
 package api
 
 import (
+	"time"
+
+	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 	c "github.com/sdslabs/nymeria/pkg/controller/admin"
 	"github.com/sdslabs/nymeria/pkg/middleware"
@@ -8,7 +11,17 @@ import (
 
 func Start() {
 	r := gin.Default()
-	// k := m.NewMiddleware()
+	// Set up CORS middleware
+	config := cors.Config{
+    AllowOrigins:     []string{"http://localhost:3000"},
+    AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+    AllowHeaders:     []string{"Authorization", "Content-Type"},
+    ExposeHeaders:    []string{"Content-Length"},
+    AllowCredentials: true,
+    MaxAge:           12 * time.Hour,
+     }
+
+	r.Use(cors.New(config))
 
 	// r.Use(k.Session())
 
