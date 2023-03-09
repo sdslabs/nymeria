@@ -9,15 +9,14 @@ import (
 	"github.com/sdslabs/nymeria/config"
 )
 
-func InitializeVerificationFlowWrapper(auth_cookie string) (string, string, string, error) {
-	returnTo := "http://127.0.0.1:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
-
+func InitializeVerificationFlowWrapper() (string, string, string, error) {
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	resp, httpRes, err := apiClient.V0alpha2Api.InitializeSelfServiceRecoveryFlowForBrowsers(context.Background()).ReturnTo(returnTo).Execute()
-	if err != nil {
-		return "", "", "", err
-	}
+    resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers(context.Background()).Execute()
+    if err != nil {
+        fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers``: %v\n", err)
+        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+    }
 
 	var csrf_token string
 
@@ -30,14 +29,14 @@ func InitializeVerificationFlowWrapper(auth_cookie string) (string, string, stri
 		}
 	}
 
-	setCookie := httpRes.Header.Get("Set-Cookie")
+	setCookie := r.Header.Get("Set-Cookie")
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitVerificationFlowWrapper(cookie string, session string, flowID string, csrfToken string, email string, method string) (string, error) {
+func SubmitVerificationFlowWrapper(cookie string,flowID string, csrfToken string, email string) (string, error) {
 
 	submitFlowBody := client.SubmitSelfServiceVerificationFlowBody{
-		SubmitSelfServiceVerificationFlowWithLinkMethodBody: client.NewSubmitSelfServiceVerificationFlowWithLinkMethodBody(email, method),
+		SubmitSelfServiceVerificationFlowWithLinkMethodBody: client.NewSubmitSelfServiceVerificationFlowWithLinkMethodBody(email, "link"),
 	}
 
 	submitFlowBody.SubmitSelfServiceVerificationFlowWithLinkMethodBody.SetCsrfToken(csrfToken)

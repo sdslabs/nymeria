@@ -1,7 +1,6 @@
 package api
 
 import (
-	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,9 +13,8 @@ import (
 func HandleGetVerificationFlow(c *gin.Context) {
 	log.Logger.Debug("Get Verification")
 
-	auth_cookie, _ := c.Cookie("sdslabs_session")
 
-	cookie, flowID, csrf_token, err := verification.InitializeVerificationFlowWrapper(auth_cookie)
+	cookie, flowID, csrf_token, err := verification.InitializeVerificationFlowWrapper()
 
 	if err != nil {
 		log.ErrorLogger("Intialize Verification Failed", err)
@@ -51,10 +49,6 @@ func HandlePostVerificationFlow(c *gin.Context) {
 	}
 
 	cookie, err := c.Cookie("verification_flow")
-	session, err := c.Cookie("sdslabs_session")
-
-	fmt.Println(cookie)
-	fmt.Println(session)
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
@@ -66,7 +60,7 @@ func HandlePostVerificationFlow(c *gin.Context) {
 		return
 	}
 
-	_, err = verification.SubmitVerificationFlowWrapper(cookie, session, t.FlowID, t.CsrfToken, t.Email, t.Method)
+	_, err = verification.SubmitVerificationFlowWrapper(cookie,t.FlowID, t.CsrfToken, t.Email)
 
 	if err != nil {
 		log.ErrorLogger("Post Verification flow failed", err)
