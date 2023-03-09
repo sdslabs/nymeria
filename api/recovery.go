@@ -59,7 +59,7 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 		return
 	}
 
-	session, err := recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.RecoveryToken, t.CsrfToken, t.Email, t.Method)
+	session, err := recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email, t.Method)
 
 	if err != nil {
 		log.ErrorLogger("POST Recovery flow failed", err)
