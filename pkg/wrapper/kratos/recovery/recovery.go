@@ -35,7 +35,7 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitRecoveryFlowWrapper(cookie string, flowID string, token string, csrfToken string, email string, method string) (string, error) {
+func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, email string, method string) (string, error) {
 
 	submitFlowBody := client.SubmitSelfServiceRecoveryFlowBody{
 		SubmitSelfServiceRecoveryFlowWithLinkMethodBody: client.NewSubmitSelfServiceRecoveryFlowWithLinkMethodBody(email, method),
