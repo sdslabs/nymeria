@@ -8,4 +8,5 @@ type NymeriaCfg struct {
 type URL struct {
 	FrontendURL string `yaml:"frontend_url"`
 	KratosURL   string `yaml:"kratos_url"`
+	Domain	  string `yaml:"domain"`
 }

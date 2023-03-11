@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/login"
+	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetLoginFlow(c *gin.Context) {
@@ -26,7 +27,7 @@ func HandleGetLoginFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("login_flow", cookie, 3600, "/", "", false, true)
+	c.SetCookie("login_flow", cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
@@ -75,7 +76,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", "", false, true)
+	c.SetCookie("sdslabs_session", session, 3600, "/", "config.NymeriaConfig.URL.Domain", true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged in",
 	})

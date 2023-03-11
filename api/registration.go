@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/registration"
+	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetRegistrationFlow(c *gin.Context) {
@@ -23,7 +24,7 @@ func HandleGetRegistrationFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("registration_flow", cookie, 3600, "/", "", false, true)
+	c.SetCookie("registration_flow", cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
@@ -70,7 +71,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", "", false, true)
+	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "created",
 	})

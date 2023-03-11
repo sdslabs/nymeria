@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/recovery"
+	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetRecoveryFlow(c *gin.Context) {
@@ -25,7 +26,7 @@ func HandleGetRecoveryFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("recovery_flow", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("recovery_flow", cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
@@ -71,7 +72,7 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", "localhost", false, true)
+	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"message": "Mail sent with recovery code",
 	})

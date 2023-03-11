@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/verification"
+	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetVerificationFlow(c *gin.Context) {
@@ -26,7 +27,7 @@ func HandleGetVerificationFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("verification_flow", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("verification_flow", cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,

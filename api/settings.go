@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/settings"
+	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetSettingsFlow(c *gin.Context) {
@@ -28,7 +29,7 @@ func HandleGetSettingsFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("settings_flow", cookie, 3600, "/", "localhost", false, true)
+	c.SetCookie("settings_flow", cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
