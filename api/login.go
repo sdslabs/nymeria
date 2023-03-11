@@ -76,7 +76,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", "config.NymeriaConfig.URL.Domain", true, true)
+	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged in",
 	})
