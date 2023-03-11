@@ -56,6 +56,8 @@ func Start() {
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
 
+	r.GET("/get_profile", GetProfile)
+
 	r.Run(":9898")
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
