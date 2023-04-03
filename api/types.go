@@ -15,6 +15,6 @@ type ApplicationPutBody struct {
 	Organisation   string `json:"organisation"`
 }
 
-type ApplicationDeleteBody struct {
+type ApplicationBody struct {
 	ID int `json:"id"`
 }

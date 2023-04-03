@@ -61,6 +61,8 @@ func Start() {
 	r.POST("/application", HandlePostApplication)
 	r.PUT("/application", HandlePutApplication)
 	r.DELETE("/application", HandleDeleteApplication)
+
+	r.POST("/update-client-secret", HandleUpdateClientSecret)
 	r.Run(":9999")
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

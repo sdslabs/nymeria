@@ -1,5 +1,9 @@
 package db
 
+import (
+	"github.com/sdslabs/nymeria/helper"
+)
+
 func CreateApplication(name string, redirectURL string, allowedDomains string, organisation string, clientKey string, clientSecret string) error {
 	sqlStatement := `INSERT INTO application (name, redirect_url, allowed_domains, organization, created_at, client_key, client_secret) VALUES ($1, $2, $3, $4, now(), $5,$6);`
 	db, err := Connection()
@@ -86,4 +90,23 @@ func GetAllApplication() ([]Application, error) {
 	}
 
 	return application, nil
+}
+
+func UpdateClientSecret(id int) error {
+	sqlStatement := `UPDATE application SET client_secret=$1 WHERE id=$2;`
+	db, err := Connection()
+
+	if err != nil {
+		return err
+	}
+	defer db.Close()
+
+	_, err = db.Exec(sqlStatement, helper.RandomString(30), id)
+
+	if err != nil {
+		return err
+	}
+
+	return nil
+
 }
