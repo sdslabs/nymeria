@@ -13,21 +13,7 @@
         },
 
         "name": {
-            "type": "object",
-            "properties": {
-                "first": {
-                    "title": "First Name",
-                    "type": "string"
-                },
-                "middle": {
-                    "title": "Middle Name",
-                    "type": "string"
-                },
-                "last": {
-                    "title": "Last Name",
-                    "type": "string"
-                }
-            }
+            "type": "string"
         },
 
         "redirect_url": {
