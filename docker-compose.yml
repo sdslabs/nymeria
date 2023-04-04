@@ -1,0 +1,22 @@
+version: "3"
+
+services:
+  db:
+    container_name: nymeria-postgres
+    image: postgres:latest
+    environment:
+      POSTGRES_USER: ""
+      POSTGRES_PASSWORD: ""
+      POSTGRES_DB: kratos_db
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./postgres-data:/var/lib/postgresql/data
+    ports:
+      - "9899:5432"
+  app:
+    container_name: nymeria-app
+    build: .
+    ports:
+      - "9898:9898"
+    depends_on:
+      - db

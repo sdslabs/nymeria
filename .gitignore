@@ -30,3 +30,6 @@ target/
 
 #Exclude values.yaml
 /config/values.yaml
+
+# Exclude sql files
+*.sql

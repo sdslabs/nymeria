@@ -3,6 +3,7 @@ env: dev # dev|prod
 url:
     frontend_url: "http://localhost:4455"
     kratos_url: "http://localhost:4433"
+    domain: "https://someaddress.com"
 
 db:
     dsn: ""
