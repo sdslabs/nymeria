@@ -18,3 +18,9 @@ type ApplicationPutBody struct {
 type ApplicationBody struct {
 	ID int `json:"id"`
 }
+
+type AccessProfileRequest struct {
+	RedirectURL    string `json:"redirect_url"`
+	ClientKey	  string `json:"client_key"`
+	ClientSecret   string `json:"client_secret"`
+}

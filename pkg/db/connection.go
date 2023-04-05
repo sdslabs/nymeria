@@ -15,7 +15,7 @@ func Connection() (*sql.DB, error) {
 	if config.NymeriaConfig.DB.DSN != "" {
 		connStr = config.NymeriaConfig.DB.DSN
 	} else {
-		connStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s",
+		connStr = fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=disable",
 			config.NymeriaConfig.DB.Host,
 			config.NymeriaConfig.DB.Port,
 			config.NymeriaConfig.DB.User,

@@ -7,10 +7,10 @@ services:
     environment:
       POSTGRES_USER: ""
       POSTGRES_PASSWORD: ""
-      POSTGRES_DB: kratos_db
+      POSTGRES_DB: 
     volumes:
+      - db-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-      - ./postgres-data:/var/lib/postgresql/data
     ports:
       - "9899:5432"
   app:
@@ -20,3 +20,7 @@ services:
       - "9898:9898"
     depends_on:
       - db
+
+volumes:
+  db-data:
+    name: nymeria-db

@@ -55,7 +55,7 @@ func Start() {
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
 
-	r.GET("/get_profile", GetProfile)
+	r.POST("/get_profile", GetProfile)
 
 	r.GET("/application", HandleGetApplication)
 	r.POST("/application", HandlePostApplication)
@@ -63,6 +63,6 @@ func Start() {
 	r.DELETE("/application", HandleDeleteApplication)
 
 	r.POST("/update-client-secret", HandleUpdateClientSecret)
-	r.Run(":9999")
+	r.Run(":9898")
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
