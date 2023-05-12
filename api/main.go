@@ -55,7 +55,7 @@ func Start() {
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
 
-	r.POST("/get_profile", GetProfile)
+	r.POST("/get_profile", HandlePostProfile)
 
 	r.GET("/application", HandleGetApplication)
 	r.POST("/application", HandlePostApplication)

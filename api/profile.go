@@ -1,7 +1,6 @@
 package api
 
 import (
-	"encoding/json"
 	"net/http"
 	"strconv"
 	"strings"
@@ -18,7 +17,7 @@ type Profile struct {
 	PhoneNumber string `json:"phone_number"`
 }
 
-func GetProfile(c *gin.Context) {
+func HandlePostProfile(c *gin.Context) {
 	var body AccessProfileRequest
 	err := c.BindJSON(&body)
 	if err != nil {
@@ -85,16 +84,5 @@ func GetProfile(c *gin.Context) {
 		Name:        profile["name"].(string),
 		PhoneNumber: profile["phone_number"].(string),
 	}
-
-	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		log.ErrorLogger("Unable to marshal json", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error":   err.Error(),
-			"message": "Internal Server Error",
-		})
-		return 
-	}
-	c.Header("X-Access-Profile-Response", string(jsonResponse))
-	c.Redirect(http.StatusFound, app.RedirectURL)
+	c.JSON(http.StatusOK, response)
 }
