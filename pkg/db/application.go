@@ -110,3 +110,23 @@ func UpdateClientSecret(id int) error {
 	return nil
 
 }
+
+func GetApplication(client_key string, client_secret string) (Application, error) {
+	sqlStatement := `SELECT * FROM application WHERE client_key=$1 AND client_secret=$2;`
+	db, err := Connection()
+
+	if err != nil {
+		return Application{}, err
+	}
+	defer db.Close()
+
+	var t Application
+
+	err = db.QueryRow(sqlStatement, client_key, client_secret).Scan(&t.ID, &t.Name, &t.RedirectURL, &t.AllowedDomains, &t.Organization, &t.CreatedAt, &t.ClientKey, &t.ClientSecret)
+
+	if err != nil {
+		return Application{}, err
+	}
+
+	return t, nil
+}

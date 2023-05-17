@@ -16,7 +16,7 @@ type Profile struct {
 	PhoneNumber string `json:"phone_number"`
 }
 
-func GetProfile(c *gin.Context) {
+func HandlePostProfile(c *gin.Context) {
 	session, err := middleware.GetSession(c)
 	if err != nil {
 		log.ErrorLogger("Unable to get session", err)
@@ -35,6 +35,5 @@ func GetProfile(c *gin.Context) {
 		Name:        profile["name"].(string),
 		PhoneNumber: profile["phone_number"].(string),
 	}
-
 	c.JSON(http.StatusOK, response)
 }

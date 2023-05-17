@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -55,14 +56,18 @@ func Start() {
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
 
-	r.GET("/get_profile", GetProfile)
-
+	r.POST("/get_profile", middleware.HandleAppAuthorization, HandlePostProfile)
+	r.POST("/verify_app", middleware.HandleAppAuthorization, func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Authorized",
+		})
+	})
 	r.GET("/application", HandleGetApplication)
 	r.POST("/application", HandlePostApplication)
 	r.PUT("/application", HandlePutApplication)
 	r.DELETE("/application", HandleDeleteApplication)
 
 	r.POST("/update-client-secret", HandleUpdateClientSecret)
-	r.Run(":9999")
+	r.Run(":9898")
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }
