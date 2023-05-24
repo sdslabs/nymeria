@@ -5,6 +5,7 @@ type Application struct {
 	Name           string `json:"name"`
 	RedirectURL    string `json:"redirect_url"`
 	AllowedDomains string `json:"allowed_domains"`
+	UpdatedAt      string `json:"updated_at"`
 	Organization   string `json:"organization"`
 	CreatedAt      string `json:"created_at"`
 	ClientKey      string `json:"client_key"`
