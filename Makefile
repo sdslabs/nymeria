@@ -2,7 +2,10 @@ GO := go
 GOPATH := $(shell go env GOPATH)
 GOPATH_BIN := $(GOPATH)/bin
 GOLANGCI_LINT := $(GOPATH_BIN)/golangci-lint
-GO_PACKAGES := $(shell go list ./... | grep -v vendor)
+SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
+GOIMPORTS := $(GOPATH_BIN)/goimports
+GO_PACKAGES = $(shell go list ./... | grep -v vendor)
+PACKAGE_BASE := github.com/sdslabs/nymeria
 
 .PHONY: help vendor build run dev lint format clean
 
@@ -33,19 +36,32 @@ dev:
 	@$(GOPATH_BIN)/air -c .air.toml
 
 install-golangci-lint:
+	@echo "=====> Installing golangci-lint..."
 	@curl -sSfL \
 	 	https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
-	 	sh -s -- -b $(GOPATH_BIN) v1.48.0
+	 	sh -s -- -b $(GOPATH_BIN) v1.52.2
 
-lint:
+lint: install-golangci-lint
 	@$(GO) vet $(GO_PACKAGES)
-	@golangci-lint run -c golangci.yaml
+	@$(GOLANGCI_LINT) run -c golangci.yaml
 	@echo "Lint successful"
 
-format:
-	@$(GO) fmt $(GO_PACKAGES)
-	@golangci-lint run -c golangci.yaml
+install-goimports:
+	@echo "=====> Installing formatter..."
+	@$(GO) install golang.org/x/tools/cmd/goimports@latest
+
+format: install-goimports
+	@echo "=====> Formatting code..."
+	@$(GOIMPORTS) -l -w -local ${PACKAGE_BASE} $(SRC)
 	@echo "Format successful"
+
+## verify: Run format and lint checks
+verify: verify-format lint
+
+## verify-format: Verify the format
+verify-format: install-goimports
+	@echo "=====> Verifying format..."
+	$(if $(shell $(GOIMPORTS) -l -local ${PACKAGE_BASE} ${SRC}), @echo ERROR: Format verification failed! && $(GOIMPORTS) -l -local ${PACKAGE_BASE} ${SRC} && exit 1)
 
 clean:
 	@rm -f nymeria
