@@ -1,4 +1,4 @@
-name: golang lint
+name: verify format & lint
 
 on: [push,pull_request]
 
@@ -15,6 +15,9 @@ jobs:
 
     - name: Install golangci lint
       run: make install-golangci-lint
+    
+    - name: Install goimports
+      run: make install-goimports
 
-    - name: Check lint
-      run: make lint
+    - name: Verify Format & Lint
+      run: make verify

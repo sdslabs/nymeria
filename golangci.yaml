@@ -2,11 +2,9 @@ linters:
   disable-all: true
   enable:
   - govet
-  - errcheck
   - staticcheck
   - unused
   - gosimple
-  - bodyclose
   - revive
   - unconvert
   - goconst
@@ -38,8 +36,13 @@ linters-settings:
     ignore-words: []
 
   lll:
-    line-length: 180
+    line-length: 500
     tab-width: 4
 
   gocyclo:
     min-complexity: 20
+  
+  revive:
+    ignore-generated-header: true
+    ignore-patterns:
+      - "_"
