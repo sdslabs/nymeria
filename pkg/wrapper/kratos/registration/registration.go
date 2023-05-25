@@ -6,6 +6,7 @@ import (
 	"os"
 
 	client "github.com/ory/client-go"
+
 	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/pkg/middleware"
 )
@@ -39,7 +40,7 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 	trait := map[string]interface{}{
 		"email":        data.Email,
 		"name":         data.Name,
-		"password": 	password,
+		"password":     password,
 		"phone_number": data.PhoneNumber,
 		"active":       true,
 		"verified":     false,

@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/db"
@@ -46,7 +47,7 @@ func HandlePostApplication(c *gin.Context) {
 		return
 	}
 
-	err = db.CreateApplication(body.Name, body.RedirectURL, body.AllowedDomains, body.Organisation, helper.RandomString(10), helper.RandomString(30))
+	err = db.CreateApplication(body.Name, body.RedirectURL, body.AllowedDomains, body.Organization, helper.RandomString(10), helper.RandomString(30))
 
 	if err != nil {
 		log.ErrorLogger("Create application failed", err)
@@ -80,7 +81,7 @@ func HandlePutApplication(c *gin.Context) {
 		return
 	}
 
-	err = db.UpdateApplication(body.ID, body.Name, body.RedirectURL, body.AllowedDomains, body.Organisation)
+	err = db.UpdateApplication(body.ID, body.Name, body.RedirectURL, body.AllowedDomains, body.Organization)
 
 	if err != nil {
 		log.ErrorLogger("Update application failed", err)
@@ -162,7 +163,7 @@ func HandleUpdateClientSecret(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "Client Secret updated sucessfully",
+		"status": "Client Secret updated successfully",
 	})
 
 }

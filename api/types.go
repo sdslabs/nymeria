@@ -4,7 +4,7 @@ type ApplicationPostBody struct {
 	Name           string `json:"name"`
 	RedirectURL    string `json:"redirect_url"`
 	AllowedDomains string `json:"allowed_domains"`
-	Organisation   string `json:"organisation"`
+	Organization   string `json:"organization"`
 }
 
 type ApplicationPutBody struct {
@@ -12,7 +12,7 @@ type ApplicationPutBody struct {
 	Name           string `json:"name"`
 	RedirectURL    string `json:"redirect_url"`
 	AllowedDomains string `json:"allowed_domains"`
-	Organisation   string `json:"organisation"`
+	Organization   string `json:"organization"`
 }
 
 type ApplicationBody struct {

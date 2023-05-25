@@ -6,17 +6,18 @@ import (
 	"os"
 
 	client "github.com/ory/client-go"
+
 	"github.com/sdslabs/nymeria/config"
 )
 
 func InitializeVerificationFlowWrapper() (string, string, string, error) {
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-    resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers(context.Background()).Execute()
-    if err != nil {
-        fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers``: %v\n", err)
-        fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-    }
+	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers(context.Background()).Execute()
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+	}
 
 	var csrf_token string
 
@@ -33,7 +34,7 @@ func InitializeVerificationFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitVerificationFlowWrapper(cookie string,flowID string, csrfToken string, email string) (string, error) {
+func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken string, email string) (string, error) {
 
 	submitFlowBody := client.SubmitSelfServiceVerificationFlowBody{
 		SubmitSelfServiceVerificationFlowWithLinkMethodBody: client.NewSubmitSelfServiceVerificationFlowWithLinkMethodBody(email, "link"),
