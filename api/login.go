@@ -6,9 +6,10 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/login"
-	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetLoginFlow(c *gin.Context) {
@@ -17,12 +18,12 @@ func HandleGetLoginFlow(c *gin.Context) {
 	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper()
 
 	if err != nil {
-		log.ErrorLogger("Intialize Login Failed", err)
+		log.ErrorLogger("Initialize Login Failed", err)
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Intialize Login Failed",
+			"message": "Initialize Login Failed",
 		})
 		return
 	}

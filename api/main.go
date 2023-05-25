@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
+
 	c "github.com/sdslabs/nymeria/pkg/controller/admin"
 	"github.com/sdslabs/nymeria/pkg/middleware"
 )

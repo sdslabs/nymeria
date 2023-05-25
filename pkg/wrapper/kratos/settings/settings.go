@@ -6,6 +6,7 @@ import (
 	"os"
 
 	client "github.com/ory/client-go"
+
 	"github.com/sdslabs/nymeria/config"
 )
 

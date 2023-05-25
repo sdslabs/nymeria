@@ -4,7 +4,7 @@ import (
 	"github.com/sdslabs/nymeria/helper"
 )
 
-func CreateApplication(name string, redirectURL string, allowedDomains string, organisation string, clientKey string, clientSecret string) error {
+func CreateApplication(name string, redirectURL string, allowedDomains string, organization string, clientKey string, clientSecret string) error {
 	sqlStatement := `INSERT INTO application (name, redirect_url, allowed_domains, organization, created_at, client_key, client_secret) VALUES ($1, $2, $3, $4, now(), $5,$6);`
 	db, err := Connection()
 
@@ -13,7 +13,7 @@ func CreateApplication(name string, redirectURL string, allowedDomains string, o
 	}
 	defer db.Close()
 
-	_, err = db.Exec(sqlStatement, name, redirectURL, allowedDomains, organisation, clientKey, clientSecret)
+	_, err = db.Exec(sqlStatement, name, redirectURL, allowedDomains, organization, clientKey, clientSecret)
 
 	if err != nil {
 		return err
@@ -23,7 +23,7 @@ func CreateApplication(name string, redirectURL string, allowedDomains string, o
 
 }
 
-func UpdateApplication(id int, name string, redirectURL string, allowedDomains string, organisation string) error {
+func UpdateApplication(id int, name string, redirectURL string, allowedDomains string, organization string) error {
 	sqlStatement := `UPDATE application SET name=$1, redirect_url=$2, allowed_domains=$3, organization=$4 WHERE id=$5;`
 	db, err := Connection()
 
@@ -32,7 +32,7 @@ func UpdateApplication(id int, name string, redirectURL string, allowedDomains s
 	}
 	defer db.Close()
 
-	_, err = db.Exec(sqlStatement, name, redirectURL, allowedDomains, organisation, id)
+	_, err = db.Exec(sqlStatement, name, redirectURL, allowedDomains, organization, id)
 
 	if err != nil {
 		return err

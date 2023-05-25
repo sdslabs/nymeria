@@ -6,9 +6,10 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/registration"
-	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetRegistrationFlow(c *gin.Context) {

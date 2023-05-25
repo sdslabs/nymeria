@@ -5,6 +5,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/db"
 )

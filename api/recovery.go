@@ -6,9 +6,10 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/recovery"
-	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetRecoveryFlow(c *gin.Context) {
@@ -17,11 +18,11 @@ func HandleGetRecoveryFlow(c *gin.Context) {
 	cookie, flowID, csrf_token, err := recovery.InitializeRecoveryFlowWrapper()
 
 	if err != nil {
-		log.ErrorLogger("Intialize Recovery Failed", err)
+		log.ErrorLogger("Initialize Recovery Failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Intialize Recovery Failed",
+			"message": "Initialize Recovery Failed",
 		})
 		return
 	}

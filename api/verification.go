@@ -6,23 +6,23 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/verification"
-	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetVerificationFlow(c *gin.Context) {
 	log.Logger.Debug("Get Verification")
 
-
 	cookie, flowID, csrf_token, err := verification.InitializeVerificationFlowWrapper()
 
 	if err != nil {
-		log.ErrorLogger("Intialize Verification Failed", err)
+		log.ErrorLogger("Initialize Verification Failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Intialize Verification Failed",
+			"message": "Initialize Verification Failed",
 		})
 		return
 	}
@@ -61,7 +61,7 @@ func HandlePostVerificationFlow(c *gin.Context) {
 		return
 	}
 
-	_, err = verification.SubmitVerificationFlowWrapper(cookie,t.FlowID, t.CsrfToken, t.Email)
+	_, err = verification.SubmitVerificationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email)
 
 	if err != nil {
 		log.ErrorLogger("Post Verification flow failed", err)

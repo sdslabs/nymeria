@@ -7,9 +7,10 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
+	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/settings"
-	"github.com/sdslabs/nymeria/config"
 )
 
 func HandleGetSettingsFlow(c *gin.Context) {
@@ -20,11 +21,11 @@ func HandleGetSettingsFlow(c *gin.Context) {
 	cookie, flowID, csrf_token, err := settings.InitializeSettingsFlowWrapper(auth_cookie)
 
 	if err != nil {
-		log.ErrorLogger("Intialize Settings Failed", err)
+		log.ErrorLogger("Initialize Settings Failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Intialize Settings Failed",
+			"message": "Initialize Settings Failed",
 		})
 		return
 	}
@@ -52,13 +53,22 @@ func HandlePostSettingsFlow(c *gin.Context) {
 	}
 
 	cookie, err := c.Cookie("settings_flow")
+	if err != nil {
+		log.ErrorLogger("Failed to retrieve settings_flow cookie", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Cookie not found",
+		})
+		return
+	}
 	session, err := c.Cookie("sdslabs_session")
 
 	fmt.Println(cookie)
 	fmt.Println(session)
 
 	if err != nil {
-		log.ErrorLogger("Cookie not found", err)
+		log.ErrorLogger("Failed to retrieve session cookie", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
