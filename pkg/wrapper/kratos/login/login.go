@@ -55,6 +55,7 @@ func SubmitLoginWithMFAWrapper(cookie string, flowID string, csrfToken string, t
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
+
 	if err != nil {
 		return *client.NewSessionWithDefaults(), "", err
 	}

@@ -138,4 +138,25 @@ func SubmitSettingsFlowWrapper(flow_cookie string, session_cookie string, flowID
 		err := errors.New("wrong choice")
 		return "Invalid method type", err
 	}
+=======
+	var setCookie string = r.Header.Get("Set-Cookie")
+	return setCookie, resp.Id, csrf_token, nil
+}
+
+func SubmitSettingsFlowWrapper(cookie string, session string, flowID string, csrfToken string, pass string) (string, error) {
+	submitDataBody := client.SubmitSelfServiceSettingsFlowBody{
+		SubmitSelfServiceSettingsFlowWithPasswordMethodBody: client.NewSubmitSelfServiceSettingsFlowWithPasswordMethodBody("password", pass)}
+
+	submitDataBody.SubmitSelfServiceSettingsFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
+
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).SubmitSelfServiceSettingsFlowBody(submitDataBody).XSessionToken(session).Cookie(cookie).Execute()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceSettingsFlow``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		return "", err
+	}
+
+	return "", nil
 }

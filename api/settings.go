@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/settings"
@@ -14,6 +15,7 @@ import (
 func HandleGetSettingsFlow(c *gin.Context) {
 	log.Logger.Debug("Get Settings")
 	session_cookie, err := c.Cookie("sdslabs_session")
+
 	if err != nil {
 		log.ErrorLogger("Initialize Settings Failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
@@ -102,7 +104,6 @@ func HandlePostSettingsFlow(c *gin.Context) {
 	flow_cookie, err := c.Cookie("settings_flow")
 	if err != nil {
 		log.ErrorLogger("Flow Cookie not found", err)
-
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),

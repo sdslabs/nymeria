@@ -6,6 +6,7 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/login"
@@ -14,6 +15,7 @@ import (
 func HandleGetLoginFlow(c *gin.Context) {
 	log.Logger.Debug("Get Login")
 	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal1")
+
 
 	if err != nil {
 		log.ErrorLogger("Initialize Login Failed", err)
