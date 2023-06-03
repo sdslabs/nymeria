@@ -1,6 +1,6 @@
 {
-  "$id": "user.json",
-  "$schema": "https://github.com/sdslabs/nymeria/blob/json-schema/user.json",
+  "$id": "https://schemas.ory.sh/presets/kratos/quickstart/email-password/identity.schema.json",
+  "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "users",
   "type": "object",
   "properties": {
@@ -20,6 +20,9 @@
             "credentials": {
               "password": {
                 "identifier": true
+              },
+              "totp": {
+                "account_name": true
               }
             },
             "verification": {
@@ -56,8 +59,11 @@
         },
         "created_at": {
           "type": "string",
-          "format": "date-time",
           "title": "Created At"
+        },
+        "totp_enabled": {
+          "type": "boolean",
+          "title": "Whether user has enabled totp"
         }
       },
 
@@ -67,7 +73,8 @@
         "phone_number",
         "role",
         "active",
-        "created_at"
+        "created_at",
+        "totp_enabled"
       ],
       "additionalProperties": false
     }

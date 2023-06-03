@@ -14,8 +14,8 @@ import (
 
 func HandleGetLoginFlow(c *gin.Context) {
 	log.Logger.Debug("Get Login")
+	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal1")
 
-	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper()
 
 	if err != nil {
 		log.ErrorLogger("Initialize Login Failed", err)
@@ -64,7 +64,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 		return
 	}
 
-	session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier)
+	identity, session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier) // _ is USERID
 
 	if err != nil {
 		log.ErrorLogger("Post login flow failed", err)
@@ -80,6 +80,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged in",
+		"person": identity,
 	})
 
 }
