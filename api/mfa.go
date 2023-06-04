@@ -4,6 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+
 	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/login"
@@ -14,7 +15,7 @@ func HandleGetMFAFlow(c *gin.Context) {
 	flow_cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal2")
 
 	if err != nil {
-		log.ErrorLogger("Intialize MFA Failed", err)
+		log.ErrorLogger("Initialize MFA Failed", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error",
 		})

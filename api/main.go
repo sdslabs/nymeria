@@ -11,7 +11,6 @@ import (
 	"github.com/sdslabs/nymeria/pkg/middleware"
 )
 
-
 func Start() {
 	r := gin.Default()
 	// Set up CORS middleware
