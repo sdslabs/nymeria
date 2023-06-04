@@ -1,6 +1,7 @@
 package api
 
 import (
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -14,7 +15,10 @@ import (
 
 func HandleGetSettingsFlow(c *gin.Context) {
 	log.Logger.Debug("Get Settings")
-	session_cookie, err := c.Cookie("sdslabs_session")
+
+	auth_cookie, _ := c.Cookie("sdslabs_session")
+
+	cookie, flowID, csrf_token, err := settings.InitializeSettingsFlowWrapper(auth_cookie)
 
 	if err != nil {
 		log.ErrorLogger("Initialize Settings Failed", err)
@@ -26,73 +30,20 @@ func HandleGetSettingsFlow(c *gin.Context) {
 		return
 	}
 
-	flow, flow_cookie, err := settings.InitializeSettingsFlowWrapper(session_cookie)
+	c.SetCookie("settings_flow", cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
-	c.SetCookie("settings_flow", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, false, true)
-
-	flowID := flow.GetId()
-
-	if err != nil {
-		log.ErrorLogger("Intialize Settings flow Failed", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
-		})
-		return
-	}
-
-	var csrf_token string
-
-	for _, node := range flow.Ui.Nodes {
-		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
-			csrf_token_interface := node.Attributes.UiNodeInputAttributes.GetValue()
-			csrf_token, _ = csrf_token_interface.(string)
-			break
-		}
-	}
-
-	var qr_src string
-
-	for _, node := range flow.Ui.Nodes {
-		if node.Attributes.UiNodeImageAttributes.GetId() == "totp_qr" {
-			qr_src = node.Attributes.UiNodeImageAttributes.GetSrc()
-			break
-		}
-	}
-
-	var totp_secret string
-
-	for _, node := range flow.Ui.Nodes {
-		if node.Attributes.UiNodeTextAttributes.GetId() == "totp_secret_key" {
-			totp_secret = node.Attributes.UiNodeTextAttributes.Text.GetText()
-			break
-		}
-	}
 	c.JSON(http.StatusOK, gin.H{
-		"flowID":      flowID,
-		"csrf_token":  csrf_token,
-		"qr":          qr_src,
-		"totp_secret": totp_secret,
+		"flowID":     flowID,
+		"csrf_token": csrf_token,
 	})
 }
 
 func HandlePostSettingsFlow(c *gin.Context) {
-	var req_body settings.SubmitSettingsAPIBody
-	err := c.BindJSON(&req_body)
-
-	traitsinterface := map[string]interface{}{
-		"name":         req_body.Traits.Name,
-		"phone_number": req_body.Traits.PhoneNumber,
-		"img_url":      req_body.Traits.ImgURL,
-		"email":        req_body.Traits.Email,
-		"totp_enabled": req_body.Traits.TOTP_Enabled,
-		"created_at":   req_body.Traits.Created_At,
-		"role":         req_body.Traits.Role,
-		"active":       req_body.Traits.Active,
-	}
+	var t settings.SubmitSettingsWithPasswordBody
+	err := c.Bind(&t)
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
@@ -101,9 +52,23 @@ func HandlePostSettingsFlow(c *gin.Context) {
 		return
 	}
 
-	flow_cookie, err := c.Cookie("settings_flow")
+	cookie, err := c.Cookie("settings_flow")
 	if err != nil {
-		log.ErrorLogger("Flow Cookie not found", err)
+		log.ErrorLogger("Failed to retrieve settings_flow cookie", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Cookie not found",
+		})
+		return
+	}
+	session, err := c.Cookie("sdslabs_session")
+
+	fmt.Println(cookie)
+	fmt.Println(session)
+
+	if err != nil {
+		log.ErrorLogger("Failed to retrieve session cookie", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
@@ -112,32 +77,19 @@ func HandlePostSettingsFlow(c *gin.Context) {
 		return
 	}
 
-	session_cookie, err := c.Cookie("sdslabs_session")
-	if err != nil {
-		log.ErrorLogger("Session Cookie not found", err)
+	_, err = settings.SubmitSettingsFlowWrapper(cookie, session, t.FlowID, t.CsrfToken, t.Password)
 
+	if err != nil {
+		log.ErrorLogger("Post Settings flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Cookie not found",
-		})
-		return
-	}
-
-	msg, err := settings.SubmitSettingsFlowWrapper(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.Method, req_body.TOTPCode, req_body.TOTPUnlink, req_body.Password, traitsinterface)
-
-	if err != nil {
-		log.ErrorLogger("Kratos post settings flow failed", err)
-
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Kratos post settings flow failed",
+			"message": "Post Settings flow failed",
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": msg,
+		"message": "Password Reset Successful",
 	})
 }

@@ -11,7 +11,6 @@ import (
 	"github.com/sdslabs/nymeria/pkg/middleware"
 )
 
-
 func Start() {
 	r := gin.Default()
 	// Set up CORS middleware
@@ -35,8 +34,6 @@ func Start() {
 	})
 	r.GET("/login", HandleGetLoginFlow)
 	r.POST("/login", HandlePostLoginFlow)
-	r.GET("/mfa", HandleGetMFAFlow)
-	r.POST("/mfa", HandlePostMFAFlow)
 
 	r.POST("/create-identity", c.CreateIdentity)
 	r.GET("/get-identity", c.GetIdentity)

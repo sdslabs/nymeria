@@ -37,8 +37,8 @@ func HandleGetLogoutFlow(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"logout_token": logoutUrl.LogoutToken,
-		"logout_url":   logoutUrl.LogoutUrl,
+		"logoutToken": logoutUrl.LogoutToken,
+		"url":         logoutUrl.LogoutUrl,
 	})
 }
 
