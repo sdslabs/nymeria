@@ -33,14 +33,12 @@ func HandleGetSettingsFlow(c *gin.Context) {
 	flowID := flow.GetId()
 
 	if err != nil {
-		log.ErrorLogger("Intialize Settings flow Failed", err)
+		log.ErrorLogger("Initialize Settings flow Failed", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"error": "internal server error",
 		})
 		return
 	}
-
-	c.SetCookie("settings_flow", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	var csrf_token string
 
