@@ -28,7 +28,7 @@ func HandleGetSettingsFlow(c *gin.Context) {
 
 	flow, flow_cookie, err := settings.InitializeSettingsFlowWrapper(session_cookie)
 
-	c.SetCookie("settings_flow", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, false, true)
+	c.SetCookie("settings_flow", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	flowID := flow.GetId()
 

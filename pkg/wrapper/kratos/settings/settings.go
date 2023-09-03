@@ -4,7 +4,6 @@ import (
 	"bytes"
 	"context"
 	"errors"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -54,7 +53,6 @@ func SubmitSettingsFlowPasswordMethod(flow_cookie string, session_cookie string,
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("Cookie", cookie)
 	req.Header.Set("Content-Type", "application/json")
-	fmt.Println(req)
 
 	resp, err := client.Do(req)
 
