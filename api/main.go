@@ -59,7 +59,6 @@ func Start() {
 	r.POST("/changepassword", HandleChangePassword)
 	r.POST("/toggletotp", HandleToggleTOTP)
 
-
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
 
