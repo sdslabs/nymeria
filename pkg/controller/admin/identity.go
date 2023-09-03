@@ -26,12 +26,12 @@ func CreateIdentity(c *gin.Context) {
 	id, _ := strconv.Atoi(c.PostForm("id"))
 	verified, _ := strconv.Atoi(c.PostForm("verified"))
 	active, _ := strconv.ParseBool(c.PostForm("active"))
+	totp_enabled, _ := strconv.ParseBool(c.PostForm("totp_enabled"))
 	adminCreateIdentityBody := *client.NewAdminCreateIdentityBody(
 		"default",
 		map[string]interface{}{
 			"id":           id,
 			"name":         c.PostForm("name"),
-			"username":     c.PostForm("username"),
 			"email":        c.PostForm("email"),
 			"phone_number": c.PostForm("phone_number"),
 			"password":     c.PostForm("password"),
@@ -40,10 +40,7 @@ func CreateIdentity(c *gin.Context) {
 			"verified":     verified,
 			"role":         c.PostForm("role"),
 			"created_at":   c.PostForm("created_at"),
-			"github_id":    c.PostForm("github_id"),
-			"dribble_id":   c.PostForm("dribble_id"),
-			"totp_enabled": false,
-			"totp_url":     "",
+			"totp_enabled": totp_enabled,
 		},
 	) // AdminCreateIdentityBody |  (optional)
 
