@@ -22,7 +22,7 @@ func HandleGetMFAFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("mfa", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, false, true)
+	c.SetCookie("mfa", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":     flowID,
@@ -62,7 +62,7 @@ func HandlePostMFAFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, false, true)
+	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "MFA Successful",
 		"user":   identity,

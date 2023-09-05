@@ -28,7 +28,7 @@ func HandleGetSettingsFlow(c *gin.Context) {
 
 	flow, flow_cookie, err := settings.InitializeSettingsFlowWrapper(session_cookie)
 
-	c.SetCookie("settings_flow", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, false, true)
+	c.SetCookie("settings_flow", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 
 	flowID := flow.GetId()
 
@@ -75,8 +75,8 @@ func HandleGetSettingsFlow(c *gin.Context) {
 	})
 }
 
-func HandlePostSettingsFlow(c *gin.Context) {
-	var req_body settings.SubmitSettingsAPIBody
+func HandleUpdateProfile(c *gin.Context) {
+	var req_body settings.UpdateProfileAPIBody
 	err := c.BindJSON(&req_body)
 
 	traitsinterface := map[string]interface{}{
@@ -125,7 +125,121 @@ func HandlePostSettingsFlow(c *gin.Context) {
 		return
 	}
 
-	msg, err := settings.SubmitSettingsFlowWrapper(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.Method, req_body.TOTPCode, req_body.TOTPUnlink, req_body.Password, traitsinterface)
+	msg, err := settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.Method, traitsinterface)
+
+	if err != nil {
+		log.ErrorLogger("Kratos post settings flow failed", err)
+
+		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Kratos post settings flow failed",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": msg,
+	})
+}
+
+func HandleChangePassword(c *gin.Context) {
+	var req_body settings.ChangePasswordAPIBody
+	err := c.BindJSON(&req_body)
+
+	if err != nil {
+		log.ErrorLogger("Unable to process json body", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to process json body",
+		})
+		return
+	}
+
+	flow_cookie, err := c.Cookie("settings_flow")
+	if err != nil {
+		log.ErrorLogger("Flow Cookie not found", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Cookie not found",
+		})
+		return
+	}
+
+	session_cookie, err := c.Cookie("sdslabs_session")
+	if err != nil {
+		log.ErrorLogger("Session Cookie not found", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Cookie not found",
+		})
+		return
+	}
+
+	msg, err := settings.SubmitSettingsFlowPasswordMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.Method, req_body.Password)
+
+	if err != nil {
+		log.ErrorLogger("Kratos post settings flow failed", err)
+
+		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Kratos post settings flow failed",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"status": msg,
+	})
+}
+
+func HandleToggleTOTP(c *gin.Context) {
+	var req_body settings.ToggleTOTPAPIBody
+	err := c.BindJSON(&req_body)
+
+	if err != nil {
+		log.ErrorLogger("Unable to process json body", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to process json body",
+		})
+		return
+	}
+
+	flow_cookie, err := c.Cookie("settings_flow")
+	if err != nil {
+		log.ErrorLogger("Flow Cookie not found", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Cookie not found",
+		})
+		return
+	}
+
+	session_cookie, err := c.Cookie("sdslabs_session")
+	if err != nil {
+		log.ErrorLogger("Session Cookie not found", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Cookie not found",
+		})
+		return
+	}
+
+	msg, err := settings.SubmitSettingsFlowTOTPMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.Method, req_body.TOTPCode, req_body.TOTPUnlink)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post settings flow failed", err)

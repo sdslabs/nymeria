@@ -36,13 +36,13 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, email string, method string) (string, error) {
+func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, code string, method string) (string, error) {
 
 	submitFlowBody := client.SubmitSelfServiceRecoveryFlowBody{
-		SubmitSelfServiceRecoveryFlowWithLinkMethodBody: client.NewSubmitSelfServiceRecoveryFlowWithLinkMethodBody(email, method),
+		SubmitSelfServiceRecoveryFlowWithCodeMethodBody: client.NewSubmitSelfServiceRecoveryFlowWithCodeMethodBody(method),
 	}
-
-	submitFlowBody.SubmitSelfServiceRecoveryFlowWithLinkMethodBody.SetCsrfToken(csrfToken)
+	submitFlowBody.SubmitSelfServiceRecoveryFlowWithCodeMethodBody.SetCode(code)
+	submitFlowBody.SubmitSelfServiceRecoveryFlowWithCodeMethodBody.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRecoveryFlow(context.Background()).Flow(flowID).SubmitSelfServiceRecoveryFlowBody(submitFlowBody).Cookie(cookie).Execute()
