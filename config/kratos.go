@@ -15,6 +15,18 @@ func getKratosClientConfig() *client.Configuration {
 	return configuration
 }
 
+func getKratosClientConfigAdmin() *client.Configuration {
+	configuration := client.NewConfiguration()
+	configuration.Servers = []client.ServerConfiguration{
+		{
+			URL: NymeriaConfig.URL.AdminKratosURL,
+		},
+	}
+
+	return configuration
+}
+
 var (
-	KratosClientConfig = getKratosClientConfig()
+	KratosClientConfig      = getKratosClientConfig()
+	KratosClientConfigAdmin = getKratosClientConfigAdmin()
 )

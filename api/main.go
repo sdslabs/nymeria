@@ -7,7 +7,6 @@ import (
 	"github.com/gin-contrib/cors"
 	"github.com/gin-gonic/gin"
 
-	c "github.com/sdslabs/nymeria/pkg/controller/admin"
 	"github.com/sdslabs/nymeria/pkg/middleware"
 )
 
@@ -37,11 +36,11 @@ func Start() {
 	r.GET("/mfa", HandleGetMFAFlow)
 	r.POST("/mfa", HandlePostMFAFlow)
 
-	r.POST("/create-identity", c.CreateIdentity)
-	r.GET("/get-identity", c.GetIdentity)
-	r.POST("/delete-identity", c.DeleteIdentity)
-	r.GET("/list-identity", c.ListIdentity)
-	r.PUT("/update-identity/ban", c.UpdateBanIdentity)
+	r.POST("/create-identity", HandleCreateIdentityFlow)
+	r.GET("/get-identity", HandleGetIdentityFlow)
+	r.POST("/delete-identity", HandleDeleteIdentityFlow)
+	r.GET("/list-identity", HandleListIdentity)
+	r.PUT("/update-identity/ban", HandleBanIdentity)
 
 	r.GET("/register", HandleGetRegistrationFlow)
 	r.POST("/register", HandlePostRegistrationFlow)
