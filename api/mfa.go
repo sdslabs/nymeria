@@ -2,6 +2,7 @@ package api
 
 import (
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -12,7 +13,8 @@ import (
 
 func HandleGetMFAFlow(c *gin.Context) {
 	log.Logger.Debug("Get MFA")
-	flow_cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal2")
+	cookie, _ := c.Cookie("sdslabs_session")
+	flow_cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal2", cookie)
 
 	if err != nil {
 		log.ErrorLogger("Initialize MFA Failed", err)
@@ -51,8 +53,11 @@ func HandlePostMFAFlow(c *gin.Context) {
 		})
 		return
 	}
+	session_cookie, _ := c.Cookie("sdslabs_session")
+	csrfToken := req_body.CsrfToken
+	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
 
-	identity, session, err := login.SubmitLoginWithMFAWrapper(flow_cookie, req_body.FlowID, req_body.CsrfToken, req_body.TOTP)
+	identity, session, err := login.SubmitLoginWithMFAWrapper(cookie, req_body.FlowID, req_body.CsrfToken, req_body.TOTP)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post MFA flow failed", err)
