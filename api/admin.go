@@ -9,7 +9,6 @@ import (
 	"strings"
 
 	"github.com/gin-gonic/gin"
-	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/admin"
@@ -22,33 +21,51 @@ func HandleCreateIdentityFlow(c *gin.Context) {
 	err := c.BindJSON(&t)
 
 	if err != nil {
-		log.ErrorLogger("Unable to process json body", err)
+		log.ErrorLogger("Unable to process JSON body", err)
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Unable to process json body",
+			"message": "Unable to process JSON body",
 		})
 		return
 	}
 
 	var mappedJsonIdentity map[string]interface{}
 
-	data, _ := json.Marshal(t)
-	json.Unmarshal(data, &mappedJsonIdentity)
+	data, err := json.Marshal(t)
 
-	adminCreateIdentityBody := *client.NewAdminCreateIdentityBody(
-		"default",
-		mappedJsonIdentity,
-	) // AdminCreateIdentityBody |  (optional)
+	if err != nil {
+		log.ErrorLogger("Unable to convert map to json", err)
 
-	createdIdentity, r, err := admin.CreateIdentityFlowWrapper(adminCreateIdentityBody)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to convert map to json",
+		})
+		return
+	}
+
+	err = json.Unmarshal(data, &mappedJsonIdentity)
+
+	if err != nil {
+		log.ErrorLogger("Unable to convert JSON to map", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to convert JSON to map",
+		})
+		return
+	}
+
+	createdIdentity, r, err := admin.CreateIdentityFlowWrapper(mappedJsonIdentity)
 
 	if err != nil {
 		log.ErrorLogger("Error while calling `AdminCreateIdentity`", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "INternal server error",
+			"error": "Internal server error",
 		})
 		return
 	}
@@ -70,13 +87,34 @@ func HandleGetIdentityFlow(c *gin.Context) {
 		return
 	}
 
-	jsonString, _ := json.Marshal(getIdentity.Traits)
+	jsonString, err := json.Marshal(getIdentity.Traits)
+
+	if err != nil {
+		log.ErrorLogger("Unable to convert map to json", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to convert map to json",
+		})
+		return
+	}
 
 	var identity admin.Identity
 
-	if err := json.Unmarshal(jsonString, &identity); err != nil {
-		fmt.Println(err)
+	err = json.Unmarshal(jsonString, &identity)
+
+	if err != nil {
+		log.ErrorLogger("Unable to convert JSON to map", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to convert JSON to map",
+		})
+		return
 	}
+
 	fmt.Fprintf(os.Stdout, "Identity details for id %v. Traits: %v\n", createdIdentity, identity)
 	c.JSON(http.StatusOK, gin.H{
 		"Identity": createdIdentity,
@@ -90,12 +128,12 @@ func HandleDeleteIdentityFlow(c *gin.Context) {
 	err := c.BindJSON(&t)
 
 	if err != nil {
-		log.ErrorLogger("Unable to process json body", err)
+		log.ErrorLogger("Unable to process JSON body", err)
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Unable to process json body",
+			"message": "Unable to process JSON body",
 		})
 		return
 	}
@@ -136,12 +174,12 @@ func HandleBanIdentity(c *gin.Context) {
 	err := c.BindJSON(&t)
 
 	if err != nil {
-		log.ErrorLogger("Unable to process json body", err)
+		log.ErrorLogger("Unable to process JSON body", err)
 
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Unable to process json body",
+			"message": "Unable to process JSON body",
 		})
 		return
 	}

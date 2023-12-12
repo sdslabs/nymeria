@@ -9,8 +9,14 @@ import (
 	"github.com/sdslabs/nymeria/config"
 )
 
-func CreateIdentityFlowWrapper(adminCreateIdentityBody client.AdminCreateIdentityBody) (*client.Identity, *http.Response, error) {
+func CreateIdentityFlowWrapper(identityMap map[string]interface{}) (*client.Identity, *http.Response, error) {
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
+
+	adminCreateIdentityBody := *client.NewAdminCreateIdentityBody(
+		"default",
+		identityMap,
+	) // AdminCreateIdentityBody |  (optional)
+
 	createdIdentity, r, err := apiClient.V0alpha2Api.AdminCreateIdentity(context.Background()).AdminCreateIdentityBody(adminCreateIdentityBody).Execute()
 
 	return createdIdentity, r, err
