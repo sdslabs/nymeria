@@ -4,7 +4,7 @@ import (
 	"context"
 	"net/http"
 
-	"github.com/ory/client-go"
+	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
 )
