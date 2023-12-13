@@ -1,6 +1,6 @@
 module github.com/sdslabs/nymeria
 
-go 1.17
+go 1.21
 
 require (
 	github.com/gin-contrib/cors v1.4.0
