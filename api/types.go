@@ -18,3 +18,7 @@ type ApplicationPutBody struct {
 type ApplicationBody struct {
 	ID int `json:"id"`
 }
+
+type IdentityBody struct {
+	Identity string `json:"identity"`
+}

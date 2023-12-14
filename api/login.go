@@ -14,7 +14,7 @@ import (
 
 func HandleGetLoginFlow(c *gin.Context) {
 	log.Logger.Debug("Get Login")
-	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal1")
+	cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal1", "")
 
 	if err != nil {
 		log.ErrorLogger("Initialize Login Failed", err)

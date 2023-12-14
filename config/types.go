@@ -6,9 +6,10 @@ type NymeriaCfg struct {
 	DB  DB     `yaml:"db"`
 }
 type URL struct {
-	FrontendURL string `yaml:"frontend_url"`
-	KratosURL   string `yaml:"kratos_url"`
-	Domain      string `yaml:"domain"`
+	FrontendURL    string `yaml:"frontend_url"`
+	KratosURL      string `yaml:"kratos_url"`
+	AdminKratosURL string `yaml:"admin_kratos_url"`
+	Domain         string `yaml:"domain"`
 }
 
 type DB struct {

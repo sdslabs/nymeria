@@ -2,6 +2,8 @@ package api
 
 import (
 	"net/http"
+	"strconv"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -12,7 +14,20 @@ import (
 
 func HandleGetMFAFlow(c *gin.Context) {
 	log.Logger.Debug("Get MFA")
-	flow_cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal2")
+	cookie, err := c.Cookie("sdslabs_session")
+
+	if err != nil {
+		log.ErrorLogger("Session Cookie not found", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Cookie not found",
+		})
+		return
+	}
+
+	flow_cookie, flowID, csrf_token, err := login.InitializeLoginFlowWrapper("aal2", cookie)
 
 	if err != nil {
 		log.ErrorLogger("Initialize MFA Failed", err)
@@ -52,7 +67,23 @@ func HandlePostMFAFlow(c *gin.Context) {
 		return
 	}
 
-	identity, session, err := login.SubmitLoginWithMFAWrapper(flow_cookie, req_body.FlowID, req_body.CsrfToken, req_body.TOTP)
+	session_cookie, err := c.Cookie("sdslabs_session")
+
+	if err != nil {
+		log.ErrorLogger("Session Cookie not found", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Cookie not found",
+		})
+		return
+	}
+
+	csrfToken := req_body.CsrfToken
+	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
+
+	identity, session, err := login.SubmitLoginWithMFAWrapper(cookie, req_body.FlowID, req_body.CsrfToken, req_body.TOTP)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post MFA flow failed", err)

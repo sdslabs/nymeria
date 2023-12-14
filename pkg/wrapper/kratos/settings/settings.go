@@ -124,7 +124,7 @@ func SubmitSettingsFlowTOTPMethod(flow_cookie string, session_cookie string, flo
 	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
 	req.URL.RawQuery = q.Encode()
 	req.Header.Set("Cookie", cookie)
-	req.Header.Set("Contentp-Type", "application/json")
+	req.Header.Set("Content-Type", "application/json")
 
 	resp, err := client.Do(req)
 

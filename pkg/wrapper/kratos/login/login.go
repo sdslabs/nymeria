@@ -8,12 +8,13 @@ import (
 	"github.com/sdslabs/nymeria/config"
 )
 
-func InitializeLoginFlowWrapper(aal string) (string, string, string, error) {
+func InitializeLoginFlowWrapper(aal string, cookie string) (string, string, string, error) {
 	refresh := false                         // bool | Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session. (optional)
 	returnTo := "http://127.0.0.1:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceLoginFlowForBrowsers(context.Background()).Refresh(refresh).Aal(aal).ReturnTo(returnTo).Execute()
+
+	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceLoginFlowForBrowsers(context.Background()).Refresh(refresh).Aal(aal).ReturnTo(returnTo).Cookie(cookie).Execute()
 
 	if err != nil {
 		return "", "", "", err
@@ -40,7 +41,6 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
-
 	if err != nil {
 		return *client.NewSessionWithDefaults(), "", err
 	}
@@ -53,9 +53,10 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 func SubmitLoginWithMFAWrapper(cookie string, flowID string, csrfToken string, totp string) (client.Session, string, error) {
 	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithTotpMethodBody: client.NewSubmitSelfServiceLoginFlowWithTotpMethodBody("totp", totp)} // SubmitSelfServiceLoginFlowBody |
 
-	submitDataBody.SubmitSelfServiceLoginFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
+	submitDataBody.SubmitSelfServiceLoginFlowWithTotpMethodBody.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
+
 	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
 
 	if err != nil {
@@ -64,5 +65,5 @@ func SubmitLoginWithMFAWrapper(cookie string, flowID string, csrfToken string, t
 
 	responseCookies := r.Header["Set-Cookie"]
 
-	return resp.Session, responseCookies[1], nil
+	return resp.Session, responseCookies[0], nil
 }
