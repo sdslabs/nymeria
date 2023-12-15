@@ -47,18 +47,18 @@ func ListIdentityFlowWrapper() ([]client.Identity, *http.Response, error) {
 
 }
 
-func BanIdentityFlowWrapper(identity string) (*client.Identity, *http.Response, error) {
-	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
-
-	jsonPatch := []client.JsonPatch{
-		{
-			From:  nil,
-			Op:    "replace",
-			Path:  "/active",
-			Value: false,
-		},
+func BanIdentityFlowWrapper(identity *client.Identity) (*client.Identity, *http.Response, error) {
+	newState, err := client.NewIdentityStateFromValue("inactive")
+	if err != nil {
+		return nil, nil, err
 	}
-	id, r, err := apiClient.V0alpha2Api.AdminPatchIdentity(context.Background(), identity).JsonPatch(jsonPatch).Execute()
+
+	identity.Traits.(map[string]interface{})["active"] = false
+
+	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *newState, identity.Traits.(map[string]interface{}))
+
+	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
+	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity.Id).AdminUpdateIdentityBody(submitDataBody).Execute()
 
 	return id, r, err
 }

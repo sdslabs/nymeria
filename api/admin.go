@@ -184,7 +184,18 @@ func HandleBanIdentity(c *gin.Context) {
 		return
 	}
 
-	id, r, err := admin.BanIdentityFlowWrapper(t.Identity)
+	identityResult, r, err := admin.GetIdentityFlowWrapper(t.Identity)
+
+	if err != nil {
+		log.ErrorLogger("Error while fetching Identity details", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal server error",
+		})
+		return
+	}
+
+	id, r, err := admin.BanIdentityFlowWrapper(identityResult)
 
 	if err != nil {
 		log.ErrorLogger("Error while calling `AdminPatchIdentities`", err)
@@ -195,6 +206,6 @@ func HandleBanIdentity(c *gin.Context) {
 		return
 	}
 	c.JSON(http.StatusOK, gin.H{
-		"identities": id,
+		"identity": id,
 	})
 }
