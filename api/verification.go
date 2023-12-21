@@ -61,7 +61,7 @@ func HandlePostVerificationFlow(c *gin.Context) {
 		return
 	}
 
-	_, err = verification.SubmitVerificationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email)
+	_, err = verification.SubmitVerificationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email, t.Token)
 
 	if err != nil {
 		log.ErrorLogger("Post Verification flow failed", err)

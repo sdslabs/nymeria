@@ -34,7 +34,7 @@ func InitializeVerificationFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken string, email string) (string, error) {
+func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken string, email string, token string) (string, error) {
 
 	submitFlowBody := client.SubmitSelfServiceVerificationFlowBody{
 		SubmitSelfServiceVerificationFlowWithLinkMethodBody: client.NewSubmitSelfServiceVerificationFlowWithLinkMethodBody(email, "link"),
@@ -44,7 +44,9 @@ func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken strin
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceVerificationFlow(context.Background()).Flow(flowID).SubmitSelfServiceVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceVerificationFlow(context.Background()).Flow(flowID).Token(token).SubmitSelfServiceVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
+
+	fmt.Println(r)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
