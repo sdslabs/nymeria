@@ -7,16 +7,27 @@ import (
 	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/pkg/middleware"
 )
 
-func CreateIdentityFlowWrapper(identityMap map[string]interface{}) (*client.Identity, *http.Response, error) {
+func CreateIdentityFlowWrapper(data Identity) (*client.Identity, *http.Response, error) {
+	timeStamp := middleware.CurrentTimeStamp()
+
+	trait := map[string]interface{}{
+		"email":        data.Email,
+		"name":         data.Name,
+		"password":     data.Password,
+		"phone_number": data.PhoneNumber,
+		"active":       true,
+		"verified":     false,
+		"role":         data.Role,
+		"created_at":   timeStamp,
+		"totp_enabled": false,
+	}
+
+	adminCreateIdentityBody := *client.NewAdminCreateIdentityBody("default", trait) // AdminCreateIdentityBody |  (optional)
+
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
-
-	adminCreateIdentityBody := *client.NewAdminCreateIdentityBody(
-		"default",
-		identityMap,
-	) // AdminCreateIdentityBody |  (optional)
-
 	createdIdentity, r, err := apiClient.V0alpha2Api.AdminCreateIdentity(context.Background()).AdminCreateIdentityBody(adminCreateIdentityBody).Execute()
 
 	return createdIdentity, r, err
