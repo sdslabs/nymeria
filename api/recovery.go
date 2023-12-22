@@ -61,7 +61,7 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 		return
 	}
 
-	session, err := recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Code, t.Method)
+	csrf_token, err := recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email, t.Token)
 
 	if err != nil {
 		log.ErrorLogger("POST Recovery flow failed", err)
@@ -73,8 +73,9 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+	// c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Mail sent with recovery code",
+		"message":    "Mail sent with recovery code",
+		"csrf_token": csrf_token,
 	})
 }
