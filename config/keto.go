@@ -4,7 +4,7 @@ import (
 	client "github.com/ory/client-go"
 )
 
-func getKetoClientConfig() (*client.Configuration, *client.Configuration){
+func getKetoClientConfig() (*client.Configuration, *client.Configuration) {
 	readConfiguration := client.NewConfiguration()
 	readConfiguration.Servers = []client.ServerConfiguration{
 		{
@@ -24,4 +24,6 @@ func getKetoClientConfig() (*client.Configuration, *client.Configuration){
 
 var (
 	KetoReadConfig, KetoWriteConfig = getKetoClientConfig()
+	KetoReadURL                     = NymeriaConfig.URL.KetoReadURL
+	KetoWriteURL                    = NymeriaConfig.URL.KetoWriteURL
 )
