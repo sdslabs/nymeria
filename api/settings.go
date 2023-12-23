@@ -137,7 +137,7 @@ func HandleUpdateProfile(c *gin.Context) {
 		return
 	}
 
-	msg, err := settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.Method, traitsinterface)
+	msg, err := settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, traitsinterface)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post settings flow failed", err)
@@ -194,7 +194,7 @@ func HandleChangePassword(c *gin.Context) {
 		return
 	}
 
-	msg, err := settings.SubmitSettingsFlowPasswordMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.Method, req_body.Password)
+	msg, err := settings.SubmitSettingsFlowPasswordMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.Password)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post settings flow failed", err)
@@ -251,7 +251,7 @@ func HandleToggleTOTP(c *gin.Context) {
 		return
 	}
 
-	msg, err := settings.SubmitSettingsFlowTOTPMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.Method, req_body.TOTPCode, req_body.TOTPUnlink)
+	msg, err := settings.SubmitSettingsFlowTOTPMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, req_body.TOTPCode, req_body.TOTPUnlink)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post settings flow failed", err)

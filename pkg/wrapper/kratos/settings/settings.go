@@ -1,13 +1,11 @@
 package settings
 
 import (
-	"bytes"
 	"context"
-	"errors"
-	"net/http"
+	"fmt"
+	"os"
 	"strings"
 
-	"github.com/goccy/go-json"
 	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
@@ -36,109 +34,65 @@ func InitializeSettingsFlowWrapper(session_cookie string, recovery_cookie string
 	return *resp, cookie, nil
 }
 
-func SubmitSettingsFlowPasswordMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, method string, password string) (string, error) {
-	client := &http.Client{}
-
-	var req_body SubmitSettingsWithPasswordBody
-	req_body.Method = method
-	req_body.Password = password
-	req_body.CsrfToken = csrfToken
-
-	body, err := json.Marshal(req_body)
-	if err != nil {
-		return "", err
-	}
-	req, err := http.NewRequest(http.MethodPost, "http://127.0.0.1:4433/self-service/settings", bytes.NewBuffer(body))
-
-	q := req.URL.Query()
-	q.Add("flow", flowID)
-
-	if err != nil {
-		return "", err
+func SubmitSettingsFlowPasswordMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, password string) (string, error) {
+	submitFlowBody := client.SubmitSelfServiceSettingsFlowBody{
+		SubmitSelfServiceSettingsFlowWithPasswordMethodBody: client.NewSubmitSelfServiceSettingsFlowWithPasswordMethodBody("password", password),
 	}
 
+	submitFlowBody.SubmitSelfServiceSettingsFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
 	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
-	req.URL.RawQuery = q.Encode()
-	req.Header.Set("Cookie", cookie)
-	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).SubmitSelfServiceSettingsFlowBody(submitFlowBody).Execute()
 
-	if err != nil || resp.StatusCode != 200 {
-		error := errors.New(resp.Status)
-		return "", error
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		return "", err
 	}
 
 	return "Password Changed", nil
 }
 
-func SubmitSettingsFlowProfileMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, method string, traits map[string]interface{}) (string, error) {
-	client := &http.Client{}
-
-	var req_body SubmitSettingsProfileRequest
-	req_body.Method = method
-	req_body.CsrfToken = csrfToken
-	req_body.Traits = traits
-
-	body, err := json.Marshal(req_body)
-	if err != nil {
-		return "", err
+func SubmitSettingsFlowProfileMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, traits map[string]interface{}) (string, error) {
+	submitFlowBody := client.SubmitSelfServiceSettingsFlowBody{
+		SubmitSelfServiceSettingsFlowWithProfileMethodBody: client.NewSubmitSelfServiceSettingsFlowWithProfileMethodBody("profile", traits),
 	}
 
-	req, err := http.NewRequest(http.MethodPost, "http://127.0.0.1:4433/self-service/settings", bytes.NewBuffer(body))
-	q := req.URL.Query()
-	q.Add("flow", flowID)
+	submitFlowBody.SubmitSelfServiceSettingsFlowWithProfileMethodBody.SetCsrfToken(csrfToken)
 
-	if err != nil {
-		return "", err
-	}
 	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
-	req.URL.RawQuery = q.Encode()
-	req.Header.Set("Cookie", cookie)
-	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).SubmitSelfServiceSettingsFlowBody(submitFlowBody).Execute()
 
-	if err != nil || resp.StatusCode != 200 {
-		error := errors.New(resp.Status)
-		return "", error
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		return "", err
 	}
 
 	return "Profile Updated", nil
 }
 
-func SubmitSettingsFlowTOTPMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, method string, TOTPcode string, TOTPUnlink bool) (string, error) {
-	client := &http.Client{}
-
-	var req_body SubmitSettingsWithTOTPBody
-	req_body.Method = method
-	req_body.TotpCode = TOTPcode
-	req_body.TotpUnlink = TOTPUnlink
-	req_body.CsrfToken = csrfToken
-
-	body, err := json.Marshal(req_body)
-	if err != nil {
-		return "", err
+func SubmitSettingsFlowTOTPMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, TOTPcode string, TOTPUnlink bool) (string, error) {
+	submitFlowBody := client.SubmitSelfServiceSettingsFlowBody{
+		SubmitSelfServiceSettingsFlowWithTotpMethodBody: client.NewSubmitSelfServiceSettingsFlowWithTotpMethodBody("totp"),
 	}
-	req, err := http.NewRequest(http.MethodPost, "http://127.0.0.1:4433/self-service/settings", bytes.NewBuffer(body))
 
-	q := req.URL.Query()
-	q.Add("flow", flowID)
-
-	if err != nil {
-		return "", err
-	}
+	submitFlowBody.SubmitSelfServiceSettingsFlowWithTotpMethodBody.SetCsrfToken(csrfToken)
+	submitFlowBody.SubmitSelfServiceSettingsFlowWithTotpMethodBody.SetTotpCode(TOTPcode)
+	submitFlowBody.SubmitSelfServiceSettingsFlowWithTotpMethodBody.SetTotpUnlink(TOTPUnlink)
 
 	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
-	req.URL.RawQuery = q.Encode()
-	req.Header.Set("Cookie", cookie)
-	req.Header.Set("Content-Type", "application/json")
 
-	resp, err := client.Do(req)
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).SubmitSelfServiceSettingsFlowBody(submitFlowBody).Execute()
 
-	if err != nil || resp.StatusCode != 200 {
-		error := errors.New(resp.Status)
-		return "", error
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		return "", err
 	}
 
 	return "Totp Toggled", nil

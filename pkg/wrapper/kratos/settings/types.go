@@ -1,21 +1,18 @@
 package settings
 
 type UpdateProfileAPIBody struct {
-	Method    string `json:"method"`
 	FlowID    string `json:"flowID"`
 	CsrfToken string `json:"csrf_token"`
-	Traits    Traits `json:"Traits"`
+	Traits    Traits `json:"traits"`
 }
 
 type ChangePasswordAPIBody struct {
-	Method    string `json:"method"`
 	FlowID    string `json:"flowID"`
 	CsrfToken string `json:"csrf_token"`
 	Password  string `json:"password"`
 }
 
 type ToggleTOTPAPIBody struct {
-	Method     string `json:"method"`
 	FlowID     string `json:"flowID"`
 	CsrfToken  string `json:"csrf_token"`
 	TOTPCode   string `json:"totp_code"`
