@@ -13,17 +13,25 @@ import (
 	"github.com/sdslabs/nymeria/config"
 )
 
-func InitializeSettingsFlowWrapper(req_cookie string) (client.SelfServiceSettingsFlow, string, error) {
+func InitializeSettingsFlowWrapper(session_cookie string, recovery_cookie string) (client.SelfServiceSettingsFlow, string, error) {
 
-	returnTo := "http://127.0.0.1:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
+	returnTo := "http://localhost:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
+
+	var cookie string
+
+	if recovery_cookie != "" {
+		cookie = "ory_kratos_session=" + recovery_cookie
+	} else {
+		cookie = strings.Split(session_cookie, ";")[0]
+	}
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	resp, httpRes, err := apiClient.V0alpha2Api.InitializeSelfServiceSettingsFlowForBrowsers(context.Background()).ReturnTo(returnTo).Cookie(req_cookie).Execute()
+	resp, httpRes, err := apiClient.V0alpha2Api.InitializeSelfServiceSettingsFlowForBrowsers(context.Background()).ReturnTo(returnTo).Cookie(cookie).Execute()
 	if err != nil {
 		return *client.NewSelfServiceSettingsFlowWithDefaults(), "", err
 	}
 
-	cookie := httpRes.Header.Get("Set-Cookie")
+	cookie = httpRes.Header.Get("Set-Cookie")
 
 	return *resp, cookie, nil
 }

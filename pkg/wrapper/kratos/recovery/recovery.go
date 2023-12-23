@@ -12,7 +12,7 @@ import (
 
 func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 
-	returnTo := "http://127.0.0.1:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
+	returnTo := "http://localhost:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
@@ -24,7 +24,6 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 	var csrf_token string
 
 	for _, node := range resp.Ui.Nodes {
-		fmt.Println(node.Attributes.UiNodeInputAttributes)
 		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
 			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
 			csrf_token, _ = csrf_token_interface.(string)
@@ -36,7 +35,7 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, email string, token string) (string, error) {
+func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, email string) (string, error) {
 
 	submitFlowBody := client.SubmitSelfServiceRecoveryFlowBody{
 		SubmitSelfServiceRecoveryFlowWithLinkMethodBody: client.NewSubmitSelfServiceRecoveryFlowWithLinkMethodBody(email, "link"),
@@ -44,7 +43,7 @@ func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, e
 	submitFlowBody.SubmitSelfServiceRecoveryFlowWithLinkMethodBody.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRecoveryFlow(context.Background()).Flow(flowID).Token(token).SubmitSelfServiceRecoveryFlowBody(submitFlowBody).Cookie(cookie).Execute()
+	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRecoveryFlow(context.Background()).Flow(flowID).SubmitSelfServiceRecoveryFlowBody(submitFlowBody).Cookie(cookie).Execute()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRecoveryFlow``: %v\n", err)
@@ -52,15 +51,5 @@ func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, e
 		return "", err
 	}
 
-	var csrf_token string
-
-	for _, node := range resp.Ui.Nodes {
-		fmt.Println(node.Attributes.UiNodeInputAttributes)
-		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
-			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
-			csrf_token, _ = csrf_token_interface.(string)
-			break
-		}
-	}
-	return csrf_token, nil
+	return "", nil
 }
