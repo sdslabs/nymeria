@@ -73,7 +73,13 @@ func HandlePostVerificationFlow(c *gin.Context) {
 		return
 	}
 
-	c.JSON(http.StatusOK, gin.H{
-		"message": "Account Verification Successful",
-	})
+	if t.Token == "" {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Account Verification Mail Sent",
+		})
+	} else {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Account Verification Successful",
+		})
+	}
 }

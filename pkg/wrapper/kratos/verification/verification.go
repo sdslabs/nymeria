@@ -22,7 +22,6 @@ func InitializeVerificationFlowWrapper() (string, string, string, error) {
 	var csrf_token string
 
 	for _, node := range resp.Ui.Nodes {
-		fmt.Println(node.Attributes.UiNodeInputAttributes)
 		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
 			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
 			csrf_token, _ = csrf_token_interface.(string)
@@ -45,8 +44,6 @@ func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken strin
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
 	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceVerificationFlow(context.Background()).Flow(flowID).Token(token).SubmitSelfServiceVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
-
-	fmt.Println(r)
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)

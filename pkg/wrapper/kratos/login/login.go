@@ -10,7 +10,7 @@ import (
 
 func InitializeLoginFlowWrapper(aal string, cookie string) (string, string, string, error) {
 	refresh := false                         // bool | Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session. (optional)
-	returnTo := "http://127.0.0.1:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
+	returnTo := "http://localhost:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
