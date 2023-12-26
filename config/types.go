@@ -6,11 +6,11 @@ type NymeriaCfg struct {
 	DB  DB     `yaml:"db"`
 }
 type URL struct {
-	FrontendURL string `yaml:"frontend_url"`
-	KratosURL   string `yaml:"kratos_url"`
-	KetoReadURL string `yaml:"keto_read_url"`
+	FrontendURL  string `yaml:"frontend_url"`
+	KratosURL    string `yaml:"kratos_url"`
+	KetoReadURL  string `yaml:"keto_read_url"`
 	KetoWriteURL string `yaml:"keto_write_url"`
-	Domain      string `yaml:"domain"`
+	Domain       string `yaml:"domain"`
 }
 
 type DB struct {
