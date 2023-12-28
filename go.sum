@@ -159,6 +159,8 @@ github.com/ory/client-go v0.2.0-alpha.60 h1:sMAqrKP5eUNYyyOYbSjDTwr8EucDxYLGrQC0
 github.com/ory/client-go v0.2.0-alpha.60/go.mod h1:dWbi9DBEjiDXwyuJ1+A2WT1/bIp9HwvVxZxzHzp4YHU=
 github.com/ory/client-go v1.4.6 h1:tW9najNBiWwC3KgU2tq2kCZ1zRCDCNao60a9M1/V71k=
 github.com/ory/client-go v1.4.6/go.mod h1:DfrTIlME7tgrdgpn4UN07s4OJ1SwzHfrkz+C6C0Lbm0=
+github.com/ory/client-go v1.4.7 h1:uWPGGM5zVwpSBfcDIhvA6D+bu2YB7zF4STtpAvzkOco=
+github.com/ory/client-go v1.4.7/go.mod h1:DfrTIlME7tgrdgpn4UN07s4OJ1SwzHfrkz+C6C0Lbm0=
 github.com/ory/keto/proto v0.11.1-alpha.0 h1:xVpFRnnIAGGvP9lYIUwjSWmrO7qVoLn20bT6NxzYQy4=
 github.com/ory/keto/proto v0.11.1-alpha.0/go.mod h1:M9J/kybmyLKRmvvSqYzmRVYx2avY3yDMdUPinsck1q0=
 github.com/ory/keto/proto/ory/keto/acl/v1alpha1 v0.0.0-20210616104402-80e043246cf9 h1:gP86NkMkUlqMOTjFQ8lt8T1HbHtCJGGeeeh/6c+nla0=

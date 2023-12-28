@@ -19,4 +19,9 @@ var (
 		URL:    config.KetoWriteURL + "/admin/relation-tuples",
 		Method: http.MethodDelete,
 	}
+
+	CheckPermissionEndpoint = Endpoint{
+		URL:    config.KetoReadURL + "/relation-tuples/check",
+		Method: http.MethodPost,
+	}
 )

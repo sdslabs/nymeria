@@ -37,7 +37,7 @@ func Start() {
 	r.GET("/mfa", HandleGetMFAFlow)
 	r.POST("/mfa", HandlePostMFAFlow)
 
-	r.GET("/rbac", HandleRbac)
+	r.GET("/rbac", middleware.CheckIfAllowed, HandleRbac)
 
 	r.POST("/create-identity", c.CreateIdentity)
 	r.GET("/get-identity", c.GetIdentity)
