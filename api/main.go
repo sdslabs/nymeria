@@ -36,11 +36,11 @@ func Start() {
 	r.GET("/mfa", HandleGetMFAFlow)
 	r.POST("/mfa", HandlePostMFAFlow)
 
-	r.POST("/create-identity", HandleCreateIdentityFlow)
-	r.GET("/get-identity", HandleGetIdentityFlow)
-	r.POST("/delete-identity", HandleDeleteIdentityFlow)
-	r.GET("/list-identity", HandleListIdentity)
-	r.PUT("/update-identity/ban", HandleBanIdentity)
+	r.POST("/create-identity", middleware.OnlyAdmin, HandleCreateIdentityFlow)
+	r.GET("/get-identity", middleware.OnlyAdmin, HandleGetIdentityFlow)
+	r.POST("/delete-identity", middleware.OnlyAdmin, HandleDeleteIdentityFlow)
+	r.GET("/list-identity", middleware.OnlyAdmin, HandleListIdentity)
+	r.PUT("/update-identity/ban", middleware.OnlyAdmin, HandleBanIdentity)
 
 	r.GET("/register", HandleGetRegistrationFlow)
 	r.POST("/register", HandlePostRegistrationFlow)
