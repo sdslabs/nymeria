@@ -61,7 +61,7 @@ func Start() {
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
 
-	r.POST("/get_profile", middleware.HandleAppAuthorization, HandlePostProfile)
+	r.POST("/get_profile", HandlePostProfile)
 	r.POST("/verify_app", middleware.HandleAppAuthorization, func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Authorized",

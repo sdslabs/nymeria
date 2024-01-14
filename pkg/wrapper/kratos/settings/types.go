@@ -44,7 +44,7 @@ type Traits struct {
 	ImgURL       string `json:"img_url,omitempty"`
 	Email        string `json:"email"`
 	Role         string `json:"role"`
-	Active       bool   `json:"active"`
+	InviteStatus string `json:"invite_status"`
 	Created_At   string `json:"created_at"`
 	TOTP_Enabled bool   `json:"totp_enabled"`
 }

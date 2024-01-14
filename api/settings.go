@@ -9,6 +9,7 @@ import (
 
 	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
+	"github.com/sdslabs/nymeria/pkg/middleware"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/settings"
 )
 
@@ -92,14 +93,14 @@ func HandleUpdateProfile(c *gin.Context) {
 	err := c.BindJSON(&req_body)
 
 	traitsinterface := map[string]interface{}{
-		"name":         req_body.Traits.Name,
-		"phone_number": req_body.Traits.PhoneNumber,
-		"img_url":      req_body.Traits.ImgURL,
-		"email":        req_body.Traits.Email,
-		"totp_enabled": req_body.Traits.TOTP_Enabled,
-		"created_at":   req_body.Traits.Created_At,
-		"role":         req_body.Traits.Role,
-		"active":       req_body.Traits.Active,
+		"name":          req_body.Traits.Name,
+		"phone_number":  req_body.Traits.PhoneNumber,
+		"img_url":       req_body.Traits.ImgURL,
+		"invite_status": req_body.Traits.InviteStatus,
+		"email":         req_body.Traits.Email,
+		"totp_enabled":  req_body.Traits.TOTP_Enabled,
+		"created_at":    req_body.Traits.Created_At,
+		"role":          req_body.Traits.Role,
 	}
 
 	if err != nil {
@@ -207,6 +208,43 @@ func HandleChangePassword(c *gin.Context) {
 		return
 	}
 
+	recovery_cookie, _ := c.Cookie("ory_kratos_session")
+
+	if recovery_cookie != "" {
+		session, err := middleware.GetSession(c)
+		if err != nil {
+			log.ErrorLogger("Unable to get session", err)
+			errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+			c.JSON(errCode, gin.H{
+				"error":   err.Error(),
+				"message": "Unable to get session",
+			})
+			return
+		}
+		identity := session.GetIdentity()
+		traits := identity.GetTraits()
+		profile := traits.(map[string]interface{})
+
+		if profile["verified"] == false {
+			profile["verified"] = true
+		}
+
+		if profile["invite_status"] == "pending" {
+			profile["invite_status"] = "accepted"
+		}
+
+		_, err = settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, profile)
+		if err != nil {
+			log.ErrorLogger("Kratos post settings update profile flow failed", err)
+
+			errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+			c.JSON(errCode, gin.H{
+				"error":   err.Error(),
+				"message": "Kratos post settings update profile flow failed",
+			})
+			return
+		}
+	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": msg,
 	})
@@ -260,6 +298,38 @@ func HandleToggleTOTP(c *gin.Context) {
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Kratos post settings toggle totp flow failed",
+		})
+		return
+	}
+
+	// Updates traits in identity
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	profile := identity.GetTraits().(map[string]interface{})
+
+	if !req_body.TOTPUnlink {
+		profile["totp_enabled"] = true
+	} else {
+		profile["totp_enabled"] = false
+	}
+
+	_, err = settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, profile)
+	if err != nil {
+		log.ErrorLogger("Kratos post settings update profile flow failed", err)
+
+		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Kratos post settings update profile flow failed",
 		})
 		return
 	}
