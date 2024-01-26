@@ -14,15 +14,16 @@ func CreateIdentityFlowWrapper(data Identity) (*client.Identity, *http.Response,
 	timeStamp := middleware.CurrentTimeStamp()
 
 	trait := map[string]interface{}{
-		"email":        data.Email,
-		"name":         data.Name,
-		"password":     data.Password,
-		"phone_number": data.PhoneNumber,
-		"active":       true,
-		"verified":     false,
-		"role":         data.Role,
-		"created_at":   timeStamp,
-		"totp_enabled": false,
+		"email":         data.Email,
+		"name":          data.Name,
+		"password":      data.Password,
+		"phone_number":  data.PhoneNumber,
+		"image_url":     data.ImgURL,
+		"invite_status": "pending",
+		"verified":      false,
+		"role":          data.Role,
+		"created_at":    timeStamp,
+		"totp_enabled":  false,
 	}
 
 	adminCreateIdentityBody := *client.NewAdminCreateIdentityBody("default", trait) // AdminCreateIdentityBody |  (optional)
@@ -63,8 +64,6 @@ func BanIdentityFlowWrapper(identity *client.Identity) (*client.Identity, *http.
 	if err != nil {
 		return nil, nil, err
 	}
-
-	identity.Traits.(map[string]interface{})["active"] = false
 
 	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *newState, identity.Traits.(map[string]interface{}))
 

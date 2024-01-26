@@ -6,4 +6,5 @@ type Identity struct {
 	PhoneNumber string `json:"phone_number"`
 	Password    string `json:"password"`
 	Role        string `json:"role"`
+	ImgURL      string `json:"img_url,omitempty"`
 }

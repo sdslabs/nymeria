@@ -11,4 +11,5 @@ type Traits struct {
 	Email       string `json:"email"`
 	Name        string `json:"name"`
 	PhoneNumber string `json:"phone_number"`
+	ImgURL      string `json:"img_url,omitempty"`
 }
