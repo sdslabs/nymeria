@@ -233,3 +233,44 @@ func HandleRemoveBanIdentity(c *gin.Context) {
 		"identity": id,
 	})
 }
+
+func HandleRoleSwitch(c *gin.Context) {
+	var t IdentityBody
+	err := c.BindJSON(&t)
+
+	if err != nil {
+		log.ErrorLogger("Unable to process JSON body", err)
+
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to process JSON body",
+		})
+		return
+	}
+
+	identityResult, r, err := admin.GetIdentityFlowWrapper(t.Identity)
+
+	if err != nil {
+		log.ErrorLogger("Error while fetching Identity details", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": "Internal server error",
+		})
+		return
+	}
+
+	id, r, err := admin.RoleSwitchFlowWrapper(identityResult)
+
+	if err != nil {
+		log.ErrorLogger("Error while calling `AdminPatchIdentities`", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		c.JSON(http.StatusInternalServerError, gin.H{
+			"error": err.Error(),
+		})
+		return
+	}
+	c.JSON(http.StatusOK, gin.H{
+		"identity": id,
+	})
+}

@@ -36,6 +36,7 @@ func GetSession(c *gin.Context) (*client.Session, error) {
 func OnlyAdmin(c *gin.Context) {
 	session, err := GetSession(c)
 	if err != nil {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "Unauthorized"})
 		c.Abort()
 		return
 	}

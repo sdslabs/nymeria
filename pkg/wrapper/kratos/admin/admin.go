@@ -86,3 +86,20 @@ func RemoveBanIdentityFlowWrapper(identity *client.Identity) (*client.Identity, 
 
 	return id, r, err
 }
+
+func RoleSwitchFlowWrapper(identity *client.Identity) (*client.Identity, *http.Response, error) {
+	traits := identity.GetTraits().(map[string]interface{})
+
+	if traits["role"] == "user" {
+		traits["role"] = "admin"
+	} else if traits["role"] == "admin" {
+		traits["role"] = "user"
+	}
+
+	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *identity.State, traits)
+
+	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
+	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity.Id).AdminUpdateIdentityBody(submitDataBody).Execute()
+
+	return id, r, err
+}
