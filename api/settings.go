@@ -36,15 +36,6 @@ func HandleGetSettingsFlow(c *gin.Context) {
 
 	flow, flow_cookie, err := settings.InitializeSettingsFlowWrapper(session_cookie, recovery_cookie)
 
-	c.SetCookie("settings_flow", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
-
-	if recovery_cookie != "" {
-		recovery_cookie = "ory_kratos_session=" + recovery_cookie
-		c.SetCookie("sdslabs_session", recovery_cookie, 900, "/", config.NymeriaConfig.URL.Domain, true, true)
-	}
-
-	flowID := flow.GetId()
-
 	if err != nil {
 		log.ErrorLogger("Initialize Settings flow Failed", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -52,6 +43,15 @@ func HandleGetSettingsFlow(c *gin.Context) {
 		})
 		return
 	}
+
+	c.SetCookie("settings_flow", flow_cookie, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+
+	if recovery_cookie != "" {
+		recovery_cookie = "ory_kratos_session=" + recovery_cookie
+		c.SetCookie("sdslabs_session", recovery_cookie, 900, "/", config.NymeriaConfig.URL.Domain, false, true)
+	}
+
+	flowID := flow.GetId()
 
 	var csrf_token string
 
