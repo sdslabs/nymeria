@@ -7,6 +7,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/logout"
 )
@@ -79,6 +80,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 		return
 	}
 
+	c.SetCookie("sdslabs_session", "", 1, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged out",
 	})
