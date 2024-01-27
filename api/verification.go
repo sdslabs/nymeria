@@ -61,7 +61,7 @@ func HandlePostVerificationFlow(c *gin.Context) {
 		return
 	}
 
-	_, err = verification.SubmitVerificationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email, t.Token)
+	_, err = verification.SubmitVerificationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email)
 
 	if err != nil {
 		log.ErrorLogger("Post Verification flow failed", err)
@@ -73,13 +73,8 @@ func HandlePostVerificationFlow(c *gin.Context) {
 		return
 	}
 
-	if t.Token == "" {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Account Verification Mail Sent",
-		})
-	} else {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Account Verification Successful",
-		})
-	}
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Account Verification Mail Sent",
+	})
+
 }
