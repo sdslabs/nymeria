@@ -39,12 +39,14 @@ type SubmitSettingsWithPasswordBody struct {
 }
 
 type Traits struct {
-	Name         string `json:"name"`
-	PhoneNumber  string `json:"phone_number"`
-	ImgURL       string `json:"img_url,omitempty"`
 	Email        string `json:"email"`
-	Role         string `json:"role"`
+	Name         string `json:"name"`
+	Password     string `json:"password"`
+	ImgURL       string `json:"img_url,omitempty"`
+	PhoneNumber  string `json:"phone_number"`
 	InviteStatus string `json:"invite_status"`
+	Verified     bool   `json:"verified"`
+	Role         string `json:"role"`
 	Created_At   string `json:"created_at"`
 	TOTP_Enabled bool   `json:"totp_enabled"`
 }

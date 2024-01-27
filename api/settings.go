@@ -93,14 +93,16 @@ func HandleUpdateProfile(c *gin.Context) {
 	err := c.BindJSON(&req_body)
 
 	traitsinterface := map[string]interface{}{
-		"name":          req_body.Traits.Name,
-		"phone_number":  req_body.Traits.PhoneNumber,
-		"img_url":       req_body.Traits.ImgURL,
-		"invite_status": req_body.Traits.InviteStatus,
 		"email":         req_body.Traits.Email,
-		"totp_enabled":  req_body.Traits.TOTP_Enabled,
-		"created_at":    req_body.Traits.Created_At,
+		"name":          req_body.Traits.Name,
+		"password":      req_body.Traits.Password,
+		"img_url":       req_body.Traits.ImgURL,
+		"phone_number":  req_body.Traits.PhoneNumber,
+		"invite_status": req_body.Traits.InviteStatus,
+		"verified":      req_body.Traits.Verified,
 		"role":          req_body.Traits.Role,
+		"created_at":    req_body.Traits.Created_At,
+		"totp_enabled":  req_body.Traits.TOTP_Enabled,
 	}
 
 	if err != nil {
@@ -210,40 +212,41 @@ func HandleChangePassword(c *gin.Context) {
 
 	recovery_cookie, _ := c.Cookie("ory_kratos_session")
 
-	if recovery_cookie != "" {
-		session, err := middleware.GetSession(c)
-		if err != nil {
-			log.ErrorLogger("Unable to get session", err)
-			errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-			c.JSON(errCode, gin.H{
-				"error":   err.Error(),
-				"message": "Unable to get session",
-			})
-			return
-		}
-		identity := session.GetIdentity()
-		traits := identity.GetTraits()
-		profile := traits.(map[string]interface{})
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	traits := identity.GetTraits()
+	profile := traits.(map[string]interface{})
 
+	profile["password"] = req_body.Password
+
+	if recovery_cookie != "" {
 		if profile["verified"] == false {
 			profile["verified"] = true
 		}
-
 		if profile["invite_status"] == "pending" {
 			profile["invite_status"] = "accepted"
 		}
+	}
 
-		_, err = settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, profile)
-		if err != nil {
-			log.ErrorLogger("Kratos post settings update profile flow failed", err)
+	_, err = settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, profile)
+	if err != nil {
+		log.ErrorLogger("Kratos post settings update profile flow failed", err)
 
-			errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
-			c.JSON(errCode, gin.H{
-				"error":   err.Error(),
-				"message": "Kratos post settings update profile flow failed",
-			})
-			return
-		}
+		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Kratos post settings update profile flow failed",
+		})
+		return
 	}
 	c.JSON(http.StatusOK, gin.H{
 		"status": msg,
