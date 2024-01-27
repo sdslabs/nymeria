@@ -72,3 +72,17 @@ func BanIdentityFlowWrapper(identity *client.Identity) (*client.Identity, *http.
 
 	return id, r, err
 }
+
+func RemoveBanIdentityFlowWrapper(identity *client.Identity) (*client.Identity, *http.Response, error) {
+	newState, err := client.NewIdentityStateFromValue("active")
+	if err != nil {
+		return nil, nil, err
+	}
+
+	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *newState, identity.Traits.(map[string]interface{}))
+
+	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
+	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity.Id).AdminUpdateIdentityBody(submitDataBody).Execute()
+
+	return id, r, err
+}

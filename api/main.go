@@ -41,6 +41,7 @@ func Start() {
 	r.POST("/delete-identity", middleware.OnlyAdmin, HandleDeleteIdentityFlow)
 	r.GET("/list-identity", middleware.OnlyAdmin, HandleListIdentity)
 	r.PUT("/update-identity/ban", middleware.OnlyAdmin, HandleBanIdentity)
+	r.PUT("/update-identity/remove-ban", middleware.OnlyAdmin, HandleRemoveBanIdentity)
 
 	r.GET("/register", HandleGetRegistrationFlow)
 	r.POST("/register", HandlePostRegistrationFlow)
