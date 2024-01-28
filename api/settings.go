@@ -80,6 +80,36 @@ func HandleGetSettingsFlow(c *gin.Context) {
 			break
 		}
 	}
+
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	traits := identity.GetTraits().(map[string]interface{})
+
+	if identity.VerifiableAddresses[0].Verified && traits["verified"] == false {
+		traits["verified"] = true
+
+		_, err = settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, flowID, csrf_token, traits)
+		if err != nil {
+			log.ErrorLogger("Kratos post settings update profile flow failed", err)
+
+			errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+			c.JSON(errCode, gin.H{
+				"error":   err.Error(),
+				"message": "Kratos post settings update profile flow failed",
+			})
+			return
+		}
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"flowID":      flowID,
 		"csrf_token":  csrf_token,
@@ -138,6 +168,25 @@ func HandleUpdateProfile(c *gin.Context) {
 			"message": "Cookie not found",
 		})
 		return
+	}
+
+	//Checking if email is changed then verified will be false
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	traits := identity.GetTraits()
+	profile := traits.(map[string]interface{})
+
+	if profile["email"] != traitsinterface["email"] {
+		traitsinterface["verified"] = false
 	}
 
 	msg, err := settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, traitsinterface)
