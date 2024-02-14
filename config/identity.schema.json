@@ -1,5 +1,5 @@
 {
-  "$id": "https://schemas.ory.sh/presets/kratos/quickstart/email-password/identity.schema.json",
+  "$id": "user.json",
   "$schema": "http://json-schema.org/draft-07/schema#",
   "title": "users",
   "type": "object",
@@ -37,6 +37,10 @@
           "type": "string",
           "title": "Phone Number"
         },
+        "invite_status": {
+          "type": "string",
+          "title": "Invite Status"
+        },
         "password": {
           "type": "string",
           "title": "Password"
@@ -44,10 +48,6 @@
         "img_url": {
           "type": "string",
           "title": "Profile Image URL"
-        },
-        "active": {
-          "type": "boolean",
-          "title": "Active"
         },
         "verified": {
           "type": "boolean",
@@ -72,7 +72,7 @@
         "name",
         "phone_number",
         "role",
-        "active",
+        "invite_status",
         "created_at",
         "totp_enabled"
       ],
