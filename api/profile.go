@@ -11,12 +11,6 @@ import (
 	"github.com/sdslabs/nymeria/pkg/middleware"
 )
 
-type Profile struct {
-	Email       string `json:"email"`
-	Name        string `json:"name"`
-	PhoneNumber string `json:"phone_number"`
-}
-
 func HandlePostProfile(c *gin.Context) {
 	session, err := middleware.GetSession(c)
 	if err != nil {
@@ -31,10 +25,6 @@ func HandlePostProfile(c *gin.Context) {
 	identity := session.GetIdentity()
 	traits := identity.GetTraits()
 	profile := traits.(map[string]interface{})
-	response := Profile{
-		Email:       profile["email"].(string),
-		Name:        profile["name"].(string),
-		PhoneNumber: profile["phone_number"].(string),
-	}
-	c.JSON(http.StatusOK, response)
+
+	c.JSON(http.StatusOK, profile)
 }

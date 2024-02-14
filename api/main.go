@@ -36,11 +36,13 @@ func Start() {
 	r.GET("/mfa", HandleGetMFAFlow)
 	r.POST("/mfa", HandlePostMFAFlow)
 
-	r.POST("/create-identity", HandleCreateIdentityFlow)
-	r.GET("/get-identity", HandleGetIdentityFlow)
-	r.POST("/delete-identity", HandleDeleteIdentityFlow)
-	r.GET("/list-identity", HandleListIdentity)
-	r.PUT("/update-identity/ban", HandleBanIdentity)
+	r.POST("/create-identity", middleware.OnlyAdmin, HandleCreateIdentityFlow)
+	r.GET("/get-identity", middleware.OnlyAdmin, HandleGetIdentityFlow)
+	r.POST("/delete-identity", middleware.OnlyAdmin, HandleDeleteIdentityFlow)
+	r.GET("/list-identity", middleware.OnlyAdmin, HandleListIdentity)
+	r.PUT("/update-identity/ban", middleware.OnlyAdmin, HandleBanIdentity)
+	r.PUT("/update-identity/remove-ban", middleware.OnlyAdmin, HandleRemoveBanIdentity)
+	r.PUT("/update-identity/switch-roles", middleware.OnlyAdmin, HandleRoleSwitch)
 
 	r.GET("/register", HandleGetRegistrationFlow)
 	r.POST("/register", HandlePostRegistrationFlow)
@@ -61,7 +63,7 @@ func Start() {
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
 
-	r.POST("/get_profile", middleware.HandleAppAuthorization, HandlePostProfile)
+	r.POST("/get_profile", HandlePostProfile)
 	r.POST("/verify_app", middleware.HandleAppAuthorization, func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{
 			"message": "Authorized",

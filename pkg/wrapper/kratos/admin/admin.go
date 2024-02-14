@@ -7,16 +7,28 @@ import (
 	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/pkg/middleware"
 )
 
-func CreateIdentityFlowWrapper(identityMap map[string]interface{}) (*client.Identity, *http.Response, error) {
+func CreateIdentityFlowWrapper(data Identity) (*client.Identity, *http.Response, error) {
+	timeStamp := middleware.CurrentTimeStamp()
+
+	trait := map[string]interface{}{
+		"email":         data.Email,
+		"name":          data.Name,
+		"password":      data.Password,
+		"phone_number":  data.PhoneNumber,
+		"img_url":       data.ImgURL,
+		"invite_status": "pending",
+		"verified":      false,
+		"role":          data.Role,
+		"created_at":    timeStamp,
+		"totp_enabled":  false,
+	}
+
+	adminCreateIdentityBody := *client.NewAdminCreateIdentityBody("default", trait) // AdminCreateIdentityBody |  (optional)
+
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
-
-	adminCreateIdentityBody := *client.NewAdminCreateIdentityBody(
-		"default",
-		identityMap,
-	) // AdminCreateIdentityBody |  (optional)
-
 	createdIdentity, r, err := apiClient.V0alpha2Api.AdminCreateIdentity(context.Background()).AdminCreateIdentityBody(adminCreateIdentityBody).Execute()
 
 	return createdIdentity, r, err
@@ -53,9 +65,38 @@ func BanIdentityFlowWrapper(identity *client.Identity) (*client.Identity, *http.
 		return nil, nil, err
 	}
 
-	identity.Traits.(map[string]interface{})["active"] = false
+	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *newState, identity.Traits.(map[string]interface{}))
+
+	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
+	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity.Id).AdminUpdateIdentityBody(submitDataBody).Execute()
+
+	return id, r, err
+}
+
+func RemoveBanIdentityFlowWrapper(identity *client.Identity) (*client.Identity, *http.Response, error) {
+	newState, err := client.NewIdentityStateFromValue("active")
+	if err != nil {
+		return nil, nil, err
+	}
 
 	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *newState, identity.Traits.(map[string]interface{}))
+
+	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
+	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity.Id).AdminUpdateIdentityBody(submitDataBody).Execute()
+
+	return id, r, err
+}
+
+func RoleSwitchFlowWrapper(identity *client.Identity) (*client.Identity, *http.Response, error) {
+	traits := identity.GetTraits().(map[string]interface{})
+
+	if traits["role"] == "user" {
+		traits["role"] = "admin"
+	} else if traits["role"] == "admin" {
+		traits["role"] = "user"
+	}
+
+	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *identity.State, traits)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
 	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity.Id).AdminUpdateIdentityBody(submitDataBody).Execute()

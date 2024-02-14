@@ -1,21 +1,18 @@
 package settings
 
 type UpdateProfileAPIBody struct {
-	Method    string `json:"method"`
 	FlowID    string `json:"flowID"`
 	CsrfToken string `json:"csrf_token"`
-	Traits    Traits `json:"Traits"`
+	Traits    Traits `json:"traits"`
 }
 
 type ChangePasswordAPIBody struct {
-	Method    string `json:"method"`
 	FlowID    string `json:"flowID"`
 	CsrfToken string `json:"csrf_token"`
 	Password  string `json:"password"`
 }
 
 type ToggleTOTPAPIBody struct {
-	Method     string `json:"method"`
 	FlowID     string `json:"flowID"`
 	CsrfToken  string `json:"csrf_token"`
 	TOTPCode   string `json:"totp_code"`
@@ -42,12 +39,14 @@ type SubmitSettingsWithPasswordBody struct {
 }
 
 type Traits struct {
-	Name         string `json:"name"`
-	PhoneNumber  string `json:"phone_number"`
-	ImgURL       string `json:"img_url,omitempty"`
 	Email        string `json:"email"`
+	Name         string `json:"name"`
+	Password     string `json:"password"`
+	ImgURL       string `json:"img_url,omitempty"`
+	PhoneNumber  string `json:"phone_number"`
+	InviteStatus string `json:"invite_status"`
+	Verified     bool   `json:"verified"`
 	Role         string `json:"role"`
-	Active       bool   `json:"active"`
 	Created_At   string `json:"created_at"`
 	TOTP_Enabled bool   `json:"totp_enabled"`
 }
