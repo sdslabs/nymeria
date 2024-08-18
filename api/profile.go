@@ -28,3 +28,21 @@ func HandlePostProfile(c *gin.Context) {
 
 	c.JSON(http.StatusOK, profile)
 }
+
+func HandleGetVerifiedStatus(c *gin.Context) {
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	verifiableAddresses := identity.GetVerifiableAddresses()
+	emails := verifiableAddresses
+
+	c.JSON(http.StatusOK, emails)
+}
