@@ -4,16 +4,16 @@ dsn: memory
 
 serve:
   public:
-    base_url: http://127.0.0.1:4433/
+    base_url: https://falcon.sdslabs.co/
     cors:
       enabled: true
   admin:
     base_url: http://127.0.0.1:4434/
 
 selfservice:
-  default_browser_return_url: http://127.0.0.1:4455/
+  default_browser_return_url: https://accounts.sdslabs.co/
   allowed_return_urls:
-    - http://127.0.0.1:4455
+    - https://accounts.sdslabs.co/
 
   methods:
     password:
@@ -35,25 +35,25 @@ selfservice:
 
     recovery:
       enabled: true
-      ui_url: http://127.0.0.1:4455/recovery
+      ui_url: http://accounts.sdslabs.co/recovery
 
     verification:
       enabled: true
-      ui_url: https://accounts.sdslabs.co/verified
+      ui_url: https://accounts.sdslabs.co/verification
       after:
-        default_browser_return_url: http://127.0.0.1:4455/
+        default_browser_return_url: https://accounts.sdslabs.co/
 
     logout:
       after:
-        default_browser_return_url: http://127.0.0.1:4455/login
+        default_browser_return_url: https://accounts.sdslabs.co/login
 
     login:
-      ui_url: http://127.0.0.1:4455/login
+      ui_url: https://accounts.sdslabs.co/login
       lifespan: 10m
 
     registration:
       lifespan: 10m
-      ui_url: http://127.0.0.1:4455/registration
+      ui_url: https://accounts.sdslabs.co/registration
       after:
         password:
           hooks:
