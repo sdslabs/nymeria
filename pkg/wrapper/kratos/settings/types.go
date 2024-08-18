@@ -45,7 +45,6 @@ type Traits struct {
 	ImgURL       string `json:"img_url,omitempty"`
 	PhoneNumber  string `json:"phone_number"`
 	InviteStatus string `json:"invite_status"`
-	Verified     bool   `json:"verified"`
 	Role         string `json:"role"`
 	Created_At   string `json:"created_at"`
 	TOTP_Enabled bool   `json:"totp_enabled"`

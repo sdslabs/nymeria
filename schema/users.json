@@ -54,10 +54,6 @@
             "type": "boolean",
             "title": "Active"
           },
-          "verified": {
-            "type": "integer",
-            "title": "Verified"
-          },
           "created_at": {
             "type": "string",
             "format": "date-time",

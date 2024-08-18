@@ -94,20 +94,16 @@ func HandleGetSettingsFlow(c *gin.Context) {
 	identity := session.GetIdentity()
 	traits := identity.GetTraits().(map[string]interface{})
 
-	if identity.VerifiableAddresses[0].Verified && traits["verified"] == false {
-		traits["verified"] = true
+	_, err = settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, flowID, csrf_token, traits)
+	if err != nil {
+		log.ErrorLogger("Kratos post settings update profile flow failed", err)
 
-		_, err = settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, flowID, csrf_token, traits)
-		if err != nil {
-			log.ErrorLogger("Kratos post settings update profile flow failed", err)
-
-			errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
-			c.JSON(errCode, gin.H{
-				"error":   err.Error(),
-				"message": "Kratos post settings update profile flow failed",
-			})
-			return
-		}
+		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Kratos post settings update profile flow failed",
+		})
+		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
@@ -129,7 +125,6 @@ func HandleUpdateProfile(c *gin.Context) {
 		"img_url":       req_body.Traits.ImgURL,
 		"phone_number":  req_body.Traits.PhoneNumber,
 		"invite_status": req_body.Traits.InviteStatus,
-		"verified":      req_body.Traits.Verified,
 		"role":          req_body.Traits.Role,
 		"created_at":    req_body.Traits.Created_At,
 		"totp_enabled":  req_body.Traits.TOTP_Enabled,
@@ -168,25 +163,6 @@ func HandleUpdateProfile(c *gin.Context) {
 			"message": "Cookie not found",
 		})
 		return
-	}
-
-	//Checking if email is changed then verified will be false
-	session, err := middleware.GetSession(c)
-	if err != nil {
-		log.ErrorLogger("Unable to get session", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Unable to get session",
-		})
-		return
-	}
-	identity := session.GetIdentity()
-	traits := identity.GetTraits()
-	profile := traits.(map[string]interface{})
-
-	if profile["email"] != traitsinterface["email"] {
-		traitsinterface["verified"] = false
 	}
 
 	msg, err := settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, traitsinterface)
@@ -278,9 +254,6 @@ func HandleChangePassword(c *gin.Context) {
 	profile["password"] = req_body.Password
 
 	if recovery_cookie != "" {
-		if profile["verified"] == false {
-			profile["verified"] = true
-		}
 		if profile["invite_status"] == "pending" {
 			profile["invite_status"] = "accepted"
 		}

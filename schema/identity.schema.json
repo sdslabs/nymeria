@@ -54,10 +54,6 @@
             "type": "boolean",
             "title": "Active"
           },
-          "verified": {
-            "type": "integer",
-            "title": "Verified"
-          },
           "isAdmin":{
             "type": "boolean",
             "title": "Role"

@@ -44,7 +44,6 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 		"img_url":       data.ImgURL,
 		"phone_number":  data.PhoneNumber,
 		"invite_status": "self_created",
-		"verified":      false,
 		"role":          "user",
 		"created_at":    timeStamp,
 		"totp_enabled":  false,
