@@ -121,7 +121,6 @@ func HandleUpdateProfile(c *gin.Context) {
 	traitsinterface := map[string]interface{}{
 		"email":         req_body.Traits.Email,
 		"name":          req_body.Traits.Name,
-		"password":      req_body.Traits.Password,
 		"img_url":       req_body.Traits.ImgURL,
 		"phone_number":  req_body.Traits.PhoneNumber,
 		"invite_status": req_body.Traits.InviteStatus,
@@ -250,8 +249,6 @@ func HandleChangePassword(c *gin.Context) {
 	identity := session.GetIdentity()
 	traits := identity.GetTraits()
 	profile := traits.(map[string]interface{})
-
-	profile["password"] = req_body.Password
 
 	if recovery_cookie != "" {
 		if profile["invite_status"] == "pending" {

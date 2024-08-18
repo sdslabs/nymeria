@@ -41,7 +41,6 @@ type SubmitSettingsWithPasswordBody struct {
 type Traits struct {
 	Email        string `json:"email"`
 	Name         string `json:"name"`
-	Password     string `json:"password"`
 	ImgURL       string `json:"img_url,omitempty"`
 	PhoneNumber  string `json:"phone_number"`
 	InviteStatus string `json:"invite_status"`
