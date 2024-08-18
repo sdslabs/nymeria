@@ -91,3 +91,5 @@ identity:
 courier:
   smtp:
     connection_uri:
+    from_address: 
+    from_name:
