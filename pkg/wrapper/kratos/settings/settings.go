@@ -13,7 +13,7 @@ import (
 
 func InitializeSettingsFlowWrapper(session_cookie string, recovery_cookie string) (client.SelfServiceSettingsFlow, string, error) {
 
-	returnTo := "http://localhost:4455/ping" // string | The URL to return the browser to after the flow was completed. (optional)
+	returnTo := "" // string | The URL to return the browser to after the flow was completed. (optional)
 
 	var cookie string
 

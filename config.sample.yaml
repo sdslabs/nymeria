@@ -1,8 +1,8 @@
 env: dev # dev|prod
 
 url:
-  kratos_url: "http://localhost:4433"
-  admin_kratos_url: "http://localhost:4434"
+  kratos_url: "http://kratos:4433"
+  admin_kratos_url: "http://kratos:4434"
 
   domain: "https://someaddress.com"
 

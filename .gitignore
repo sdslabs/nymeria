@@ -21,6 +21,7 @@ nymeria
 
 # Exclude the config file
 config.yaml
+/config/kratos.yml
 
 # miscellaneous
 .vscode/

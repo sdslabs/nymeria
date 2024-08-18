@@ -12,7 +12,7 @@ import (
 )
 
 func InitializeRegistrationFlowWrapper() (string, string, string, error) {
-	returnTo := "http://localhost:4455/ping"
+	returnTo := ""
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceRegistrationFlowForBrowsers(context.Background()).ReturnTo(returnTo).Execute()
