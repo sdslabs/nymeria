@@ -49,10 +49,6 @@
           "type": "string",
           "title": "Profile Image URL"
         },
-        "verified": {
-          "type": "boolean",
-          "title": "Verified"
-        },
         "role": {
           "type": "string",
           "title": "Role"
