@@ -14,7 +14,7 @@ func Start() {
 	r := gin.Default()
 	// Set up CORS middleware
 	config := cors.Config{
-		AllowOrigins:     []string{"https://accounts.sdslabs.co/"},
+		AllowOrigins:     []string{"https://*.sdslabs.co"},
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
