@@ -40,7 +40,6 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 	trait := map[string]interface{}{
 		"email":         data.Email,
 		"name":          data.Name,
-		"password":      password,
 		"img_url":       data.ImgURL,
 		"phone_number":  data.PhoneNumber,
 		"invite_status": "self_created",

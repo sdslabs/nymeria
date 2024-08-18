@@ -16,7 +16,6 @@ func CreateIdentityFlowWrapper(data Identity) (*client.Identity, *http.Response,
 	trait := map[string]interface{}{
 		"email":         data.Email,
 		"name":          data.Name,
-		"password":      data.Password,
 		"phone_number":  data.PhoneNumber,
 		"img_url":       data.ImgURL,
 		"invite_status": "pending",

@@ -41,10 +41,6 @@
           "type": "string",
           "title": "Invite Status"
         },
-        "password": {
-          "type": "string",
-          "title": "Password"
-        },
         "img_url": {
           "type": "string",
           "title": "Profile Image URL"
