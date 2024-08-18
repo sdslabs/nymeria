@@ -18,7 +18,39 @@ services:
       - "9898:9898"
     depends_on:
       - db
+  kratos-migrate:
+    image: oryd/kratos:v0.9.0-alpha.2
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true&mode=rwc
+    volumes:
+      - type: volume
+        source: kratos-sqlite
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./config
+        target: /etc/config/kratos
+    command: -c /etc/config/kratos/kratos.yml migrate sql -e --yes
+    restart: on-failure
+  kratos:
+    depends_on:
+      - kratos-migrate
+    image: oryd/kratos:latest
+    restart: unless-stopped
+    environment:
+      - DSN=sqlite:///var/lib/sqlite/db.sqlite?_fk=true
+      - LOG_LEVEL=trace
+    command: serve -c /etc/config/kratos/kratos.yml --dev --watch-courier
+    volumes:
+      - type: volume
+        source: kratos-sqlite
+        target: /var/lib/sqlite
+        read_only: false
+      - type: bind
+        source: ./config
+        target: /etc/config/kratos
 
 volumes:
   db-data:
     name: nymeria-db
+  kratos-sqlite:
