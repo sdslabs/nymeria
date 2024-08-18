@@ -34,13 +34,6 @@ services:
       - type: bind
         source: ./config
         target: /etc/config/kratos
-    extra_hosts:
-      - "host.docker.internal:host-gateway"
-    network_mode: host 
     
 volumes:
   kratos-sqlite:
-
-networks:
-  nymeria-network:
-    external: true

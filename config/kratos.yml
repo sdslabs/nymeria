@@ -88,7 +88,6 @@ identity:
   schemas:
     - id: default
       url: file:///etc/config/kratos/identity.schema.json
-
 courier:
   smtp:
-    connection_uri: smtp://pks:pkswashere@localhost:25/?skip_ssl_verify=true
+    connection_uri: smtps://accounts:sdslabs_is_here@mail.sdslabs.co:465/

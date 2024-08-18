@@ -11,8 +11,6 @@ services:
     volumes:
       - db-data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
-    networks:
-      - nymeria-network
   app:
     container_name: nymeria-app
     build: .
@@ -20,12 +18,7 @@ services:
       - "9898:9898"
     depends_on:
       - db
-    networks:
-      - nymeria-network
 
 volumes:
   db-data:
     name: nymeria-db
-
-networks:
-  nymeria-network:
