@@ -54,3 +54,7 @@ volumes:
   db-data:
     name: nymeria-db
   kratos-sqlite:
+
+networks:
+  accounts:
+    driver: bridge
