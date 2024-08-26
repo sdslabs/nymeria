@@ -15,7 +15,8 @@ func InitializeRegistrationFlowWrapper() (string, string, string, error) {
 	returnTo := ""
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceRegistrationFlowForBrowsers(context.Background()).ReturnTo(returnTo).Execute()
+
+	resp, r, err := apiClient.FrontendAPI.CreateBrowserRegistrationFlow(context.Background()).ReturnTo(returnTo).Execute()
 	if err != nil {
 		return "", "", "", err
 	}
@@ -48,14 +49,14 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 		"totp_enabled":  false,
 	}
 
-	submitDataBody := client.SubmitSelfServiceRegistrationFlowBody{
-		SubmitSelfServiceRegistrationFlowWithPasswordMethodBody: client.NewSubmitSelfServiceRegistrationFlowWithPasswordMethodBody("password", password, trait),
-	}
+	submitDataBody := client.UpdateRegistrationFlowBody{UpdateRegistrationFlowWithPasswordMethod: client.NewUpdateRegistrationFlowWithPasswordMethod("password", password, trait)}
 
-	submitDataBody.SubmitSelfServiceRegistrationFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
+	submitDataBody.UpdateRegistrationFlowWithPasswordMethod.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRegistrationFlow(context.Background()).Flow(flowID).SubmitSelfServiceRegistrationFlowBody(submitDataBody).Cookie(cookie).Execute()
+
+	_, r, err := apiClient.FrontendAPI.UpdateRegistrationFlow(context.Background()).Flow(flowID).UpdateRegistrationFlowBody(submitDataBody).Cookie(cookie).Execute()
+
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRegistrationFlow``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
