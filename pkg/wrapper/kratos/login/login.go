@@ -50,3 +50,21 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 
 	return resp.Session, responseCookies[1], nil
 }
+
+func SubmitLoginWithMFAWrapper(cookie string, flowID string, csrfToken string, totp string) (client.Session, string, error) {
+	submitDataBody := client.UpdateLoginFlowBody{UpdateLoginFlowWithTotpMethod: client.NewUpdateLoginFlowWithTotpMethod("totp", totp)} // SubmitSelfServiceLoginFlowBody |
+
+	submitDataBody.UpdateLoginFlowWithTotpMethod.SetCsrfToken(csrfToken)
+
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+
+	resp, r, err := apiClient.FrontendAPI.UpdateLoginFlow(context.Background()).Flow(flowID).UpdateLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
+
+	if err != nil {
+		return *client.NewSessionWithDefaults(), "", err
+	}
+
+	responseCookies := r.Header["Set-Cookie"]
+
+	return resp.Session, responseCookies[0], nil
+}

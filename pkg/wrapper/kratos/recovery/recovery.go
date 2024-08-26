@@ -16,7 +16,7 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	resp, httpRes, err := apiClient.V0alpha2Api.InitializeSelfServiceRecoveryFlowForBrowsers(context.Background()).ReturnTo(returnTo).Execute()
+	resp, httpRes, err := apiClient.FrontendAPI.CreateBrowserRecoveryFlow(context.Background()).ReturnTo(returnTo).Execute()
 	if err != nil {
 		return "", "", "", err
 	}
@@ -37,13 +37,13 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 
 func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, email string) (string, error) {
 
-	submitFlowBody := client.SubmitSelfServiceRecoveryFlowBody{
-		SubmitSelfServiceRecoveryFlowWithLinkMethodBody: client.NewSubmitSelfServiceRecoveryFlowWithLinkMethodBody(email, "link"),
+	submitFlowBody := client.UpdateRecoveryFlowBody{
+		UpdateRecoveryFlowWithLinkMethod: client.NewUpdateRecoveryFlowWithLinkMethod(email, "link"),
 	}
-	submitFlowBody.SubmitSelfServiceRecoveryFlowWithLinkMethodBody.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateRecoveryFlowWithLinkMethod.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceRecoveryFlow(context.Background()).Flow(flowID).SubmitSelfServiceRecoveryFlowBody(submitFlowBody).Cookie(cookie).Execute()
+	_, r, err := apiClient.FrontendAPI.UpdateRecoveryFlow(context.Background()).Flow(flowID).UpdateRecoveryFlowBody(submitFlowBody).Cookie(cookie).Execute()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRecoveryFlow``: %v\n", err)

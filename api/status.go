@@ -24,7 +24,7 @@ func HandleStatus(c *gin.Context) {
 	}
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	resp, _, err := apiClient.V0alpha2Api.ToSession(context.Background()).Cookie(cookie).Execute()
+	resp, _, err := apiClient.FrontendAPI.ToSession(context.Background()).Cookie(cookie).Execute()
 	if err != nil {
 		fmt.Println(err)
 	}

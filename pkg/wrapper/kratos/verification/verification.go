@@ -13,7 +13,7 @@ import (
 func InitializeVerificationFlowWrapper() (string, string, string, error) {
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers(context.Background()).Execute()
+	resp, r, err := apiClient.FrontendAPI.CreateBrowserVerificationFlow(context.Background()).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -35,15 +35,15 @@ func InitializeVerificationFlowWrapper() (string, string, string, error) {
 
 func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken string, email string) (string, error) {
 
-	submitFlowBody := client.SubmitSelfServiceVerificationFlowBody{
-		SubmitSelfServiceVerificationFlowWithLinkMethodBody: client.NewSubmitSelfServiceVerificationFlowWithLinkMethodBody(email, "link"),
+	submitFlowBody := client.UpdateVerificationFlowBody{
+		UpdateVerificationFlowWithLinkMethod: client.NewUpdateVerificationFlowWithLinkMethod(email, "link"),
 	}
 
-	submitFlowBody.SubmitSelfServiceVerificationFlowWithLinkMethodBody.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateVerificationFlowWithLinkMethod.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceVerificationFlow(context.Background()).Flow(flowID).SubmitSelfServiceVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
+	_, r, err := apiClient.FrontendAPI.UpdateVerificationFlow(context.Background()).Flow(flowID).UpdateVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
