@@ -60,7 +60,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		return
 	}
 
-	session, err := registration.SubmitRegistrationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Traits)
+	flowID, sessionCookies, err := registration.SubmitRegistrationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Traits)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post registration flow failed", err)
@@ -72,9 +72,11 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+	c.SetCookie("verification_flow", sessionCookies[0], 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+	c.SetCookie("sdslabs_session", sessionCookies[1], 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
 		"status": "created",
+		"flowID": flowID,
 	})
 
 }

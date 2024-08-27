@@ -62,7 +62,9 @@ func Start() {
 	r.POST("/toggletotp", HandleToggleTOTP)
 
 	r.GET("/verification", HandleGetVerificationFlow)
+	r.POST("/verification-after-registration", HandleGetVerificationAfterRegistrationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
+	r.POST("/verification-code", HandlePostVerificationCodeFlow)
 
 	r.POST("/get_profile", HandlePostProfile)
 	r.POST("/get_verified_status", HandleGetVerifiedStatus)

@@ -36,7 +36,7 @@ func InitializeRegistrationFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, password string, data Traits) (string, error) {
+func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, password string, data Traits) (string, []string, error) {
 	timeStamp := middleware.CurrentTimeStamp()
 	trait := map[string]interface{}{
 		"email":         data.Email,
@@ -55,14 +55,15 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	_, r, err := apiClient.FrontendAPI.UpdateRegistrationFlow(context.Background()).Flow(flowID).UpdateRegistrationFlowBody(submitDataBody).Cookie(cookie).Execute()
+	resp, r, err := apiClient.FrontendAPI.UpdateRegistrationFlow(context.Background()).Flow(flowID).UpdateRegistrationFlowBody(submitDataBody).Cookie(cookie).Execute()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRegistrationFlow``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return "", err
+		return "", nil, err
 	}
 
 	responseCookies := r.Header["Set-Cookie"]
-	return responseCookies[1], nil
+
+	return resp.GetContinueWith()[0].ContinueWithVerificationUi.GetFlow().Id, responseCookies, nil
 }
