@@ -38,9 +38,39 @@ func InitializeRecoveryFlowWrapper() (string, string, string, error) {
 func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, email string) (string, error) {
 
 	submitFlowBody := client.UpdateRecoveryFlowBody{
-		UpdateRecoveryFlowWithLinkMethod: client.NewUpdateRecoveryFlowWithLinkMethod(email, "link"),
+		UpdateRecoveryFlowWithCodeMethod: client.NewUpdateRecoveryFlowWithCodeMethod("code"),
 	}
-	submitFlowBody.UpdateRecoveryFlowWithLinkMethod.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateRecoveryFlowWithCodeMethod.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateRecoveryFlowWithCodeMethod.SetEmail(email)
+
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+	resp, r, err := apiClient.FrontendAPI.UpdateRecoveryFlow(context.Background()).Flow(flowID).UpdateRecoveryFlowBody(submitFlowBody).Cookie(cookie).Execute()
+
+	var csrf_token string
+
+	for _, node := range resp.Ui.Nodes {
+		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
+			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
+			csrf_token, _ = csrf_token_interface.(string)
+			break
+		}
+	}
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRecoveryFlow``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		return "", err
+	}
+
+	return csrf_token, nil
+}
+
+func SubmitRecoveryCodeFlowWrapper(cookie string, flowID string, csrfToken string, recoveryCode string) (string, error) {
+	submitFlowBody := client.UpdateRecoveryFlowBody{
+		UpdateRecoveryFlowWithCodeMethod: client.NewUpdateRecoveryFlowWithCodeMethod("code"),
+	}
+	submitFlowBody.UpdateRecoveryFlowWithCodeMethod.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateRecoveryFlowWithCodeMethod.SetCode(recoveryCode)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	_, r, err := apiClient.FrontendAPI.UpdateRecoveryFlow(context.Background()).Flow(flowID).UpdateRecoveryFlowBody(submitFlowBody).Cookie(cookie).Execute()
@@ -51,5 +81,7 @@ func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, e
 		return "", err
 	}
 
-	return "", nil
+	responseCookies := r.Header["Set-Cookie"]
+
+	return responseCookies[1], nil
 }

@@ -54,6 +54,7 @@ func Start() {
 
 	r.GET("/recovery", HandleGetRecoveryFlow)
 	r.POST("/recovery", HandlePostRecoveryFlow)
+	r.POST("/recovery-code", HandlePostRecoveryCodeFlow)
 
 	r.GET("/settings", HandleGetSettingsFlow)
 	r.POST("/updateprofile", HandleUpdateProfile)

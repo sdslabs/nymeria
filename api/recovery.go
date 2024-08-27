@@ -60,8 +60,8 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 		})
 		return
 	}
-
-	_, err = recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email)
+	var csrf_token string
+	csrf_token, err = recovery.SubmitRecoveryFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Email)
 
 	if err != nil {
 		log.ErrorLogger("POST Recovery flow failed", err)
@@ -74,6 +74,52 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Mail sent with recovery link",
+		"message":    "Mail sent with recovery code",
+		"csrf_token": csrf_token,
+	})
+}
+
+func HandlePostRecoveryCodeFlow(c *gin.Context) {
+	var t recovery.SubmitRecoveryAPIBody
+	err := c.BindJSON(&t)
+
+	if err != nil {
+		log.ErrorLogger("Unable to process json body", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to process json body",
+		})
+		return
+	}
+
+	cookie, err := c.Cookie("recovery_flow")
+
+	if err != nil {
+		log.ErrorLogger("Recovery Flow Cookie not found", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Recovery Flow Cookie not found",
+		})
+		return
+	}
+
+	session, err := recovery.SubmitRecoveryCodeFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.RecoveryCode)
+
+	if err != nil {
+		log.ErrorLogger("POST Recovery flow failed", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "POST Recovery Code flow failed",
+		})
+		return
+	}
+
+	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Session cookie set for password change",
 	})
 }

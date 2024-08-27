@@ -11,20 +11,15 @@ import (
 	"github.com/sdslabs/nymeria/config"
 )
 
-func InitializeSettingsFlowWrapper(session_cookie string, recovery_cookie string) (client.SettingsFlow, string, error) {
+func InitializeSettingsFlowWrapper(session_cookie string) (client.SettingsFlow, string, error) {
 
 	returnTo := "" // string | The URL to return the browser to after the flow was completed. (optional)
 
-	var cookie string
-
-	if recovery_cookie != "" {
-		cookie = "ory_kratos_session=" + recovery_cookie
-	} else {
-		cookie = strings.Split(session_cookie, ";")[0]
-	}
+	cookie := strings.Split(session_cookie, ";")[0]
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 	resp, httpRes, err := apiClient.FrontendAPI.CreateBrowserSettingsFlow(context.Background()).ReturnTo(returnTo).Cookie(cookie).Execute()
+
 	if err != nil {
 		return *client.NewSettingsFlowWithDefaults(), "", err
 	}
