@@ -31,17 +31,6 @@ func HandleCreateIdentityFlow(c *gin.Context) {
 		return
 	}
 
-	if err != nil {
-		log.ErrorLogger("Unable to convert JSON to map", err)
-
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Unable to convert JSON to map",
-		})
-		return
-	}
-
 	createdIdentity, r, err := admin.CreateIdentityFlowWrapper(t)
 
 	if err != nil {
