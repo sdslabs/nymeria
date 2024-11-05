@@ -84,7 +84,7 @@ Enter the Kratos directory and  Change the Kratos Version to v0.10.0
 
 ```sh
  cd kratos
- git checkout v0.10.0
+ git checkout v1.3.1
 ```
 
 Download the dependencies
@@ -110,5 +110,5 @@ Copy the Kratos config file and identity schema from nymeria
 Run the following command to use Kratos in containerized form
 
 ```sh
- docker-compose -f quickstart.yml -f quickstart-standalone.yml -f quickstart-postgres.yml up --build --force-recreate
+ docker compose -f quickstart.yml -f quickstart-standalone.yml -f quickstart-postgres.yml up --build --force-recreate
 ```
