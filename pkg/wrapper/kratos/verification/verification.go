@@ -88,7 +88,7 @@ func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken strin
 	return csrf_token, nil
 }
 
-func SubmitVerificationCodeFlowWrapper(cookie string, flowID string, csrfToken string, verificationCode string) (string, error) {
+func SubmitVerificationCodeFlowWrapper(cookie string, flowID string, csrfToken string, verificationCode string) error {
 
 	submitFlowBody := client.UpdateVerificationFlowBody{
 		UpdateVerificationFlowWithCodeMethod: client.NewUpdateVerificationFlowWithCodeMethod("code"),
@@ -99,13 +99,20 @@ func SubmitVerificationCodeFlowWrapper(cookie string, flowID string, csrfToken s
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	_, r, err := apiClient.FrontendAPI.UpdateVerificationFlow(context.Background()).Flow(flowID).Token(verificationCode).UpdateVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
+	resp, r, err := apiClient.FrontendAPI.UpdateVerificationFlow(context.Background()).Flow(flowID).Token(verificationCode).UpdateVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return "", err
+		return err
 	}
 
-	return "", nil
+	if resp.Ui.Messages[len(resp.Ui.Messages)-1].Text == "The verification code is invalid or has already been used. Please try again." {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", "The verification code is invalid or has already been used. Please try again.")
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+
+		return fmt.Errorf("the verification code is invalid or has already been used")
+	}
+
+	return nil
 }

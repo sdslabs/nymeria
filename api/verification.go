@@ -150,11 +150,16 @@ func HandlePostVerificationCodeFlow(c *gin.Context) {
 		return
 	}
 
-	_, err = verification.SubmitVerificationCodeFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.VerificationCode)
+	err = verification.SubmitVerificationCodeFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.VerificationCode)
 
 	if err != nil {
 		log.ErrorLogger("Post Verification flow failed", err)
 		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+
+		if errCode == 0 {
+			errCode = http.StatusBadRequest
+		}
+
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Post Settings flow failed",
