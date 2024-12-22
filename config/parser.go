@@ -1,16 +1,16 @@
 package config
 
 import (
-	"io/ioutil"
 	"log"
+	"os"
 
-	"gopkg.in/yaml.v2"
+	yaml "gopkg.in/yaml.v2"
 )
 
 func getConf() *NymeriaCfg {
 	c := &NymeriaCfg{}
 
-	yamlFile, err := ioutil.ReadFile("config.yaml")
+	yamlFile, err := os.ReadFile("config.yaml")
 	if err != nil {
 		log.Printf("yamlFile.Get err   #%v ", err)
 	}
