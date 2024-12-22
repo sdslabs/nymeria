@@ -78,5 +78,4 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		"status": "created",
 		"flowID": flowID,
 	})
-
 }

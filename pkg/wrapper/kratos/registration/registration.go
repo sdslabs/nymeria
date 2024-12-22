@@ -65,5 +65,5 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 
 	responseCookies := r.Header["Set-Cookie"]
 
-	return resp.GetContinueWith()[0].ContinueWithVerificationUi.GetFlow().Id, responseCookies, nil
+	return resp.GetContinueWith()[1].ContinueWithVerificationUi.GetFlow().Id, responseCookies, nil
 }
