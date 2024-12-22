@@ -11,6 +11,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/sdslabs/nymeria/log"
+	"github.com/sdslabs/nymeria/pkg/middleware"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/admin"
 )
 
@@ -106,6 +107,27 @@ func HandleDeleteIdentityFlow(c *gin.Context) {
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
+		})
+		return
+	}
+
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	id := identity.GetId()
+
+	if id == t.Identity {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": "Cannot delete own identity",
 		})
 		return
 	}
