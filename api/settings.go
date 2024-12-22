@@ -222,8 +222,6 @@ func HandleChangePassword(c *gin.Context) {
 		return
 	}
 
-	recovery_cookie, _ := c.Cookie("ory_kratos_session")
-
 	session, err := middleware.GetSession(c)
 	if err != nil {
 		log.ErrorLogger("Unable to get session", err)
@@ -238,10 +236,8 @@ func HandleChangePassword(c *gin.Context) {
 	traits := identity.GetTraits()
 	profile := traits.(map[string]interface{})
 
-	if recovery_cookie != "" {
-		if profile["invite_status"] == "pending" {
-			profile["invite_status"] = "accepted"
-		}
+	if profile["invite_status"] == "pending" {
+		profile["invite_status"] = "accepted"
 	}
 
 	_, err = settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, req_body.FlowID, req_body.CsrfToken, profile)
