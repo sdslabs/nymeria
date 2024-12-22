@@ -178,6 +178,27 @@ func HandleBanIdentity(c *gin.Context) {
 		return
 	}
 
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	identityId := identity.GetId()
+
+	if identityId == t.Identity {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": "Cannot ban own identity",
+		})
+		return
+	}
+
 	identityResult, r, err := admin.GetIdentityFlowWrapper(t.Identity)
 
 	if err != nil {
@@ -256,6 +277,27 @@ func HandleRoleSwitch(c *gin.Context) {
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
+		})
+		return
+	}
+
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	identityId := identity.GetId()
+
+	if identityId == t.Identity {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": "Cannot switch own role",
 		})
 		return
 	}
