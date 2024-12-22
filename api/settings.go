@@ -106,17 +106,6 @@ func HandleUpdateProfile(c *gin.Context) {
 	var req_body settings.UpdateProfileAPIBody
 	err := c.BindJSON(&req_body)
 
-	traitsinterface := map[string]interface{}{
-		"email":         req_body.Traits.Email,
-		"name":          req_body.Traits.Name,
-		"img_url":       req_body.Traits.ImgURL,
-		"phone_number":  req_body.Traits.PhoneNumber,
-		"invite_status": req_body.Traits.InviteStatus,
-		"role":          req_body.Traits.Role,
-		"created_at":    req_body.Traits.Created_At,
-		"totp_enabled":  req_body.Traits.TOTP_Enabled,
-	}
-
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
 
@@ -126,6 +115,31 @@ func HandleUpdateProfile(c *gin.Context) {
 			"message": "Unable to process json body",
 		})
 		return
+	}
+
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	traits := identity.GetTraits()
+	profile := traits.(map[string]interface{})
+
+	traitsinterface := map[string]interface{}{
+		"email":         profile["email"],
+		"name":          req_body.Traits.Name,
+		"img_url":       req_body.Traits.ImgURL,
+		"phone_number":  req_body.Traits.PhoneNumber,
+		"invite_status": profile["invite_status"],
+		"role":          profile["role"],
+		"created_at":    profile["created_at"],
+		"totp_enabled":  profile["totp_enabled"],
 	}
 
 	flow_cookie, err := c.Cookie("settings_flow")
