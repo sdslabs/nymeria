@@ -65,7 +65,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 
 	identity, session, err := login.SubmitLoginFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Identifier) // _ is USERID
 
-	if err != nil {
+	if session == "" {
 		log.ErrorLogger("Post login flow failed", err)
 
 		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
@@ -75,8 +75,16 @@ func HandlePostLoginFlow(c *gin.Context) {
 		})
 		return
 	}
-
 	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+
+	if err != nil {
+		c.JSON(http.StatusOK, gin.H{
+			"status": "aal1 done",
+			"person": nil,
+		})
+		return
+	}
+
 	c.JSON(http.StatusOK, gin.H{
 		"status": "user logged in",
 		"person": identity,

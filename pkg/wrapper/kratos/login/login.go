@@ -42,11 +42,15 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
 	resp, r, err := apiClient.FrontendAPI.UpdateLoginFlow(context.Background()).Cookie(cookie).Flow(flowID).XSessionToken("").UpdateLoginFlowBody(submitDataBody).Execute()
-	if err != nil {
-		return *client.NewSessionWithDefaults(), "", err
-	}
 
 	responseCookies := r.Header["Set-Cookie"]
+
+	if err != nil {
+		if responseCookies == nil {
+			return *client.NewSessionWithDefaults(), "", err
+		}
+		return *client.NewSessionWithDefaults(), responseCookies[1], err
+	}
 
 	return resp.Session, responseCookies[1], nil
 }

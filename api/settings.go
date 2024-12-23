@@ -31,8 +31,9 @@ func HandleGetSettingsFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Initialize Settings flow Failed", err)
-		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error": err.Error(),
 		})
 		return
 	}
@@ -67,31 +68,6 @@ func HandleGetSettingsFlow(c *gin.Context) {
 			totp_secret = node.Attributes.UiNodeTextAttributes.Text.GetText()
 			break
 		}
-	}
-
-	session, err := middleware.GetSession(c)
-	if err != nil {
-		log.ErrorLogger("Unable to get session", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Unable to get session",
-		})
-		return
-	}
-	identity := session.GetIdentity()
-	traits := identity.GetTraits().(map[string]interface{})
-
-	_, err = settings.SubmitSettingsFlowProfileMethod(flow_cookie, session_cookie, flowID, csrf_token, traits)
-	if err != nil {
-		log.ErrorLogger("Kratos post settings update profile flow failed", err)
-
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Kratos post settings update profile flow failed",
-		})
-		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
