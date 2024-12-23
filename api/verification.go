@@ -2,12 +2,11 @@ package api
 
 import (
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/verification"
 )
@@ -19,7 +18,7 @@ func HandleGetVerificationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Initialize Verification Failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Initialize Verification Failed",
@@ -41,7 +40,7 @@ func HandlePostVerificationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process json body",
@@ -53,7 +52,7 @@ func HandlePostVerificationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -67,7 +66,7 @@ func HandlePostVerificationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Post Verification flow failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Post Settings flow failed",
@@ -87,7 +86,7 @@ func HandlePostVerificationCodeFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process json body",
@@ -99,7 +98,7 @@ func HandlePostVerificationCodeFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -111,7 +110,7 @@ func HandlePostVerificationCodeFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Post Verification flow failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 
 		if errCode == 0 {
 			errCode = http.StatusBadRequest

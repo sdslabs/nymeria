@@ -2,12 +2,11 @@ package api
 
 import (
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/recovery"
 )
@@ -19,7 +18,7 @@ func HandleGetRecoveryFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Initialize Recovery Failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Initialize Recovery Failed",
@@ -41,7 +40,7 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process json body",
@@ -53,7 +52,7 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -65,7 +64,7 @@ func HandlePostRecoveryFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("POST Recovery flow failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "POST Recovery flow failed",
@@ -85,7 +84,7 @@ func HandlePostRecoveryCodeFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process json body",
@@ -97,7 +96,7 @@ func HandlePostRecoveryCodeFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Recovery Flow Cookie not found", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Recovery Flow Cookie not found",
@@ -109,7 +108,7 @@ func HandlePostRecoveryCodeFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("POST Recovery flow failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "POST Recovery Code flow failed",

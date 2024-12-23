@@ -6,6 +6,7 @@ import (
 	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 )
 
 func InitializeLoginFlowWrapper(aal string, cookie string) (string, string, string, error) {
@@ -34,7 +35,7 @@ func InitializeLoginFlowWrapper(aal string, cookie string) (string, string, stri
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, identifier string) (client.Session, string, error) {
+func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, identifier string) (client.Session, string, string, error) {
 
 	submitDataBody := client.UpdateLoginFlowBody{UpdateLoginFlowWithPasswordMethod: client.NewUpdateLoginFlowWithPasswordMethod(identifier, "password", pass)} // SubmitSelfServiceLoginFlowBody |
 	submitDataBody.UpdateLoginFlowWithPasswordMethod.SetCsrfToken(csrfToken)
@@ -47,12 +48,13 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 
 	if err != nil {
 		if responseCookies == nil {
-			return *client.NewSessionWithDefaults(), "", err
+			msg := helper.ExtractErrorMessage(r)
+			return *client.NewSessionWithDefaults(), "", msg, err
 		}
-		return *client.NewSessionWithDefaults(), responseCookies[1], err
+		return *client.NewSessionWithDefaults(), responseCookies[1], "", err
 	}
 
-	return resp.Session, responseCookies[1], nil
+	return resp.Session, responseCookies[1], "", nil
 }
 
 func SubmitLoginWithMFAWrapper(cookie string, flowID string, csrfToken string, totp string) (client.Session, string, error) {

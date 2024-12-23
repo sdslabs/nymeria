@@ -8,6 +8,7 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/middleware"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/settings"
@@ -19,7 +20,7 @@ func HandleGetSettingsFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Initialize Settings Failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Initialize Settings Failed",
@@ -31,7 +32,7 @@ func HandleGetSettingsFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Initialize Settings flow Failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error": err.Error(),
 		})
@@ -85,7 +86,7 @@ func HandleUpdateProfile(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process json body",
@@ -96,7 +97,7 @@ func HandleUpdateProfile(c *gin.Context) {
 	session, err := middleware.GetSession(c)
 	if err != nil {
 		log.ErrorLogger("Unable to get session", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to get session",
@@ -122,7 +123,7 @@ func HandleUpdateProfile(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Flow Cookie not found", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -134,7 +135,7 @@ func HandleUpdateProfile(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Session Cookie not found", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -167,7 +168,7 @@ func HandleChangePassword(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process json body",
@@ -179,7 +180,7 @@ func HandleChangePassword(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Flow Cookie not found", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -191,7 +192,7 @@ func HandleChangePassword(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Session Cookie not found", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -215,7 +216,7 @@ func HandleChangePassword(c *gin.Context) {
 	session, err := middleware.GetSession(c)
 	if err != nil {
 		log.ErrorLogger("Unable to get session", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to get session",
@@ -253,7 +254,7 @@ func HandleToggleTOTP(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process json body",
@@ -265,7 +266,7 @@ func HandleToggleTOTP(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Flow Cookie not found", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -277,7 +278,7 @@ func HandleToggleTOTP(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Session Cookie not found", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -302,7 +303,7 @@ func HandleToggleTOTP(c *gin.Context) {
 	session, err := middleware.GetSession(c)
 	if err != nil {
 		log.ErrorLogger("Unable to get session", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to get session",

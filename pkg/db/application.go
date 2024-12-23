@@ -1,8 +1,6 @@
 package db
 
-import (
-	"github.com/sdslabs/nymeria/helper"
-)
+import "github.com/sdslabs/nymeria/helper"
 
 func CreateApplication(name string, redirectURL string, allowedDomains string, organization string, clientKey string, clientSecret string) error {
 	sqlStatement := `INSERT INTO application (name, redirect_url, allowed_domains, organization, created_at, client_key, client_secret) VALUES ($1, $2, $3, $4, now(), $5,$6);`

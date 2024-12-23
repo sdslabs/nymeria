@@ -5,11 +5,10 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/middleware"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/admin"
@@ -24,7 +23,7 @@ func HandleCreateIdentityFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
@@ -65,7 +64,7 @@ func HandleGetIdentityFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to convert map to json", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to convert map to json",
@@ -80,7 +79,7 @@ func HandleGetIdentityFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to convert JSON to map", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to convert JSON to map",
@@ -103,7 +102,7 @@ func HandleDeleteIdentityFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
@@ -114,7 +113,7 @@ func HandleDeleteIdentityFlow(c *gin.Context) {
 	session, err := middleware.GetSession(c)
 	if err != nil {
 		log.ErrorLogger("Unable to get session", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to get session",
@@ -170,7 +169,7 @@ func HandleBanIdentity(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
@@ -181,7 +180,7 @@ func HandleBanIdentity(c *gin.Context) {
 	session, err := middleware.GetSession(c)
 	if err != nil {
 		log.ErrorLogger("Unable to get session", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to get session",
@@ -232,7 +231,7 @@ func HandleRemoveBanIdentity(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
@@ -273,7 +272,7 @@ func HandleRoleSwitch(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
@@ -284,7 +283,7 @@ func HandleRoleSwitch(c *gin.Context) {
 	session, err := middleware.GetSession(c)
 	if err != nil {
 		log.ErrorLogger("Unable to get session", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to get session",

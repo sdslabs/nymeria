@@ -2,12 +2,11 @@ package registration
 
 import (
 	"context"
-	"fmt"
-	"os"
 
 	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/pkg/middleware"
 )
 
@@ -36,7 +35,7 @@ func InitializeRegistrationFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, password string, data Traits) (string, []string, error) {
+func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, password string, data Traits) (string, []string, string, error) {
 	timeStamp := middleware.CurrentTimeStamp()
 	trait := map[string]interface{}{
 		"email":         data.Email,
@@ -58,12 +57,12 @@ func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken strin
 	resp, r, err := apiClient.FrontendAPI.UpdateRegistrationFlow(context.Background()).Flow(flowID).UpdateRegistrationFlowBody(submitDataBody).Cookie(cookie).Execute()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRegistrationFlow``: %v\n", err)
-		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return "", nil, err
+		msg := helper.ExtractErrorMessage(r)
+
+		return "", nil, msg, err
 	}
 
 	responseCookies := r.Header["Set-Cookie"]
 
-	return resp.GetContinueWith()[1].ContinueWithVerificationUi.GetFlow().Id, responseCookies, nil
+	return resp.GetContinueWith()[1].ContinueWithVerificationUi.GetFlow().Id, responseCookies, "", nil
 }

@@ -2,12 +2,11 @@ package api
 
 import (
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/logout"
 )
@@ -17,7 +16,7 @@ func HandleGetLogoutFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Session cookie not found", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Session cookie not found",
@@ -29,7 +28,7 @@ func HandleGetLogoutFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Kratos get logout flow failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Kratos get logout flow failed",
@@ -49,7 +48,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process json body",
@@ -61,7 +60,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Session cookie not found", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Session cookie not found",
@@ -72,7 +71,7 @@ func HandlePostLogoutFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Kratos get logout flow failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Kratos get logout flow failed",

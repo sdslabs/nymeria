@@ -1,11 +1,11 @@
 package middleware
 
 import (
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/db"
 )
@@ -15,7 +15,7 @@ func HandleAppAuthorization(c *gin.Context) {
 	err := c.BindJSON(&body)
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unable to process json body",
@@ -25,7 +25,7 @@ func HandleAppAuthorization(c *gin.Context) {
 	app, err := db.GetApplication(body.ClientKey, body.ClientSecret)
 	if err != nil {
 		log.ErrorLogger("Unable to get application", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Internal Server Error",
@@ -34,7 +34,7 @@ func HandleAppAuthorization(c *gin.Context) {
 	}
 	if app.RedirectURL != body.RedirectURL {
 		log.ErrorLogger("Redirect URL does not match", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Redirect URL does not match",
@@ -43,7 +43,7 @@ func HandleAppAuthorization(c *gin.Context) {
 	}
 	if app.ClientKey != body.ClientKey {
 		log.ErrorLogger("Client Key does not match", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unauthorized",
@@ -52,7 +52,7 @@ func HandleAppAuthorization(c *gin.Context) {
 	}
 	if app.ClientSecret != body.ClientSecret {
 		log.ErrorLogger("Client Secret does not match", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unauthorized",

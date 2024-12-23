@@ -18,7 +18,7 @@ func HandleGetApplication(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to get application data", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unable to get application data",
@@ -39,7 +39,7 @@ func HandlePostApplication(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unable to process json body",
@@ -73,7 +73,7 @@ func HandlePutApplication(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unable to process json body",
@@ -107,7 +107,7 @@ func HandleDeleteApplication(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unable to process json body",
@@ -141,7 +141,7 @@ func HandleUpdateClientSecret(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Unable to process json body",
