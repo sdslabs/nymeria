@@ -35,49 +35,6 @@ func HandleGetVerificationFlow(c *gin.Context) {
 	})
 }
 
-func HandleGetVerificationAfterRegistrationFlow(c *gin.Context) {
-	var t verification.SubmitVerificationBody
-	err := c.Bind(&t)
-
-	if err != nil {
-		log.ErrorLogger("Unable to process json body", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Unable to process json body",
-		})
-		return
-	}
-
-	cookie, err := c.Cookie("verification_flow")
-
-	if err != nil {
-		log.ErrorLogger("Cookie not found", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Cookie not found",
-		})
-		return
-	}
-
-	csrf_token, err := verification.InitializeVerificationAfterRegistrationFlowWrapper(cookie, t.FlowID)
-
-	if err != nil {
-		log.ErrorLogger("Initialize Verification Failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Initialize Verification Failed",
-		})
-		return
-	}
-
-	c.JSON(http.StatusOK, gin.H{
-		"csrf_token": csrf_token,
-	})
-}
-
 func HandlePostVerificationFlow(c *gin.Context) {
 	var t verification.SubmitVerificationBody
 	err := c.Bind(&t)

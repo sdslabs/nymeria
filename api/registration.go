@@ -10,6 +10,7 @@ import (
 	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/registration"
+	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/verification"
 )
 
 func HandleGetRegistrationFlow(c *gin.Context) {
@@ -72,10 +73,23 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		return
 	}
 
+	csrf_token, err := verification.InitializeVerificationAfterRegistrationFlowWrapper(sessionCookies[0], flowID)
+
+	if err != nil {
+		log.ErrorLogger("Initialize Verification Failed", err)
+		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Initialize Verification Failed",
+		})
+		return
+	}
+
 	c.SetCookie("verification_flow", sessionCookies[0], 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.SetCookie("sdslabs_session", sessionCookies[1], 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
 	c.JSON(http.StatusOK, gin.H{
-		"status": "created",
-		"flowID": flowID,
+		"status":     "created",
+		"flowID":     flowID,
+		"csrf_token": csrf_token,
 	})
 }
