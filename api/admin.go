@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"net/http"
 	"os"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
+	"github.com/sdslabs/nymeria/pkg/middleware"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/admin"
 )
 
@@ -23,21 +23,10 @@ func HandleCreateIdentityFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
-		})
-		return
-	}
-
-	if err != nil {
-		log.ErrorLogger("Unable to convert JSON to map", err)
-
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Unable to convert JSON to map",
 		})
 		return
 	}
@@ -75,7 +64,7 @@ func HandleGetIdentityFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to convert map to json", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to convert map to json",
@@ -90,7 +79,7 @@ func HandleGetIdentityFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to convert JSON to map", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to convert JSON to map",
@@ -113,10 +102,31 @@ func HandleDeleteIdentityFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
+		})
+		return
+	}
+
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode := helper.ExtractErrorCode(err)
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	id := identity.GetId()
+
+	if id == t.Identity {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": "Cannot delete own identity",
 		})
 		return
 	}
@@ -159,10 +169,31 @@ func HandleBanIdentity(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
+		})
+		return
+	}
+
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode := helper.ExtractErrorCode(err)
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	identityId := identity.GetId()
+
+	if identityId == t.Identity {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": "Cannot ban own identity",
 		})
 		return
 	}
@@ -200,7 +231,7 @@ func HandleRemoveBanIdentity(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
@@ -241,10 +272,31 @@ func HandleRoleSwitch(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Unable to process JSON body", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process JSON body",
+		})
+		return
+	}
+
+	session, err := middleware.GetSession(c)
+	if err != nil {
+		log.ErrorLogger("Unable to get session", err)
+		errCode := helper.ExtractErrorCode(err)
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Unable to get session",
+		})
+		return
+	}
+	identity := session.GetIdentity()
+	identityId := identity.GetId()
+
+	if identityId == t.Identity {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   "Bad request",
+			"message": "Cannot switch own role",
 		})
 		return
 	}

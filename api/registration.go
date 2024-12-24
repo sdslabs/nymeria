@@ -2,14 +2,14 @@ package api
 
 import (
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/registration"
+	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/verification"
 )
 
 func HandleGetRegistrationFlow(c *gin.Context) {
@@ -17,7 +17,12 @@ func HandleGetRegistrationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Kratos get registration flow failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
+
+		if errCode == 0 {
+			errCode = http.StatusInternalServerError
+		}
+
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Kratos get registration flow failed",
@@ -40,7 +45,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Unable to process json body", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Unable to process json body",
@@ -52,7 +57,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Cookie not found", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "cookie not found",
@@ -60,21 +65,35 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		return
 	}
 
-	session, err := registration.SubmitRegistrationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Traits)
+	flowID, sessionCookies, errMsg, err := registration.SubmitRegistrationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Traits)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post registration flow failed", err)
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Kratos post registration flow failed",
+			"message": errMsg,
 		})
 		return
 	}
 
-	c.SetCookie("sdslabs_session", session, 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
-	c.JSON(http.StatusOK, gin.H{
-		"status": "created",
-	})
+	csrf_token, err := verification.InitializeVerificationAfterRegistrationFlowWrapper(sessionCookies[0], flowID)
 
+	if err != nil {
+		log.ErrorLogger("Initialize Verification Failed", err)
+		errCode := helper.ExtractErrorCode(err)
+		c.JSON(errCode, gin.H{
+			"error":   err.Error(),
+			"message": "Initialize Verification Failed",
+		})
+		return
+	}
+
+	c.SetCookie("verification_flow", sessionCookies[0], 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+	c.SetCookie("sdslabs_session", sessionCookies[1], 3600, "/", config.NymeriaConfig.URL.Domain, true, true)
+	c.JSON(http.StatusOK, gin.H{
+		"status":     "created",
+		"flowID":     flowID,
+		"csrf_token": csrf_token,
+	})
 }

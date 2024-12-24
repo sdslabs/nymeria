@@ -24,10 +24,10 @@ func CreateIdentityFlowWrapper(data Identity) (*client.Identity, *http.Response,
 		"totp_enabled":  false,
 	}
 
-	adminCreateIdentityBody := *client.NewAdminCreateIdentityBody("default", trait) // AdminCreateIdentityBody |  (optional)
+	adminCreateIdentityBody := *client.NewCreateIdentityBody("default", trait) // AdminCreateIdentityBody |  (optional)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
-	createdIdentity, r, err := apiClient.V0alpha2Api.AdminCreateIdentity(context.Background()).AdminCreateIdentityBody(adminCreateIdentityBody).Execute()
+	createdIdentity, r, err := apiClient.IdentityAPI.CreateIdentity(context.Background()).CreateIdentityBody(adminCreateIdentityBody).Execute()
 
 	return createdIdentity, r, err
 }
@@ -35,7 +35,7 @@ func CreateIdentityFlowWrapper(data Identity) (*client.Identity, *http.Response,
 func GetIdentityFlowWrapper(createdIdentity string) (*client.Identity, *http.Response, error) {
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
 
-	getIdentity, r, err := apiClient.V0alpha2Api.AdminGetIdentity(context.Background(), createdIdentity).Execute()
+	getIdentity, r, err := apiClient.IdentityAPI.GetIdentity(context.Background(), createdIdentity).Execute()
 
 	return getIdentity, r, err
 }
@@ -43,7 +43,7 @@ func GetIdentityFlowWrapper(createdIdentity string) (*client.Identity, *http.Res
 func DeleteIdentityFlowWrapper(identity string) (*http.Response, error) {
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
 
-	r, err := apiClient.V0alpha2Api.AdminDeleteIdentity(context.Background(), identity).Execute()
+	r, err := apiClient.IdentityAPI.DeleteIdentity(context.Background(), identity).Execute()
 
 	return r, err
 }
@@ -51,36 +51,28 @@ func DeleteIdentityFlowWrapper(identity string) (*http.Response, error) {
 func ListIdentityFlowWrapper() ([]client.Identity, *http.Response, error) {
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
 
-	identities, r, err := apiClient.V0alpha2Api.AdminListIdentities(context.Background()).Execute()
+	identities, r, err := apiClient.IdentityAPI.ListIdentities(context.Background()).Execute()
 
 	return identities, r, err
 
 }
 
 func BanIdentityFlowWrapper(identity *client.Identity) (*client.Identity, *http.Response, error) {
-	newState, err := client.NewIdentityStateFromValue("inactive")
-	if err != nil {
-		return nil, nil, err
-	}
 
-	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *newState, identity.Traits.(map[string]interface{}))
+	submitDataBody := *client.NewUpdateIdentityBody(identity.SchemaId, "inactive", identity.Traits.(map[string]interface{}))
 
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
-	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity.Id).AdminUpdateIdentityBody(submitDataBody).Execute()
+	id, r, err := apiClient.IdentityAPI.UpdateIdentity(context.Background(), identity.Id).UpdateIdentityBody(submitDataBody).Execute()
 
 	return id, r, err
 }
 
 func RemoveBanIdentityFlowWrapper(identity *client.Identity) (*client.Identity, *http.Response, error) {
-	newState, err := client.NewIdentityStateFromValue("active")
-	if err != nil {
-		return nil, nil, err
-	}
 
-	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *newState, identity.Traits.(map[string]interface{}))
+	submitDataBody := *client.NewUpdateIdentityBody(identity.SchemaId, "active", identity.Traits.(map[string]interface{}))
 
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
-	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity.Id).AdminUpdateIdentityBody(submitDataBody).Execute()
+	id, r, err := apiClient.IdentityAPI.UpdateIdentity(context.Background(), identity.Id).UpdateIdentityBody(submitDataBody).Execute()
 
 	return id, r, err
 }
@@ -94,10 +86,10 @@ func RoleSwitchFlowWrapper(identity *client.Identity) (*client.Identity, *http.R
 		traits["role"] = "user"
 	}
 
-	submitDataBody := *client.NewAdminUpdateIdentityBody(identity.SchemaId, *identity.State, traits)
+	submitDataBody := *client.NewUpdateIdentityBody(identity.SchemaId, *identity.State, traits)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfigAdmin)
-	id, r, err := apiClient.V0alpha2Api.AdminUpdateIdentity(context.Background(), identity.Id).AdminUpdateIdentityBody(submitDataBody).Execute()
+	id, r, err := apiClient.IdentityAPI.UpdateIdentity(context.Background(), identity.Id).UpdateIdentityBody(submitDataBody).Execute()
 
 	return id, r, err
 }

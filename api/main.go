@@ -54,14 +54,16 @@ func Start() {
 
 	r.GET("/recovery", HandleGetRecoveryFlow)
 	r.POST("/recovery", HandlePostRecoveryFlow)
+	r.POST("/recovery-code", HandlePostRecoveryCodeFlow)
 
 	r.GET("/settings", HandleGetSettingsFlow)
-	r.POST("/updateprofile", HandleUpdateProfile)
-	r.POST("/changepassword", HandleChangePassword)
-	r.POST("/toggletotp", HandleToggleTOTP)
+	r.POST("/update-profile", HandleUpdateProfile)
+	r.POST("/change-password", HandleChangePassword)
+	r.POST("/toggle-totp", HandleToggleTOTP)
 
 	r.GET("/verification", HandleGetVerificationFlow)
 	r.POST("/verification", HandlePostVerificationFlow)
+	r.POST("/verification-code", HandlePostVerificationCodeFlow)
 
 	r.POST("/get_profile", HandlePostProfile)
 	r.POST("/get_verified_status", HandleGetVerifiedStatus)

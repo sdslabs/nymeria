@@ -60,7 +60,7 @@ func (k *kratosMiddleware) validateSession(r *http.Request) (*client.Session, er
 	if cookie == nil {
 		return nil, errors.New("no session found in cookie")
 	}
-	resp, _, err := k.client.V0alpha2Api.ToSession(context.Background()).Cookie(cookie.String()).Execute()
+	resp, _, err := k.client.FrontendAPI.ToSession(context.Background()).Cookie(cookie.String()).Execute()
 	if err != nil {
 		return nil, err
 	}

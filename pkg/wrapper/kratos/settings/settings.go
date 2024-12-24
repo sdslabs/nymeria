@@ -11,22 +11,17 @@ import (
 	"github.com/sdslabs/nymeria/config"
 )
 
-func InitializeSettingsFlowWrapper(session_cookie string, recovery_cookie string) (client.SelfServiceSettingsFlow, string, error) {
+func InitializeSettingsFlowWrapper(session_cookie string) (client.SettingsFlow, string, error) {
 
 	returnTo := "" // string | The URL to return the browser to after the flow was completed. (optional)
 
-	var cookie string
-
-	if recovery_cookie != "" {
-		cookie = "ory_kratos_session=" + recovery_cookie
-	} else {
-		cookie = strings.Split(session_cookie, ";")[0]
-	}
+	cookie := strings.Split(session_cookie, ";")[0]
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	resp, httpRes, err := apiClient.V0alpha2Api.InitializeSelfServiceSettingsFlowForBrowsers(context.Background()).ReturnTo(returnTo).Cookie(cookie).Execute()
+	resp, httpRes, err := apiClient.FrontendAPI.CreateBrowserSettingsFlow(context.Background()).ReturnTo(returnTo).Cookie(cookie).Execute()
+
 	if err != nil {
-		return *client.NewSelfServiceSettingsFlowWithDefaults(), "", err
+		return *client.NewSettingsFlowWithDefaults(), "", err
 	}
 
 	cookie = httpRes.Header.Get("Set-Cookie")
@@ -35,15 +30,15 @@ func InitializeSettingsFlowWrapper(session_cookie string, recovery_cookie string
 }
 
 func SubmitSettingsFlowPasswordMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, password string) (string, error) {
-	submitFlowBody := client.SubmitSelfServiceSettingsFlowBody{
-		SubmitSelfServiceSettingsFlowWithPasswordMethodBody: client.NewSubmitSelfServiceSettingsFlowWithPasswordMethodBody("password", password),
+	submitFlowBody := client.UpdateSettingsFlowBody{
+		UpdateSettingsFlowWithPasswordMethod: client.NewUpdateSettingsFlowWithPasswordMethod("password", password),
 	}
 
-	submitFlowBody.SubmitSelfServiceSettingsFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateSettingsFlowWithPasswordMethod.SetCsrfToken(csrfToken)
 	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).SubmitSelfServiceSettingsFlowBody(submitFlowBody).Execute()
+	_, r, err := apiClient.FrontendAPI.UpdateSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).UpdateSettingsFlowBody(submitFlowBody).Execute()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
@@ -55,16 +50,16 @@ func SubmitSettingsFlowPasswordMethod(flow_cookie string, session_cookie string,
 }
 
 func SubmitSettingsFlowProfileMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, traits map[string]interface{}) (string, error) {
-	submitFlowBody := client.SubmitSelfServiceSettingsFlowBody{
-		SubmitSelfServiceSettingsFlowWithProfileMethodBody: client.NewSubmitSelfServiceSettingsFlowWithProfileMethodBody("profile", traits),
+	submitFlowBody := client.UpdateSettingsFlowBody{
+		UpdateSettingsFlowWithProfileMethod: client.NewUpdateSettingsFlowWithProfileMethod("profile", traits),
 	}
 
-	submitFlowBody.SubmitSelfServiceSettingsFlowWithProfileMethodBody.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateSettingsFlowWithProfileMethod.SetCsrfToken(csrfToken)
 
 	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).SubmitSelfServiceSettingsFlowBody(submitFlowBody).Execute()
+	_, r, err := apiClient.FrontendAPI.UpdateSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).UpdateSettingsFlowBody(submitFlowBody).Execute()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
@@ -76,18 +71,18 @@ func SubmitSettingsFlowProfileMethod(flow_cookie string, session_cookie string, 
 }
 
 func SubmitSettingsFlowTOTPMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, TOTPcode string, TOTPUnlink bool) (string, error) {
-	submitFlowBody := client.SubmitSelfServiceSettingsFlowBody{
-		SubmitSelfServiceSettingsFlowWithTotpMethodBody: client.NewSubmitSelfServiceSettingsFlowWithTotpMethodBody("totp"),
+	submitFlowBody := client.UpdateSettingsFlowBody{
+		UpdateSettingsFlowWithTotpMethod: client.NewUpdateSettingsFlowWithTotpMethod("totp"),
 	}
 
-	submitFlowBody.SubmitSelfServiceSettingsFlowWithTotpMethodBody.SetCsrfToken(csrfToken)
-	submitFlowBody.SubmitSelfServiceSettingsFlowWithTotpMethodBody.SetTotpCode(TOTPcode)
-	submitFlowBody.SubmitSelfServiceSettingsFlowWithTotpMethodBody.SetTotpUnlink(TOTPUnlink)
+	submitFlowBody.UpdateSettingsFlowWithTotpMethod.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateSettingsFlowWithTotpMethod.SetTotpCode(TOTPcode)
+	submitFlowBody.UpdateSettingsFlowWithTotpMethod.SetTotpUnlink(TOTPUnlink)
 
 	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).SubmitSelfServiceSettingsFlowBody(submitFlowBody).Execute()
+	_, r, err := apiClient.FrontendAPI.UpdateSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).UpdateSettingsFlowBody(submitFlowBody).Execute()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)

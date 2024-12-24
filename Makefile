@@ -7,6 +7,15 @@ GOIMPORTS := $(GOPATH_BIN)/goimports
 GO_PACKAGES = $(shell go list ./... | grep -v vendor)
 PACKAGE_BASE := github.com/sdslabs/nymeria
 
+DB_HOST = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'host:' | sed -n 's/.*host: *"\?\([^"]*\)"\?/\1/p')
+DB_PORT = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'port:' | sed -n 's/.*port: *"\?\([^"]*\)"\?/\1/p')
+DB_USER = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'user:' | sed -n 's/.*user: *"\?\([^"]*\)"\?/\1/p')
+DB_PASS = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'password:' | sed -n 's/.*password: *"\?\([^"]*\)"\?/\1/p')
+DB_NAME = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'db_name:' | sed -n 's/.*db_name: *"\?\([^"]*\)"\?/\1/p')
+
+UP_MIGRATION_FILE = db/migrations/000001_init_schema.up.sql
+DOWN_MIGRATION_FILE = db/migrations/000001_init_schema.down.sql
+
 .PHONY: help vendor build run dev lint format clean
 
 help:
@@ -39,7 +48,7 @@ install-golangci-lint:
 	@echo "=====> Installing golangci-lint..."
 	@curl -sSfL \
 	 	https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
-	 	sh -s -- -b $(GOPATH_BIN) v1.52.2
+	 	sh -s -- -b $(GOPATH_BIN) v1.62.2
 
 lint: install-golangci-lint
 	@$(GO) vet $(GO_PACKAGES)
@@ -73,4 +82,10 @@ install-air:
 	@curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(GOPATH_BIN)
 	@echo "Air installed successfully"	
 
-	
+apply-migration:
+	@echo "Applying migration..."
+	PGPASSWORD=$(DB_PASS) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(UP_MIGRATION_FILE)
+
+rollback-migration:
+	@echo "Rolling back migration..."
+	PGPASSWORD=$(DB_PASS) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(DOWN_MIGRATION_FILE)

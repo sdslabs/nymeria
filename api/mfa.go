@@ -2,12 +2,12 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
 	"github.com/sdslabs/nymeria/pkg/wrapper/kratos/login"
 )
@@ -19,7 +19,7 @@ func HandleGetMFAFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Session Cookie not found", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",
@@ -72,7 +72,7 @@ func HandlePostMFAFlow(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Session Cookie not found", err)
 
-		errCode, _ := strconv.Atoi(strings.Split(err.Error(), " ")[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Cookie not found",

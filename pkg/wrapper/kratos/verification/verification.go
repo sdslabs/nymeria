@@ -13,7 +13,7 @@ import (
 func InitializeVerificationFlowWrapper() (string, string, string, error) {
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers(context.Background()).Execute()
+	resp, r, err := apiClient.FrontendAPI.CreateBrowserVerificationFlow(context.Background()).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
@@ -33,17 +33,41 @@ func InitializeVerificationFlowWrapper() (string, string, string, error) {
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken string, email string) (string, error) {
+func InitializeVerificationAfterRegistrationFlowWrapper(cookie string, flowID string) (string, error) {
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	submitFlowBody := client.SubmitSelfServiceVerificationFlowBody{
-		SubmitSelfServiceVerificationFlowWithLinkMethodBody: client.NewSubmitSelfServiceVerificationFlowWithLinkMethodBody(email, "link"),
+	resp, r, err := apiClient.FrontendAPI.GetVerificationFlow(context.Background()).Cookie(cookie).Id(flowID).Execute()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.InitializeSelfServiceVerificationFlowForBrowsers``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
 	}
 
-	submitFlowBody.SubmitSelfServiceVerificationFlowWithLinkMethodBody.SetCsrfToken(csrfToken)
+	var csrf_token string
+
+	for _, node := range resp.Ui.Nodes {
+		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
+			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
+			csrf_token, _ = csrf_token_interface.(string)
+			break
+		}
+	}
+
+	return csrf_token, nil
+}
+
+func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken string, email string) (string, error) {
+
+	submitFlowBody := client.UpdateVerificationFlowBody{
+		UpdateVerificationFlowWithCodeMethod: client.NewUpdateVerificationFlowWithCodeMethod("code"),
+	}
+
+	submitFlowBody.UpdateVerificationFlowWithCodeMethod.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateVerificationFlowWithCodeMethod.SetEmail(email)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	_, r, err := apiClient.V0alpha2Api.SubmitSelfServiceVerificationFlow(context.Background()).Flow(flowID).SubmitSelfServiceVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
+	resp, r, err := apiClient.FrontendAPI.UpdateVerificationFlow(context.Background()).Flow(flowID).UpdateVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
 
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
@@ -51,5 +75,44 @@ func SubmitVerificationFlowWrapper(cookie string, flowID string, csrfToken strin
 		return "", err
 	}
 
-	return "", nil
+	var csrf_token string
+
+	for _, node := range resp.Ui.Nodes {
+		if node.Attributes.UiNodeInputAttributes.Name == "csrf_token" {
+			csrf_token_interface := node.Attributes.UiNodeInputAttributes.Value
+			csrf_token, _ = csrf_token_interface.(string)
+			break
+		}
+	}
+
+	return csrf_token, nil
+}
+
+func SubmitVerificationCodeFlowWrapper(cookie string, flowID string, csrfToken string, verificationCode string) error {
+
+	submitFlowBody := client.UpdateVerificationFlowBody{
+		UpdateVerificationFlowWithCodeMethod: client.NewUpdateVerificationFlowWithCodeMethod("code"),
+	}
+
+	submitFlowBody.UpdateVerificationFlowWithCodeMethod.SetCsrfToken(csrfToken)
+	submitFlowBody.UpdateVerificationFlowWithCodeMethod.SetCode(verificationCode)
+
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+
+	resp, r, err := apiClient.FrontendAPI.UpdateVerificationFlow(context.Background()).Flow(flowID).Token(verificationCode).UpdateVerificationFlowBody(submitFlowBody).Cookie(cookie).Execute()
+
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		return err
+	}
+
+	if resp.Ui.Messages[len(resp.Ui.Messages)-1].Text == "The verification code is invalid or has already been used. Please try again." {
+		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", "The verification code is invalid or has already been used. Please try again.")
+		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+
+		return fmt.Errorf("the verification code is invalid or has already been used")
+	}
+
+	return nil
 }

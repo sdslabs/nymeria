@@ -1,22 +1,22 @@
 linters:
   disable-all: true
   enable:
-  - govet
-  - staticcheck
-  - unused
-  - gosimple
-  - revive
-  - unconvert
-  - goconst
-  - gocyclo
-  - gofmt
-  - goimports
-  - misspell
-  - lll
+    - govet
+    - staticcheck
+    - unused
+    - gosimple
+    - revive
+    - unconvert
+    - goconst
+    - gocyclo
+    - gofmt
+    - goimports
+    - misspell
+    - lll
 
 linters-settings:
   govet:
-    check-shadowing: true
+    shadow: true
 
   errcheck:
     check-type-assertions: true
@@ -41,7 +41,7 @@ linters-settings:
 
   gocyclo:
     min-complexity: 20
-  
+
   revive:
     ignore-generated-header: true
     ignore-patterns:

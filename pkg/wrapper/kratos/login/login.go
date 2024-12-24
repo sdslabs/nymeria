@@ -6,15 +6,16 @@ import (
 	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 )
 
 func InitializeLoginFlowWrapper(aal string, cookie string) (string, string, string, error) {
-	refresh := false                         // bool | Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session. (optional)
-	returnTo := "" // string | The URL to return the browser to after the flow was completed. (optional)
+	refresh := false // bool | Refresh a login session  If set to true, this will refresh an existing login session by asking the user to sign in again. This will reset the authenticated_at time of the session. (optional)
+	returnTo := ""   // string | The URL to return the browser to after the flow was completed. (optional)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	resp, r, err := apiClient.V0alpha2Api.InitializeSelfServiceLoginFlowForBrowsers(context.Background()).Refresh(refresh).Aal(aal).ReturnTo(returnTo).Cookie(cookie).Execute()
+	resp, r, err := apiClient.FrontendAPI.CreateBrowserLoginFlow(context.Background()).Refresh(refresh).Aal(aal).ReturnTo(returnTo).Cookie(cookie).Execute()
 
 	if err != nil {
 		return "", "", "", err
@@ -34,30 +35,36 @@ func InitializeLoginFlowWrapper(aal string, cookie string) (string, string, stri
 	return setCookie, resp.Id, csrf_token, nil
 }
 
-func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, identifier string) (client.Session, string, error) {
-	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithPasswordMethodBody: client.NewSubmitSelfServiceLoginFlowWithPasswordMethodBody(identifier, "password", pass)} // SubmitSelfServiceLoginFlowBody |
+func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass string, identifier string) (client.Session, string, string, error) {
 
-	submitDataBody.SubmitSelfServiceLoginFlowWithPasswordMethodBody.SetCsrfToken(csrfToken)
+	submitDataBody := client.UpdateLoginFlowBody{UpdateLoginFlowWithPasswordMethod: client.NewUpdateLoginFlowWithPasswordMethod(identifier, "password", pass)} // SubmitSelfServiceLoginFlowBody |
+	submitDataBody.UpdateLoginFlowWithPasswordMethod.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
-	if err != nil {
-		return *client.NewSessionWithDefaults(), "", err
-	}
+
+	resp, r, err := apiClient.FrontendAPI.UpdateLoginFlow(context.Background()).Cookie(cookie).Flow(flowID).XSessionToken("").UpdateLoginFlowBody(submitDataBody).Execute()
 
 	responseCookies := r.Header["Set-Cookie"]
 
-	return resp.Session, responseCookies[1], nil
+	if err != nil {
+		if responseCookies == nil {
+			msg := helper.ExtractErrorMessage(r)
+			return *client.NewSessionWithDefaults(), "", msg, err
+		}
+		return *client.NewSessionWithDefaults(), responseCookies[1], "", err
+	}
+
+	return resp.Session, responseCookies[1], "", nil
 }
 
 func SubmitLoginWithMFAWrapper(cookie string, flowID string, csrfToken string, totp string) (client.Session, string, error) {
-	submitDataBody := client.SubmitSelfServiceLoginFlowBody{SubmitSelfServiceLoginFlowWithTotpMethodBody: client.NewSubmitSelfServiceLoginFlowWithTotpMethodBody("totp", totp)} // SubmitSelfServiceLoginFlowBody |
+	submitDataBody := client.UpdateLoginFlowBody{UpdateLoginFlowWithTotpMethod: client.NewUpdateLoginFlowWithTotpMethod("totp", totp)} // SubmitSelfServiceLoginFlowBody |
 
-	submitDataBody.SubmitSelfServiceLoginFlowWithTotpMethodBody.SetCsrfToken(csrfToken)
+	submitDataBody.UpdateLoginFlowWithTotpMethod.SetCsrfToken(csrfToken)
 
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	resp, r, err := apiClient.V0alpha2Api.SubmitSelfServiceLoginFlow(context.Background()).Flow(flowID).SubmitSelfServiceLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
+	resp, r, err := apiClient.FrontendAPI.UpdateLoginFlow(context.Background()).Flow(flowID).UpdateLoginFlowBody(submitDataBody).XSessionToken("").Cookie(cookie).Execute()
 
 	if err != nil {
 		return *client.NewSessionWithDefaults(), "", err

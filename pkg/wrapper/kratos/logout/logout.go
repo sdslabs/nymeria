@@ -2,17 +2,16 @@ package logout
 
 import (
 	"context"
-	"net/http"
 
 	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
 )
 
-func InitializeLogoutFlowWrapper(cookie string) (*client.SelfServiceLogoutUrl, error) {
+func InitializeLogoutFlowWrapper(cookie string) (*client.LogoutFlow, error) {
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	resp, _, err := apiClient.V0alpha2Api.CreateSelfServiceLogoutFlowUrlForBrowsers(context.Background()).Cookie(cookie).Execute()
+	resp, _, err := apiClient.FrontendAPI.CreateBrowserLogoutFlow(context.Background()).Cookie(cookie).Execute()
 
 	if err != nil {
 		return nil, err
@@ -22,21 +21,9 @@ func InitializeLogoutFlowWrapper(cookie string) (*client.SelfServiceLogoutUrl, e
 }
 
 func SubmitLogoutFlowWrapper(cookie string, token string, returnToUrl string) error {
-	client := &http.Client{}
-	req, err := http.NewRequest(http.MethodGet, "http://127.0.0.1:4433/self-service/logout", nil)
-	if err != nil {
-		return err
-	}
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
 
-	q := req.URL.Query()
-	q.Add("token", token)
-
-	req.URL.RawQuery = q.Encode()
-	req.Header.Set("Cookie", cookie)
-	req.Header.Set("Accept", "application/json")
-
-	_, err = client.Do(req)
-
+	_, err := apiClient.FrontendAPI.UpdateLogoutFlow(context.Background()).Cookie(cookie).Token(token).Execute()
 	if err != nil {
 		return err
 	}

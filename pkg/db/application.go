@@ -1,8 +1,6 @@
 package db
 
-import (
-	"github.com/sdslabs/nymeria/helper"
-)
+import "github.com/sdslabs/nymeria/helper"
 
 func CreateApplication(name string, redirectURL string, allowedDomains string, organization string, clientKey string, clientSecret string) error {
 	sqlStatement := `INSERT INTO application (name, redirect_url, allowed_domains, organization, created_at, client_key, client_secret) VALUES ($1, $2, $3, $4, now(), $5,$6);`
@@ -80,7 +78,7 @@ func GetAllApplication() ([]Application, error) {
 	for rows.Next() {
 		var t Application
 
-		err = rows.Scan(&t.ID, &t.Name, &t.RedirectURL, &t.AllowedDomains, &t.UpdatedAt, &t.Organization, &t.CreatedAt, &t.ClientKey, &t.ClientSecret)
+		err = rows.Scan(&t.ID, &t.Name, &t.RedirectURL, &t.AllowedDomains, &t.Organization, &t.CreatedAt, &t.ClientKey, &t.ClientSecret)
 		if err != nil {
 			return nil, err
 		}
@@ -122,7 +120,7 @@ func GetApplication(client_key string, client_secret string) (Application, error
 
 	var t Application
 
-	err = db.QueryRow(sqlStatement, client_key, client_secret).Scan(&t.ID, &t.Name, &t.RedirectURL, &t.AllowedDomains, &t.UpdatedAt, &t.Organization, &t.CreatedAt, &t.ClientKey, &t.ClientSecret)
+	err = db.QueryRow(sqlStatement, client_key, client_secret).Scan(&t.ID, &t.Name, &t.RedirectURL, &t.AllowedDomains, &t.Organization, &t.CreatedAt, &t.ClientKey, &t.ClientSecret)
 
 	if err != nil {
 		return Application{}, err

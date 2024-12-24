@@ -24,7 +24,7 @@ func GetSession(c *gin.Context) (*client.Session, error) {
 		return nil, err
 	}
 	apiClient := client.NewAPIClient(config.KratosClientConfig)
-	resp, r, err := apiClient.V0alpha2Api.ToSession(context.Background()).Cookie(cookie).Execute()
+	resp, r, err := apiClient.FrontendAPI.ToSession(context.Background()).Cookie(cookie).Execute()
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.ToSession``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
