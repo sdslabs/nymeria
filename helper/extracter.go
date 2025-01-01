@@ -24,6 +24,86 @@ func ExtractErrorCode(Error error) int {
 	return errCode
 }
 
+func ExtractSuccessMessage(r *http.Response) string {
+
+	body, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		log.ErrorLogger("Success message extractor failed: ", err)
+		return "Error: " + err.Error()
+	}
+
+	var resp KratosHttpResponseBody
+	err = json.Unmarshal(body, &resp)
+
+	if err != nil {
+		log.ErrorLogger("Info message extractor failed: ", err)
+		return "Info message unmarshal error"
+	}
+
+	if len(resp.UI.Nodes) == 0 {
+		log.Logger.Warn(string(body))
+		log.ErrorLogger("Invalid response from Kratos.", err)
+		return "Invalid response from Kratos."
+	}
+
+	msg := ""
+	for _, node := range resp.UI.Nodes {
+		for _, message := range node.Messages {
+			if message.Type == "success" {
+				msg += message.Text + ", "
+			}
+		}
+	}
+	for _, message := range resp.UI.Messages {
+		if message.Type == "success" {
+			msg += message.Text + ", "
+		}
+	}
+
+	return strings.Trim(msg, ", ")
+}
+
+func ExtractInfoMessage(r *http.Response) string {
+
+	body, err := io.ReadAll(r.Body)
+
+	if err != nil {
+		log.ErrorLogger("Info message extractor failed: ", err)
+		return "Error: " + err.Error()
+	}
+
+	var resp KratosHttpResponseBody
+	err = json.Unmarshal(body, &resp)
+
+	if err != nil {
+		log.ErrorLogger("Info message extractor failed: ", err)
+		return "Info message unmarshal error"
+	}
+
+	if len(resp.UI.Nodes) == 0 {
+		log.Logger.Warn(string(body))
+		log.ErrorLogger("Invalid response from Kratos.", err)
+		return "Invalid response from Kratos."
+	}
+
+	msg := ""
+	for _, node := range resp.UI.Nodes {
+		for _, message := range node.Messages {
+			if message.Type == "info" {
+				msg += message.Text + ", "
+			}
+		}
+	}
+	for _, message := range resp.UI.Messages {
+		if message.Type == "info" {
+			msg += message.Text + ", "
+		}
+	}
+
+	return strings.Trim(msg, ", ")
+}
+
 func ExtractErrorMessage(r *http.Response) string {
 
 	body, err := io.ReadAll(r.Body)
@@ -33,17 +113,33 @@ func ExtractErrorMessage(r *http.Response) string {
 		return "Error"
 	}
 
-	var resp HttpResponseBody
+	var resp KratosHttpResponseBody
 	err = json.Unmarshal(body, &resp)
 
 	if err != nil {
 		log.ErrorLogger("Error message extractor failed: ", err)
-		return "Error"
+		return "Error message unmarshal error"
 	}
 
-	if len(resp.UI.Messages) == 0 {
-		return "Error"
+	if len(resp.UI.Nodes) == 0 {
+		log.Logger.Warn(string(body))
+		log.ErrorLogger("Invalid response from Kratos.", err)
+		return "Invalid response from Kratos."
 	}
 
-	return resp.UI.Messages[0].Text
+	msg := ""
+	for _, node := range resp.UI.Nodes {
+		for _, message := range node.Messages {
+			if message.Type == "error" {
+				msg += message.Text + ", "
+			}
+		}
+	}
+
+	for _, message := range resp.UI.Messages {
+		if message.Type == "error" {
+			msg += message.Text + ", "
+		}
+	}
+	return strings.Trim(msg, ", ")
 }
