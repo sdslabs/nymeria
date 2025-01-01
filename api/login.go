@@ -2,8 +2,6 @@ package api
 
 import (
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -70,7 +68,7 @@ func HandlePostLoginFlow(c *gin.Context) {
 	if session == "" {
 		log.ErrorLogger("Post login flow failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": errMsg,

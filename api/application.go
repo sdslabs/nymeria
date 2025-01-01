@@ -2,7 +2,6 @@ package api
 
 import (
 	"net/http"
-	"strconv"
 	"strings"
 
 	"github.com/gin-gonic/gin"
@@ -52,7 +51,7 @@ func HandlePostApplication(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Create application failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Create application failed",
@@ -86,7 +85,7 @@ func HandlePutApplication(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Update application failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Update application failed",
@@ -120,7 +119,7 @@ func HandleDeleteApplication(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Delete application failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Delete application failed",
@@ -154,7 +153,7 @@ func HandleUpdateClientSecret(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Client Secret update failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   strings.Split(err.Error(), " ")[1],
 			"message": "Client Secret update failed",
