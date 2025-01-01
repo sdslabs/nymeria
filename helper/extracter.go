@@ -26,7 +26,7 @@ func ExtractErrorCode(Error error) int {
 }
 
 func ExtractSuccessMessage(r *http.Response) string {
-	
+
 	if r == nil {
 		log.ErrorLogger("Error message extractor failed: ", errors.New("response is nil"))
 		return "Kratos Connection Refused"
@@ -71,7 +71,7 @@ func ExtractSuccessMessage(r *http.Response) string {
 }
 
 func ExtractInfoMessage(r *http.Response) string {
-	
+
 	if r == nil {
 		log.ErrorLogger("Error message extractor failed: ", errors.New("response is nil"))
 		return "Kratos Connection Refused"
