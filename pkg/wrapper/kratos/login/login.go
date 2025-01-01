@@ -47,11 +47,11 @@ func SubmitLoginFlowWrapper(cookie string, flowID string, csrfToken string, pass
 	responseCookies := r.Header["Set-Cookie"]
 
 	if err != nil {
+		msg := helper.ExtractErrorMessage(r)
 		if responseCookies == nil {
-			msg := helper.ExtractErrorMessage(r)
 			return *client.NewSessionWithDefaults(), "", msg, err
 		}
-		return *client.NewSessionWithDefaults(), responseCookies[1], "", err
+		return *client.NewSessionWithDefaults(), responseCookies[1], msg, err
 	}
 
 	return resp.Session, responseCookies[1], "", nil

@@ -9,6 +9,7 @@ import (
 	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 )
 
 func InitializeSettingsFlowWrapper(session_cookie string) (client.SettingsFlow, string, error) {
@@ -41,12 +42,15 @@ func SubmitSettingsFlowPasswordMethod(flow_cookie string, session_cookie string,
 	_, r, err := apiClient.FrontendAPI.UpdateSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).UpdateSettingsFlowBody(submitFlowBody).Execute()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
+		msg := helper.ExtractErrorMessage(r)
+		fmt.Fprintf(os.Stderr, "Error when calling `SubmitSettingsFlowPasswordMethod`: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return "", err
+		return msg, err
 	}
 
-	return "Password Changed", nil
+	msg := helper.ExtractSuccessMessage(r)
+
+	return msg + " Password Changed", nil
 }
 
 func SubmitSettingsFlowProfileMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, traits map[string]interface{}) (string, error) {
@@ -62,12 +66,15 @@ func SubmitSettingsFlowProfileMethod(flow_cookie string, session_cookie string, 
 	_, r, err := apiClient.FrontendAPI.UpdateSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).UpdateSettingsFlowBody(submitFlowBody).Execute()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
+		msg := helper.ExtractErrorMessage(r)
+		fmt.Fprintf(os.Stderr, "Error when calling `SubmitSettingsFlowProfileMethod`: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return "", err
+		return msg, err
 	}
 
-	return "Profile Updated", nil
+	msg := helper.ExtractSuccessMessage(r)
+
+	return msg + " Profile Updated", nil
 }
 
 func SubmitSettingsFlowTOTPMethod(flow_cookie string, session_cookie string, flowID string, csrfToken string, TOTPcode string, TOTPUnlink bool) (string, error) {
@@ -85,10 +92,13 @@ func SubmitSettingsFlowTOTPMethod(flow_cookie string, session_cookie string, flo
 	_, r, err := apiClient.FrontendAPI.UpdateSettingsFlow(context.Background()).Flow(flowID).Cookie(cookie).UpdateSettingsFlowBody(submitFlowBody).Execute()
 
 	if err != nil {
-		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceVerificationFlow``: %v\n", err)
+		msg := helper.ExtractErrorMessage(r)
+		fmt.Fprintf(os.Stderr, "Error when calling `SubmitSettingsFlowTOTPMethod`: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return "", err
+		return msg, err
 	}
 
-	return "Totp Toggled", nil
+	msg := helper.ExtractSuccessMessage(r)
+
+	return msg + " Totp Toggled", nil
 }
