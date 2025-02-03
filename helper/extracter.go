@@ -157,5 +157,6 @@ func ExtractErrorMessage(r *http.Response) string {
 			msg += message.Text + ", "
 		}
 	}
+
 	return strings.Trim(msg, ", ")
 }

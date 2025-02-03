@@ -206,7 +206,7 @@ func HandleChangePassword(c *gin.Context) {
 		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Kratos post settings change password flow failed",
+			"message": msg,
 		})
 		return
 	}

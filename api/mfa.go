@@ -83,12 +83,13 @@ func HandlePostMFAFlow(c *gin.Context) {
 	csrfToken := req_body.CsrfToken
 	cookie := strings.Split(flow_cookie, ";")[0] + "; " + strings.Split(session_cookie, ";")[0] + "; x-csrf-token=" + csrfToken
 
-	identity, session, err := login.SubmitLoginWithMFAWrapper(cookie, req_body.FlowID, req_body.CsrfToken, req_body.TOTP)
+	identity, session, errMsg, err := login.SubmitLoginWithMFAWrapper(cookie, req_body.FlowID, req_body.CsrfToken, req_body.TOTP)
 
 	if err != nil {
 		log.ErrorLogger("Kratos post MFA flow failed", err)
 		c.JSON(http.StatusInternalServerError, gin.H{
-			"error": "internal server error",
+			"error":   "MFA Failed",
+			"message": errMsg,
 		})
 		return
 	}
