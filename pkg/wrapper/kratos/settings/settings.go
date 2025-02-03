@@ -45,6 +45,7 @@ func SubmitSettingsFlowPasswordMethod(flow_cookie string, session_cookie string,
 		msg := helper.ExtractErrorMessage(r)
 		fmt.Fprintf(os.Stderr, "Error when calling `SubmitSettingsFlowPasswordMethod`: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
+		fmt.Fprintf(os.Stderr, "Error Message: %v\n", msg)
 		return msg, err
 	}
 
@@ -100,5 +101,8 @@ func SubmitSettingsFlowTOTPMethod(flow_cookie string, session_cookie string, flo
 
 	msg := helper.ExtractSuccessMessage(r)
 
-	return msg + " Totp Toggled", nil
+	if TOTPUnlink {
+		return msg + " Totp Unlinked", nil
+	}
+	return msg + " Totp Linked", nil
 }
