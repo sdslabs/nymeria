@@ -16,11 +16,11 @@ func HandleGetApplication(c *gin.Context) {
 
 	if err != nil {
 		log.ErrorLogger("Unable to get application data", err)
-
 		errCode := helper.ExtractErrorCode(err)
+		errStr := helper.ExtractErrorString(err)
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
-			"message": "Unable to get application data",
+			"error":   http.StatusText(errCode),
+			"message": "Unable to get application data: " + errStr,
 		})
 		return
 	}
@@ -36,11 +36,11 @@ func HandlePostApplication(c *gin.Context) {
 	err := c.BindJSON(&body)
 
 	if err != nil {
-		log.ErrorLogger("Unable to process json body", err)
-
 		errCode := helper.ExtractErrorCode(err)
+
+		log.ErrorLogger("Couldn't create application.", err)
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   http.StatusText(errCode),
 			"message": "Unable to process json body",
 		})
 		return
@@ -52,9 +52,10 @@ func HandlePostApplication(c *gin.Context) {
 		log.ErrorLogger("Create application failed", err)
 
 		errCode := helper.ExtractErrorCode(err)
+		errStr := helper.ExtractErrorString(err)
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
-			"message": "Create application failed",
+			"error":   http.StatusText(errCode),
+			"message": "Create application failed: " + errStr,
 		})
 		return
 	}
@@ -74,7 +75,7 @@ func HandlePutApplication(c *gin.Context) {
 
 		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   http.StatusText(errCode),
 			"message": "Unable to process json body",
 		})
 		return
@@ -86,9 +87,10 @@ func HandlePutApplication(c *gin.Context) {
 		log.ErrorLogger("Update application failed", err)
 
 		errCode := helper.ExtractErrorCode(err)
+		errStr := helper.ExtractErrorString(err)
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
-			"message": "Update application failed",
+			"error":   http.StatusText(errCode),
+			"message": "Update application failed: " + errStr,
 		})
 		return
 	}
@@ -108,7 +110,7 @@ func HandleDeleteApplication(c *gin.Context) {
 
 		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
+			"error":   http.StatusText(errCode),
 			"message": "Unable to process json body",
 		})
 		return
@@ -120,15 +122,16 @@ func HandleDeleteApplication(c *gin.Context) {
 		log.ErrorLogger("Delete application failed", err)
 
 		errCode := helper.ExtractErrorCode(err)
+		errStr := helper.ExtractErrorString(err)
 		c.JSON(errCode, gin.H{
-			"error":   strings.Split(err.Error(), " ")[1],
-			"message": "Delete application failed",
+			"error":   http.StatusText(errCode),
+			"message": "Delete application failed: " + errStr,
 		})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "application deleted",
+		"message": "application deleted",
 	})
 
 }
@@ -162,7 +165,7 @@ func HandleUpdateClientSecret(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "Client Secret updated successfully",
+		"message": "Client Secret updated successfully",
 	})
 
 }

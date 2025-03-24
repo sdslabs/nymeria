@@ -24,6 +24,18 @@ func ExtractErrorCode(Error error) int {
 	}
 	return errCode
 }
+func ExtractErrorString(Error error) string {
+	if Error == nil {
+		return ""
+	}
+
+	parts := strings.SplitN(Error.Error(), " ", 2)
+	if len(parts) < 2 {
+		return Error.Error()
+	}
+
+	return strings.TrimSpace(parts[1])
+}
 
 func ExtractSuccessMessage(r *http.Response) string {
 
