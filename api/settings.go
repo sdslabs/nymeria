@@ -2,8 +2,6 @@ package api
 
 import (
 	"net/http"
-	"strconv"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 
@@ -148,7 +146,7 @@ func HandleUpdateProfile(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Kratos post settings update profile flow failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Kratos post settings update profile flow failed",
@@ -205,10 +203,10 @@ func HandleChangePassword(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Kratos post settings change password flow failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Kratos post settings change password flow failed",
+			"message": msg,
 		})
 		return
 	}
@@ -235,7 +233,7 @@ func HandleChangePassword(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Kratos post settings update profile flow failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Kratos post settings update profile flow failed",
@@ -291,10 +289,10 @@ func HandleToggleTOTP(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Kratos post settings toggle totp flow failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
-			"message": "Kratos post settings toggle totp flow failed",
+			"message": msg,
 		})
 		return
 	}
@@ -323,7 +321,7 @@ func HandleToggleTOTP(c *gin.Context) {
 	if err != nil {
 		log.ErrorLogger("Kratos post settings update profile flow failed", err)
 
-		errCode, _ := strconv.Atoi((strings.Split(err.Error(), " "))[0])
+		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
 			"message": "Kratos post settings update profile flow failed",

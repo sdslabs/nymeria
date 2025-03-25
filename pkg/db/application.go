@@ -1,58 +1,100 @@
 package db
 
-import "github.com/sdslabs/nymeria/helper"
+import (
+	"errors"
+	"fmt"
 
-func CreateApplication(name string, redirectURL string, allowedDomains string, organization string, clientKey string, clientSecret string) error {
-	sqlStatement := `INSERT INTO application (name, redirect_url, allowed_domains, organization, created_at, client_key, client_secret) VALUES ($1, $2, $3, $4, now(), $5,$6);`
+	"github.com/sdslabs/nymeria/helper"
+)
+
+func CreateApplication(name, redirectURL, allowedDomains, organization, clientKey, clientSecret string) error {
+	if name == "" {
+		return errors.New("400 application name is required")
+	}
+	if redirectURL == "" {
+		return errors.New("400 redirect URL is required")
+	}
+	if allowedDomains == "" {
+		return errors.New("400 allowed domains is required")
+	}
+	if organization == "" {
+		return errors.New("400 organization is required")
+	}
+	if clientKey == "" {
+		return errors.New("400 client key is required")
+	}
+	if clientSecret == "" {
+		return errors.New("400 client secret is required")
+	}
+
+	sqlStatement := `INSERT INTO application (name, redirect_url, allowed_domains, organization, created_at, client_key, client_secret) 
+					 VALUES ($1, $2, $3, $4, now(), $5, $6);`
+
 	db, err := Connection()
-
 	if err != nil {
-		return err
+		return fmt.Errorf("500 database connection error: %w", err)
 	}
 	defer db.Close()
 
 	_, err = db.Exec(sqlStatement, name, redirectURL, allowedDomains, organization, clientKey, clientSecret)
-
 	if err != nil {
-		return err
+		return fmt.Errorf("500 failed to create application: %w", err)
 	}
 
 	return nil
-
 }
 
-func UpdateApplication(id int, name string, redirectURL string, allowedDomains string, organization string) error {
-	sqlStatement := `UPDATE application SET name=$1, redirect_url=$2, allowed_domains=$3, organization=$4 WHERE id=$5;`
-	db, err := Connection()
+func UpdateApplication(id int, name, redirectURL, allowedDomains, organization string) error {
+	if name == "" {
+		return errors.New("400 application name is required")
+	}
+	if redirectURL == "" {
+		return errors.New("400 redirect URL is required")
+	}
+	if allowedDomains == "" {
+		return errors.New("400 allowed domains is required")
+	}
+	if organization == "" {
+		return errors.New("400 organization is required")
+	}
 
+	sqlStatement := `UPDATE application SET name=$1, redirect_url=$2, allowed_domains=$3, organization=$4 WHERE id=$5;`
+
+	db, err := Connection()
 	if err != nil {
-		return err
+		return fmt.Errorf("500 database connection error: %w", err)
 	}
 	defer db.Close()
 
 	_, err = db.Exec(sqlStatement, name, redirectURL, allowedDomains, organization, id)
-
 	if err != nil {
-		return err
+		return fmt.Errorf("500 failed to update application: %w", err)
 	}
 
 	return nil
-
 }
 
 func DeleteApplication(id int) error {
 	sqlStatement := `DELETE FROM application WHERE id=$1;`
-	db, err := Connection()
 
+	db, err := Connection()
 	if err != nil {
-		return err
+		return fmt.Errorf("500 database connection error: %w", err)
 	}
 	defer db.Close()
 
-	_, err = db.Exec(sqlStatement, id)
-
+	result, err := db.Exec(sqlStatement, id)
 	if err != nil {
-		return err
+		return fmt.Errorf("500 failed to delete application: %w", err)
+	}
+
+	rowsAffected, err := result.RowsAffected()
+	if err != nil {
+		return fmt.Errorf("500 error checking affected rows: %w", err)
+	}
+
+	if rowsAffected == 0 {
+		return errors.New("404 application not found")
 	}
 
 	return nil

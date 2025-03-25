@@ -104,13 +104,21 @@ func HandlePostRecoveryCodeFlow(c *gin.Context) {
 		return
 	}
 
-	session, err := recovery.SubmitRecoveryCodeFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.RecoveryCode)
+	session, errMsg, err := recovery.SubmitRecoveryCodeFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.RecoveryCode)
 
 	if err != nil {
 		log.ErrorLogger("POST Recovery flow failed", err)
 		errCode := helper.ExtractErrorCode(err)
 		c.JSON(errCode, gin.H{
 			"error":   err.Error(),
+			"message": "POST Recovery Code flow failed",
+		})
+		return
+	}
+
+	if session == "" {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   errMsg,
 			"message": "POST Recovery Code flow failed",
 		})
 		return

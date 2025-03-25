@@ -8,6 +8,7 @@ import (
 	client "github.com/ory/client-go"
 
 	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
 )
 
 func InitializeRecoveryFlowWrapper() (string, string, string, error) {
@@ -65,7 +66,7 @@ func SubmitRecoveryFlowWrapper(cookie string, flowID string, csrfToken string, e
 	return csrf_token, nil
 }
 
-func SubmitRecoveryCodeFlowWrapper(cookie string, flowID string, csrfToken string, recoveryCode string) (string, error) {
+func SubmitRecoveryCodeFlowWrapper(cookie string, flowID string, csrfToken string, recoveryCode string) (string, string, error) {
 	submitFlowBody := client.UpdateRecoveryFlowBody{
 		UpdateRecoveryFlowWithCodeMethod: client.NewUpdateRecoveryFlowWithCodeMethod("code"),
 	}
@@ -78,10 +79,15 @@ func SubmitRecoveryCodeFlowWrapper(cookie string, flowID string, csrfToken strin
 	if err != nil {
 		fmt.Fprintf(os.Stderr, "Error when calling `V0alpha2Api.SubmitSelfServiceRecoveryFlow``: %v\n", err)
 		fmt.Fprintf(os.Stderr, "Full HTTP response: %v\n", r)
-		return "", err
+		return "", "internal server error", err
 	}
 
 	responseCookies := r.Header["Set-Cookie"]
 
-	return responseCookies[1], nil
+	if len(responseCookies) < 2 {
+		errMsg := helper.ExtractErrorMessage(r)
+		return "", errMsg, nil
+	}
+
+	return responseCookies[1], "", nil
 }
