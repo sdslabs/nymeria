@@ -43,7 +43,7 @@ func OnlyAdmin(c *gin.Context) {
 	identity := session.GetIdentity()
 	traits := identity.GetTraits()
 	role := traits.(map[string]interface{})["role"]
-	if role == "admin" {
+	if role == "admin" || role == "superadmin" {
 		c.Next()
 		return
 	}
