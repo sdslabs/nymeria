@@ -65,6 +65,15 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		return
 	}
 
+	err = helper.VerifyFields(t.Traits.Email, t.Traits.Username, t.Traits.Name, t.Traits.PhoneNumber, t.Password)
+
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{
+			"error":   err.Error(),
+			"message": "Missing required fields",
+		})
+		return
+	}
 	flowID, sessionCookies, errMsg, err := registration.SubmitRegistrationFlowWrapper(cookie, t.FlowID, t.CsrfToken, t.Password, t.Traits)
 
 	if err != nil {
