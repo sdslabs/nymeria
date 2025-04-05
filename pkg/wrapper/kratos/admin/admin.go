@@ -14,10 +14,13 @@ func CreateIdentityFlowWrapper(data Identity) (*client.Identity, *http.Response,
 	timeStamp := middleware.CurrentTimeStamp()
 
 	trait := map[string]interface{}{
+		"username":      data.Username,
 		"email":         data.Email,
 		"name":          data.Name,
 		"phone_number":  data.PhoneNumber,
 		"img_url":       data.ImgURL,
+		"github_id":     data.GithubID,
+		"invited_by":    data.InvitedBy,
 		"invite_status": "pending",
 		"role":          data.Role,
 		"created_at":    timeStamp,

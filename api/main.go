@@ -1,7 +1,6 @@
 package api
 
 import (
-	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -14,7 +13,7 @@ func Start() {
 	r := gin.Default()
 	// Set up CORS middleware
 	config := cors.Config{
-		AllowOrigins:     []string{"https://*.sdslabs.co"},
+		AllowOrigins:     []string{"http://localhost:3000"}, // TODO: Change to production domain
 		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
 		AllowHeaders:     []string{"Authorization", "Content-Type"},
 		ExposeHeaders:    []string{"Content-Length"},
@@ -26,7 +25,7 @@ func Start() {
 
 	// r.Use(k.Session())
 
-	r.GET("/ping", middleware.OnlyAdmin, func(c *gin.Context) {
+	r.GET("/ping", func(c *gin.Context) {
 		c.JSON(200, gin.H{
 			"message": "pong",
 		})
@@ -36,28 +35,18 @@ func Start() {
 	r.GET("/mfa", HandleGetMFAFlow)
 	r.POST("/mfa", HandlePostMFAFlow)
 
-	r.POST("/create-identity", middleware.OnlyAdmin, HandleCreateIdentityFlow)
-	r.GET("/get-identity", middleware.OnlyAdmin, HandleGetIdentityFlow)
-	r.POST("/delete-identity", middleware.OnlyAdmin, HandleDeleteIdentityFlow)
-	r.GET("/list-identity", middleware.OnlyAdmin, HandleListIdentity)
-	r.PUT("/update-identity/ban", middleware.OnlyAdmin, HandleBanIdentity)
-	r.PUT("/update-identity/remove-ban", middleware.OnlyAdmin, HandleRemoveBanIdentity)
-	r.PUT("/update-identity/switch-roles", middleware.OnlyAdmin, HandleRoleSwitch)
-
 	r.GET("/register", HandleGetRegistrationFlow)
 	r.POST("/register", HandlePostRegistrationFlow)
 
 	r.GET("/logout", HandleGetLogoutFlow)
 	r.POST("/logout", HandlePostLogoutFlow)
 
-	r.GET("/status", HandleStatus)
-
 	r.GET("/recovery", HandleGetRecoveryFlow)
 	r.POST("/recovery", HandlePostRecoveryFlow)
 	r.POST("/recovery-code", HandlePostRecoveryCodeFlow)
 
 	r.GET("/settings", HandleGetSettingsFlow)
-	r.POST("/update-profile", HandleUpdateProfile)
+	r.PATCH("/update-profile", HandleUpdateProfile)
 	r.POST("/change-password", HandleChangePassword)
 	r.POST("/toggle-totp", HandleToggleTOTP)
 
@@ -65,19 +54,34 @@ func Start() {
 	r.POST("/verification", HandlePostVerificationFlow)
 	r.POST("/verification-code", HandlePostVerificationCodeFlow)
 
-	r.POST("/get_profile", HandlePostProfile)
-	r.POST("/get_verified_status", HandleGetVerifiedStatus)
-	r.POST("/verify_app", middleware.HandleAppAuthorization, func(c *gin.Context) {
-		c.JSON(http.StatusOK, gin.H{
-			"message": "Authorized",
-		})
-	})
-	r.GET("/application", HandleGetApplication)
-	r.POST("/application", HandlePostApplication)
-	r.PUT("/application", HandlePutApplication)
-	r.DELETE("/application", HandleDeleteApplication)
+	r.GET("/get-profile", HandlePostProfile)
 
-	r.POST("/update-client-secret", HandleUpdateClientSecret)
+	// Verify User Session
+	r.GET("/verify-session", HandleVerifySession)
+
+	// Application Authorization
+	r.POST("/verify-app", HandleAppAuthorization)
+
+	// Admin Routes
+	r.Use(middleware.OnlyAdmin)
+
+	// Identity Management
+	r.POST("/create-identity", HandleCreateIdentityFlow)
+	r.GET("/get-identity", HandleGetIdentityFlow)
+	r.POST("/delete-identity", HandleDeleteIdentityFlow)
+	r.GET("/list-identity", HandleListIdentity)
+	r.PUT("/update-identity/ban", HandleBanIdentity)
+	r.PUT("/update-identity/remove-ban", HandleRemoveBanIdentity)
+	r.PUT("/update-identity/switch-roles", HandleRoleSwitch)
+
+	// Application Management
+	r.GET("/application", HandleGetApplication)
+	r.POST("/application", HandleCreateApplication)
+	r.PUT("/application", HandleUpdateApplication)
+	r.DELETE("/application", HandleDeleteApplication)
+	r.PATCH("/update-client-secret", HandleUpdateClientSecret)
+	r.PATCH("/update-client-key", HandleUpdateClientKey)
+
 	r.Run(":9898")
 	// listen and serve on 0.0.0.0:8080 (for windows "localhost:8080")
 }

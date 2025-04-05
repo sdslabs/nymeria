@@ -7,6 +7,10 @@
     "traits": {
       "type": "object",
       "properties": {
+        "username": {
+          "type": "string",
+          "title": "Username"
+        },
         "name": {
           "title": "Name",
           "type": "string"
@@ -41,6 +45,10 @@
           "type": "string",
           "title": "Invite Status"
         },
+        "invited_by": {
+          "type": "string",
+          "title": "Invited By"
+        },
         "img_url": {
           "type": "string",
           "title": "Profile Image URL"
@@ -53,6 +61,10 @@
           "type": "string",
           "title": "Created At"
         },
+        "github_id": {
+          "type": "string",
+          "title": "Github ID"
+        },
         "totp_enabled": {
           "type": "boolean",
           "title": "Whether user has enabled totp"
@@ -60,6 +72,7 @@
       },
 
       "required": [
+        "username",
         "email",
         "name",
         "phone_number",

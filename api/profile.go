@@ -23,25 +23,13 @@ func HandlePostProfile(c *gin.Context) {
 	}
 	identity := session.GetIdentity()
 	traits := identity.GetTraits()
-	profile := traits.(map[string]interface{})
 
-	c.JSON(http.StatusOK, profile)
-}
-
-func HandleGetVerifiedStatus(c *gin.Context) {
-	session, err := middleware.GetSession(c)
-	if err != nil {
-		log.ErrorLogger("Unable to get session", err)
-		errCode := helper.ExtractErrorCode(err)
-		c.JSON(errCode, gin.H{
-			"error":   err.Error(),
-			"message": "Unable to get session",
-		})
-		return
-	}
-	identity := session.GetIdentity()
-	verifiableAddresses := identity.GetVerifiableAddresses()
-	emails := verifiableAddresses
-
-	c.JSON(http.StatusOK, emails)
+	c.JSON(http.StatusOK, gin.H{
+		"message": "Profile fetched successfully",
+		"profile": gin.H{
+			"identityId": identity.GetId(),
+			"status":     identity.GetState(),
+			"traits":     traits,
+		},
+	})
 }

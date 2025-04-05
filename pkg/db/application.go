@@ -132,23 +132,55 @@ func GetAllApplication() ([]Application, error) {
 	return application, nil
 }
 
-func UpdateClientSecret(id int) error {
+func UpdateClientSecret(id int) (string, error) {
+
+	if id == 0 {
+		return "", errors.New("400 id is required")
+	}
+
 	sqlStatement := `UPDATE application SET client_secret=$1 WHERE id=$2;`
 	db, err := Connection()
 
 	if err != nil {
-		return err
+		return "", err
 	}
 	defer db.Close()
 
-	_, err = db.Exec(sqlStatement, helper.RandomString(30), id)
+	newSecret := helper.RandomString(30)
+
+	_, err = db.Exec(sqlStatement, newSecret, id)
 
 	if err != nil {
-		return err
+		return "", err
 	}
 
-	return nil
+	return newSecret, nil
 
+}
+
+func UpdateClientKey(id int) (string, error) {
+
+	if id == 0 {
+		return "", errors.New("400 id is required")
+	}
+
+	sqlStatement := `UPDATE application SET client_key=$1 WHERE id=$2;`
+	db, err := Connection()
+
+	if err != nil {
+		return "", err
+	}
+	defer db.Close()
+
+	newKey := helper.RandomString(30)
+
+	_, err = db.Exec(sqlStatement, newKey, id)
+
+	if err != nil {
+		return "", err
+	}
+
+	return newKey, nil
 }
 
 func GetApplication(client_key string, client_secret string) (Application, error) {
@@ -163,6 +195,27 @@ func GetApplication(client_key string, client_secret string) (Application, error
 	var t Application
 
 	err = db.QueryRow(sqlStatement, client_key, client_secret).Scan(&t.ID, &t.Name, &t.RedirectURL, &t.AllowedDomains, &t.Organization, &t.CreatedAt, &t.ClientKey, &t.ClientSecret)
+
+	if err != nil {
+		return Application{}, err
+	}
+
+	return t, nil
+}
+
+// GetApplicationByKey retrieves an application using only the client key
+func GetApplicationByKey(client_key string) (Application, error) {
+	sqlStatement := `SELECT * FROM application WHERE client_key=$1;`
+	db, err := Connection()
+
+	if err != nil {
+		return Application{}, err
+	}
+	defer db.Close()
+
+	var t Application
+
+	err = db.QueryRow(sqlStatement, client_key).Scan(&t.ID, &t.Name, &t.RedirectURL, &t.AllowedDomains, &t.Organization, &t.CreatedAt, &t.ClientKey, &t.ClientSecret)
 
 	if err != nil {
 		return Application{}, err

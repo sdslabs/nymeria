@@ -1,10 +1,10 @@
-version: v0.7.1-alpha.1
+version: v0.13.0
 
 dsn: memory
 
 serve:
   public:
-    base_url: https://falcon.sdslabs.co/
+    base_url: http://127.0.0.1:4433/
     cors:
       enabled: true
   admin:
@@ -23,25 +23,26 @@ selfservice:
         issuer: sdslabs.co
       enabled: true
 
-
   flows:
     error:
-      ui_url: http://127.0.0.1:4455/error
+      ui_url: https://accounts.sdslabs.co/error
 
     settings:
-      ui_url: https://accounts.sdslabs.co/passwordReset
-      required_aal: aal1
+      ui_url: https://accounts.sdslabs.co/settings
+      required_aal: highest_available
       privileged_session_max_age: 15m
 
     recovery:
       enabled: true
-      ui_url: http://accounts.sdslabs.co/recovery
+      ui_url: https://accounts.sdslabs.co/recovery
+      use: code
 
     verification:
       enabled: true
       ui_url: https://accounts.sdslabs.co/verification
+      use: code
       after:
-        default_browser_return_url: https://accounts.sdslabs.co/
+        default_browser_return_url: https://accounts.sdslabs.co/welcome
 
     logout:
       after:
@@ -57,12 +58,8 @@ selfservice:
       after:
         password:
           hooks:
-            -
-              hook: session
-
-session:
-  whoami:
-    required_aal: aal1
+            - hook: session
+            - hook: show_verification_ui
 
 log:
   level: debug
@@ -88,8 +85,12 @@ identity:
   schemas:
     - id: default
       url: file:///etc/config/kratos/identity.schema.json
+
 courier:
   smtp:
     connection_uri:
     from_address: 
     from_name:
+
+feature_flags:
+  use_continue_with_transitions: true

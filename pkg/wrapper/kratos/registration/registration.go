@@ -38,10 +38,13 @@ func InitializeRegistrationFlowWrapper() (string, string, string, error) {
 func SubmitRegistrationFlowWrapper(cookie string, flowID string, csrfToken string, password string, data Traits) (string, []string, string, error) {
 	timeStamp := middleware.CurrentTimeStamp()
 	trait := map[string]interface{}{
+		"username":      data.Username,
 		"email":         data.Email,
 		"name":          data.Name,
 		"img_url":       data.ImgURL,
 		"phone_number":  data.PhoneNumber,
+		"github_id":     data.GithubID,
+		"invited_by":    data.InvitedBy,
 		"invite_status": "self_created",
 		"role":          "user",
 		"created_at":    timeStamp,
