@@ -3,10 +3,12 @@ package middleware
 import (
 	"context"
 	"errors"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 	client "github.com/ory/client-go"
+	"github.com/sdslabs/nymeria/config"
+	"github.com/sdslabs/nymeria/helper"
+	"github.com/sdslabs/nymeria/log"
 )
 
 type kratosMiddleware struct {
@@ -37,32 +39,18 @@ func NewAdminMiddleware() *client.APIClient {
 	return apiClient
 }
 
-func (k *kratosMiddleware) Session() gin.HandlerFunc {
-	return func(c *gin.Context) {
-		session, err := k.validateSession(c.Request)
-		if err != nil {
-			c.Redirect(http.StatusMovedPermanently, "http://127.0.0.1:4455/login")
-			return
-		}
-		if !*session.Active {
-			c.Redirect(http.StatusMovedPermanently, "http://your_endpoint")
-			return
-		}
-		c.Next()
-	}
-}
-
-func (k *kratosMiddleware) validateSession(r *http.Request) (*client.Session, error) {
-	cookie, err := r.Cookie("ory_kratos_session")
+func GetSession(c *gin.Context) (*client.Session, error) {
+	cookie, err := c.Cookie("sdslabs_session")
 	if err != nil {
+		log.ErrorLogger("Session cookie not found", err)
 		return nil, err
 	}
-	if cookie == nil {
-		return nil, errors.New("no session found in cookie")
-	}
-	resp, _, err := k.client.FrontendAPI.ToSession(context.Background()).Cookie(cookie.String()).Execute()
+	apiClient := client.NewAPIClient(config.KratosClientConfig)
+	resp, r, err := apiClient.FrontendAPI.ToSession(context.Background()).Cookie(cookie).Execute()
 	if err != nil {
-		return nil, err
+		msg := helper.ExtractErrorMessage(r)
+		log.ErrorLogger("Error when calling `FrontendAPI.ToSession`", err)
+		return nil, errors.New(msg)
 	}
 	return resp, nil
 }
