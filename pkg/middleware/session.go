@@ -6,6 +6,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 	client "github.com/ory/client-go"
+
 	"github.com/sdslabs/nymeria/config"
 	"github.com/sdslabs/nymeria/helper"
 	"github.com/sdslabs/nymeria/log"
