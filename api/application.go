@@ -31,7 +31,7 @@ func HandleGetApplication(c *gin.Context) {
 
 }
 
-func HandlePostApplication(c *gin.Context) {
+func HandleCreateApplication(c *gin.Context) {
 	var body ApplicationPostBody
 	err := c.BindJSON(&body)
 
@@ -61,12 +61,12 @@ func HandlePostApplication(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "application created",
+		"message": "application created",
 	})
 
 }
 
-func HandlePutApplication(c *gin.Context) {
+func HandleUpdateApplication(c *gin.Context) {
 	var body ApplicationPutBody
 	err := c.BindJSON(&body)
 
@@ -96,7 +96,7 @@ func HandlePutApplication(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"status": "application updated",
+		"message": "application updated",
 	})
 
 }
@@ -151,7 +151,7 @@ func HandleUpdateClientSecret(c *gin.Context) {
 		return
 	}
 
-	err = db.UpdateClientSecret(body.ID)
+	newSecret, err := db.UpdateClientSecret(body.ID)
 
 	if err != nil {
 		log.ErrorLogger("Client Secret update failed", err)
@@ -165,7 +165,42 @@ func HandleUpdateClientSecret(c *gin.Context) {
 	}
 
 	c.JSON(http.StatusOK, gin.H{
-		"message": "Client Secret updated successfully",
+		"message":   "Client Secret updated successfully",
+		"newSecret": newSecret,
 	})
 
+}
+
+func HandleUpdateClientKey(c *gin.Context) {
+	var body ApplicationBody
+	err := c.BindJSON(&body)
+
+	if err != nil {
+		log.ErrorLogger("Unable to process json body", err)
+
+		errCode := helper.ExtractErrorCode(err)
+		c.JSON(errCode, gin.H{
+			"error":   strings.Split(err.Error(), " ")[1],
+			"message": "Unable to process json body",
+		})
+		return
+	}
+
+	newKey, err := db.UpdateClientKey(body.ID)
+
+	if err != nil {
+		log.ErrorLogger("Client Key update failed", err)
+
+		errCode := helper.ExtractErrorCode(err)
+		c.JSON(errCode, gin.H{
+			"error":   strings.Split(err.Error(), " ")[1],
+			"message": "Client Key update failed",
+		})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{
+		"message":      "Client Key updated successfully",
+		"newClientKey": newKey,
+	})
 }
