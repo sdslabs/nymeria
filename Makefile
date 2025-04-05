@@ -7,11 +7,11 @@ GOIMPORTS := $(GOPATH_BIN)/goimports
 GO_PACKAGES = $(shell go list ./... | grep -v vendor)
 PACKAGE_BASE := github.com/sdslabs/nymeria
 
-DB_HOST = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'host:' | sed -n 's/.*host: *"\?\([^"]*\)"\?/\1/p')
-DB_PORT = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'port:' | sed -n 's/.*port: *"\?\([^"]*\)"\?/\1/p')
-DB_USER = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'user:' | sed -n 's/.*user: *"\?\([^"]*\)"\?/\1/p')
-DB_PASS = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'password:' | sed -n 's/.*password: *"\?\([^"]*\)"\?/\1/p')
-DB_NAME = $(shell awk '/db:/,/db_name:/' config.yaml | grep 'db_name:' | sed -n 's/.*db_name: *"\?\([^"]*\)"\?/\1/p')
+DB_HOST = $(shell grep -A6 "^db:" config.yaml | grep "host:" | head -1 | cut -d'"' -f2)
+DB_PORT = $(shell grep -A6 "^db:" config.yaml | grep "port:" | head -1 | awk '{print $$2}')
+DB_USER = $(shell grep -A6 "^db:" config.yaml | grep "user:" | head -1 | cut -d'"' -f2)
+DB_PASS = $(shell grep -A6 "^db:" config.yaml | grep "password:" | head -1 | cut -d'"' -f2)
+DB_NAME = $(shell grep -A6 "^db:" config.yaml | grep "db_name:" | head -1 | cut -d'"' -f2)
 
 UP_MIGRATION_FILE = db/migrations/000001_init_schema.up.sql
 DOWN_MIGRATION_FILE = db/migrations/000001_init_schema.down.sql
@@ -84,6 +84,11 @@ install-air:
 
 apply-migration:
 	@echo "Applying migration..."
+	@echo "DB_HOST: $(DB_HOST)"
+	@echo "DB_PORT: $(DB_PORT)"
+	@echo "DB_USER: $(DB_USER)"
+	@echo "DB_PASS: $(DB_PASS)"
+	@echo "DB_NAME: $(DB_NAME)"
 	PGPASSWORD=$(DB_PASS) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(UP_MIGRATION_FILE)
 
 rollback-migration:
