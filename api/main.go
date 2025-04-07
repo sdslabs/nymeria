@@ -1,6 +1,7 @@
 package api
 
 import (
+	"net/http"
 	"time"
 
 	"github.com/gin-contrib/cors"
@@ -57,10 +58,14 @@ func Start() {
 	r.GET("/get-profile", HandlePostProfile)
 
 	// Verify User Session
-	r.GET("/verify-session", HandleVerifySession)
+	r.POST("/verify-session", middleware.HandleAppAuthorization, HandleVerifySession)
 
 	// Application Authorization
-	r.POST("/verify-app", HandleAppAuthorization)
+	r.POST("/verify-app", middleware.HandleAppAuthorization, func(c *gin.Context) {
+		c.JSON(http.StatusOK, gin.H{
+			"message": "Authorized",
+		})
+	})
 
 	// Admin Routes
 	r.Use(middleware.OnlyAdmin)
