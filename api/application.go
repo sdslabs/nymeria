@@ -46,7 +46,10 @@ func HandleCreateApplication(c *gin.Context) {
 		return
 	}
 
-	err = db.CreateApplication(body.Name, body.RedirectURL, body.AllowedDomains, body.Organization, helper.RandomString(10), helper.RandomString(30))
+	clientKey := helper.RandomString(10)
+	clientSecret := helper.RandomString(30)
+
+	err = db.CreateApplication(body.Name, body.RedirectURL, body.AllowedDomains, body.Organization, clientKey, clientSecret)
 
 	if err != nil {
 		log.ErrorLogger("Create application failed", err)
@@ -62,6 +65,14 @@ func HandleCreateApplication(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{
 		"message": "application created",
+		"application_credentials": gin.H{
+			"name":            body.Name,
+			"client_key":      clientKey,
+			"client_secret":   clientSecret,
+			"redirect_url":    body.RedirectURL,
+			"allowed_domains": body.AllowedDomains,
+			"organization":    body.Organization,
+		},
 	})
 
 }
