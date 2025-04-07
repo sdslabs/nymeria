@@ -58,7 +58,7 @@ func Start() {
 	r.GET("/get-profile", HandlePostProfile)
 
 	// Verify User Session
-	r.POST("/verify-session", HandleVerifySession)
+	r.GET("/verify-session", HandleVerifySession)
 
 	// Application Authorization
 	r.POST("/verify-app", middleware.HandleAppAuthorization, func(c *gin.Context) {
