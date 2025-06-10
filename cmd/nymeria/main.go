@@ -1,7 +1,7 @@
 package main
 
-import "github.com/sdslabs/nymeria/api"
+import "fmt"
 
 func main() {
-	api.Start()
+	fmt.Printf("Accounts V3")
 }

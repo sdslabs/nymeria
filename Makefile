@@ -51,9 +51,9 @@ build-debug:
 	@$(GO) build -gcflags="all=-N -l" -o $(BUILD_DIR)/$(BINARY_NAME)-debug $(CMD_DIR)
 
 run: build
-	@$(BUILD_DIR)/$(BINARY_NAME)
+	@./$(BUILD_DIR)/$(BINARY_NAME)
 
-dev: install-air
+dev: build install-air
 	@$(AIR) -c .air.toml
 
 test:
