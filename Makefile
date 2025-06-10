@@ -1,96 +1,117 @@
+PROJECT_NAME := nymeria
+PACKAGE_BASE := github.com/sdslabs/nymeria
+BINARY_NAME := $(PROJECT_NAME)
+CMD_DIR := ./cmd/$(PROJECT_NAME)
+
 GO := go
 GOPATH := $(shell go env GOPATH)
 GOPATH_BIN := $(GOPATH)/bin
+
+BUILD_DIR := build
+VERSION := $(shell git describe --tags --always --dirty)
+COMMIT := $(shell git rev-parse --short HEAD)
+BUILD_TIME := $(shell date -u '+%Y-%m-%d_%H:%M:%S')
+LDFLAGS := -ldflags "-X main.version=$(VERSION) -X main.commit=$(COMMIT) -X main.buildTime=$(BUILD_TIME) -s -w"
+
 GOLANGCI_LINT := $(GOPATH_BIN)/golangci-lint
-SRC = $(shell find . -type f -name '*.go' -not -path "./vendor/*")
 GOIMPORTS := $(GOPATH_BIN)/goimports
-GO_PACKAGES = $(shell go list ./... | grep -v vendor)
-PACKAGE_BASE := github.com/sdslabs/nymeria
+AIR := $(GOPATH_BIN)/air
 
-DB_HOST = $(shell grep -A6 "^db:" config.yaml | grep "host:" | head -1 | cut -d'"' -f2)
-DB_PORT = $(shell grep -A6 "^db:" config.yaml | grep "port:" | head -1 | awk '{print $$2}')
-DB_USER = $(shell grep -A6 "^db:" config.yaml | grep "user:" | head -1 | cut -d'"' -f2)
-DB_PASS = $(shell grep -A6 "^db:" config.yaml | grep "password:" | head -1 | cut -d'"' -f2)
-DB_NAME = $(shell grep -A6 "^db:" config.yaml | grep "db_name:" | head -1 | cut -d'"' -f2)
+SRC := $(shell find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./build/*")
+GO_PACKAGES := $(shell go list ./... | grep -v vendor)
 
-UP_MIGRATION_FILE = db/migrations/000001_init_schema.up.sql
-DOWN_MIGRATION_FILE = db/migrations/000001_init_schema.down.sql
+DB_HOST := $(shell grep -A6 "^db:" config.yaml | grep "host:" | head -1 | cut -d'"' -f2)
+DB_PORT := $(shell grep -A6 "^db:" config.yaml | grep "port:" | head -1 | awk '{print $$2}')
+DB_USER := $(shell grep -A6 "^db:" config.yaml | grep "user:" | head -1 | cut -d'"' -f2)
+DB_PASS := $(shell grep -A6 "^db:" config.yaml | grep "password:" | head -1 | cut -d'"' -f2)
+DB_NAME := $(shell grep -A6 "^db:" config.yaml | grep "db_name:" | head -1 | cut -d'"' -f2)
 
-.PHONY: help vendor build run dev lint format clean
+UP_MIGRATION_FILE := db/migrations/000001_init_schema.up.sql
+DOWN_MIGRATION_FILE := db/migrations/000001_init_schema.down.sql
+
+.PHONY: help all vendor build run dev test lint format clean install-tools verify verify-format
+
+.DEFAULT_GOAL := help
 
 help:
-	@echo "Nymeria make help"
-	@echo ""
-	@echo "vendor: Downloads the dependencies in the vendor folder"
-	@echo "build: Builds the binary of the server"
-	@echo "run: Runs the binary of the server"
-	@echo "dev: Combines build and run commands"
-	@echo "lint: Lints the code using vet and golangci-lint"
-	@echo "format: Formats the code using fmt and golangci-lint"
-	@echo "clean: Removes the vendor directory and binary"
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-20s\033[0m %s\n", $$1, $$2}'
+
+all: clean vendor build
 
 vendor:
-	@${GO} mod tidy
-	@${GO} mod vendor
-	@echo "Vendor downloaded successfully"
+	@$(GO) mod tidy
+	@$(GO) mod vendor
 
 build:
-	@${GO} build -o nymeria ./cmd/nymeria/main.go
-	@echo "Binary built successfully"
+	@mkdir -p $(BUILD_DIR)
+	@$(GO) build $(LDFLAGS) -o $(BUILD_DIR)/$(BINARY_NAME) $(CMD_DIR)
 
-run:
-	@./nymeria
+build-debug:
+	@mkdir -p $(BUILD_DIR)
+	@$(GO) build -gcflags="all=-N -l" -o $(BUILD_DIR)/$(BINARY_NAME)-debug $(CMD_DIR)
 
-dev:
-	@$(GOPATH_BIN)/air -c .air.toml
+run: build
+	@$(BUILD_DIR)/$(BINARY_NAME)
+
+dev: install-air
+	@$(AIR) -c .air.toml
+
+test:
+	@$(GO) test -v -race -coverprofile=coverage.out $(GO_PACKAGES)
+	@$(GO) tool cover -html=coverage.out -o coverage.html
+
+test-short:
+	@$(GO) test -short $(GO_PACKAGES)
+
+install-tools: install-golangci-lint install-goimports install-air
 
 install-golangci-lint:
-	@echo "=====> Installing golangci-lint..."
-	@curl -sSfL \
-	 	https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
-	 	sh -s -- -b $(GOPATH_BIN) v1.62.2
+	@if [ ! -f $(GOLANGCI_LINT) ]; then \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
+		sh -s -- -b $(GOPATH_BIN) v1.62.2; \
+	fi
+
+install-goimports:
+	@if [ ! -f $(GOIMPORTS) ]; then \
+		$(GO) install golang.org/x/tools/cmd/goimports@latest; \
+	fi
+
+install-air:
+	@if [ ! -f $(AIR) ]; then \
+		curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(GOPATH_BIN); \
+	fi
 
 lint: install-golangci-lint
 	@$(GO) vet $(GO_PACKAGES)
 	@$(GOLANGCI_LINT) run -c golangci.yaml
-	@echo "Lint successful"
-
-install-goimports:
-	@echo "=====> Installing formatter..."
-	@$(GO) install golang.org/x/tools/cmd/goimports@latest
 
 format: install-goimports
-	@echo "=====> Formatting code..."
-	@$(GOIMPORTS) -l -w -local ${PACKAGE_BASE} $(SRC)
-	@echo "Format successful"
+	@$(GOIMPORTS) -l -w -local $(PACKAGE_BASE) $(SRC)
+	@$(GO) fmt $(GO_PACKAGES)
 
-## verify: Run format and lint checks
-verify: verify-format lint
+verify: verify-format lint test-short
 
-## verify-format: Verify the format
 verify-format: install-goimports
-	@echo "=====> Verifying format..."
-	$(if $(shell $(GOIMPORTS) -l -local ${PACKAGE_BASE} ${SRC}), @echo ERROR: Format verification failed! && $(GOIMPORTS) -l -local ${PACKAGE_BASE} ${SRC} && exit 1)
+	@if [ -n "$$($(GOIMPORTS) -l -local $(PACKAGE_BASE) $(SRC))" ]; then \
+		echo "ERROR: Code is not formatted properly!"; \
+		$(GOIMPORTS) -l -local $(PACKAGE_BASE) $(SRC); \
+		exit 1; \
+	fi
 
 clean:
-	@rm -f nymeria
+	@rm -rf $(BUILD_DIR)/
 	@rm -rf vendor/
-	@echo "Clean successful"
+	@rm -f coverage.out coverage.html
 
-install-air:
-	@echo "Make sure your GOPATH and GOPATH_BIN is set"
-	@curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(GOPATH_BIN)
-	@echo "Air installed successfully"	
+info:
+	@echo "Project: $(PROJECT_NAME)"
+	@echo "Version: $(VERSION)"
+	@echo "Commit: $(COMMIT)"
+	@echo "Build Time: $(BUILD_TIME)"
+	@echo "Go Version: $(shell $(GO) version)"
 
 apply-migration:
-	@echo "Applying migration..."
-	@echo "DB_HOST: $(DB_HOST)"
-	@echo "DB_PORT: $(DB_PORT)"
-	@echo "DB_USER: $(DB_USER)"
-	@echo "DB_PASS: $(DB_PASS)"
-	@echo "DB_NAME: $(DB_NAME)"
-	PGPASSWORD=$(DB_PASS) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(UP_MIGRATION_FILE)
+	@PGPASSWORD=$(DB_PASS) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(UP_MIGRATION_FILE)
 
 rollback-migration:
-	@echo "Rolling back migration..."
-	PGPASSWORD=$(DB_PASS) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(DOWN_MIGRATION_FILE)
+	@PGPASSWORD=$(DB_PASS) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(DOWN_MIGRATION_FILE)
