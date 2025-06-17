@@ -13,7 +13,6 @@
 
 # Dependency directories (remove the comment below to include it)
 vendor/
-v1.46.2/
 
 # Exclude the binary
 nymeria
@@ -21,7 +20,6 @@ nymeria
 
 # Exclude the config file
 config.yaml
-/config/kratos.yml
 
 # miscellaneous
 .vscode/
@@ -38,3 +36,7 @@ target/
 config.docker.yaml
 
 logs
+
+.env
+
+.DS_Store

@@ -1,0 +1,22 @@
+# Build artifacts
+build/
+vendor/
+
+# Development files
+.env
+*.log
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Docker files
+Dockerfile*
+docker-compose*.yaml
+dev.sh 

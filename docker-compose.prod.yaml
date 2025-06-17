@@ -1,0 +1,31 @@
+services:
+  app:
+    build: 
+      context: .
+      target: prod
+    ports:
+      - "9898:9898"
+    depends_on:
+      - db
+    environment:
+      - DB_HOST=db
+      - DB_USER=${DB_USER:-nymeria}
+      - DB_PASS=${DB_PASS:-password}
+      - DB_NAME=${DB_NAME:-nymeria}
+      - DB_PORT=5432
+    restart: unless-stopped
+
+  db:
+    image: postgres:15-alpine
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_USER=${DB_USER:-nymeria}
+      - POSTGRES_PASSWORD=${DB_PASS:-password}
+      - POSTGRES_DB=${DB_NAME:-nymeria}
+    ports:
+      - "5432:5432"
+    restart: unless-stopped
+
+volumes:
+  postgres_data:

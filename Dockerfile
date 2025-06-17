@@ -1,15 +1,24 @@
-FROM golang:1.23-alpine 
+FROM golang:1.23-alpine AS base
 
 WORKDIR /app
 
-COPY . /app/
+ENV GOPROXY=direct
 
-RUN export GOPROXY=direct
+RUN apk add --no-cache make postgresql-client git curl
 
+COPY go.mod go.sum ./
+RUN go mod download
+
+# Development Mode
+FROM base AS dev
+COPY . .
+RUN make install-tools
 EXPOSE 9898
+CMD ["make", "dev"]
 
-# install make, psql
-RUN apk add --no-cache make postgresql-client
+# Production Mode
+FROM base AS prod
+COPY . .
 RUN make build
-
-CMD ["./nymeria"]
+EXPOSE 9898
+CMD ["./build/nymeria"]

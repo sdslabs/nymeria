@@ -6,10 +6,11 @@ package api
 import (
 	"net/http"
 
-	"github.com/go-chi/chi/middleware"
-	"github.com/go-chi/chi/v5"
-	"github.com/go-chi/cors"
+	"github.com/gin-contrib/cors"
+	"github.com/gin-gonic/gin"
+
 	"github.com/sdslabs/nymeria/internal/database"
+	"github.com/sdslabs/nymeria/internal/log"
 )
 
 func Start() {
@@ -17,34 +18,44 @@ func Start() {
 		panic(err)
 	}
 
-	r := chi.NewRouter()
+	r := gin.Default()
 
-	// r.Use(log.LoggerMiddleware(log.Logger))
-	r.Use(middleware.Logger)
+	// Use custom logging middleware
+	r.Use(log.LoggerMiddleware(log.Logger))
 
 	// CORS configuration
-	r.Use(cors.Handler(cors.Options{
-		AllowedOrigins:   []string{"http://localhost:3000"}, // TODO: change in prod
-		AllowedMethods:   []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
-		AllowedHeaders:   []string{"Authorization", "Content-Type"},
-		ExposedHeaders:   []string{"Content-Length"},
+	config := cors.New(cors.Config{
+		AllowOrigins:     []string{"http://localhost:3000"}, // TODO: change in prod
+		AllowMethods:     []string{"GET", "POST", "PUT", "PATCH", "DELETE", "OPTIONS"},
+		AllowHeaders:     []string{"Authorization", "Content-Type"},
+		ExposeHeaders:    []string{"Content-Length"},
 		AllowCredentials: true,
 		MaxAge:           12 * 3600, // 12 hours in seconds
-	}))
+	})
+	
+	r.Use(config)
 
-	r.Get("/", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("welcome"))
+	r.GET("/", func(c *gin.Context) {
+		log.Logger.Info().Msg("welcome")
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "success",
+			"message": "welcome",
+		})
 	})
 
-	r.Get("/ping", func(w http.ResponseWriter, r *http.Request) {
-		w.Write([]byte("pong! 🏓"))
+	r.GET("/ping", func(c *gin.Context) {
+		log.Logger.Info().Msg("ping")
+		c.JSON(http.StatusOK, gin.H{
+			"status":  "success",
+			"message": "pong",
+		})
 	})
 
-	r.Get("/register", HandleGetRegistrationFlow)
-	r.Post("/register", HandlePostRegistrationFlow)
+	r.GET("/register", HandleGetRegistrationFlow)
+	r.POST("/register", HandlePostRegistrationFlow)
 
-	r.Get("/login", HandleGetLoginFlow)
-	r.Post("/login", HandlePostLoginFlow)
+	r.GET("/login", HandleGetLoginFlow)
+	r.POST("/login", HandlePostLoginFlow)
 
-	http.ListenAndServe(":9898", r)
+	r.Run(":9898")
 }

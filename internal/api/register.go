@@ -4,51 +4,62 @@
 package api
 
 import (
-	"encoding/json"
-	"log"
 	"net/http"
 	"strings"
 
+	"github.com/gin-gonic/gin"
+
 	"github.com/sdslabs/nymeria/internal/database"
+	"github.com/sdslabs/nymeria/internal/log"
 )
 
 // HandleGetRegistrationFlow handles the GET request for the registration flow.
-func HandleGetRegistrationFlow(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodGet {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
-	w.Write([]byte("not implemented"))
+func HandleGetRegistrationFlow(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "Registration flow",
+	})
 }
 
 // HandlePostRegistrationFlow handles the POST request for the registration flow.
-func HandlePostRegistrationFlow(w http.ResponseWriter, r *http.Request) {
-	if r.Method != http.MethodPost {
-		http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
-		return
-	}
-
+func HandlePostRegistrationFlow(c *gin.Context) {
 	var req RegistrationRequest
-	if err := json.NewDecoder(r.Body).Decode(&req); err != nil {
-		http.Error(w, "Invalid JSON", http.StatusBadRequest)
+	err := c.ShouldBindJSON(&req)
+	if err != nil {
+		log.Logger.Err(err).Msg("invalid json")
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": err.Error(),
+		})
 		return
 	}
 
 	if req.Username == "" {
-		http.Error(w, "Username is required", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Username is required",
+		})
 		return
 	}
 	if req.Password == "" {
-		http.Error(w, "Password is required", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Password is required",
+		})
 		return
 	}
 	if req.Email == "" {
-		http.Error(w, "Email is required", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Email is required",
+		})
 		return
 	}
 	if req.Phone == "" {
-		http.Error(w, "Phone number is required", http.StatusBadRequest)
+		c.JSON(http.StatusBadRequest, gin.H{
+			"status":  "error",
+			"message": "Phone number is required",
+		})
 		return
 	}
 
@@ -61,23 +72,18 @@ func HandlePostRegistrationFlow(w http.ResponseWriter, r *http.Request) {
 
 	if result := database.DB.Create(&user); result.Error != nil {
 		if strings.Contains(result.Error.Error(), "duplicate key") {
-			http.Error(w, "GitHub ID already exists", http.StatusConflict)
+			c.JSON(http.StatusConflict, gin.H{
+				"status":  "error",
+				"message": "GitHub ID already exists",
+			})
 		} else {
-			log.Fatalf("failed to insert user: %v", result.Error)
+			log.Logger.Err(result.Error).Msg("failed to insert user")
 		}
-	}
-
-	w.WriteHeader(http.StatusCreated)
-
-	response := map[string]string{
-		"message": "User registered successfully",
-	}
-
-	jsonResponse, err := json.Marshal(response)
-	if err != nil {
-		http.Error(w, "Failed to create response: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
-	w.Header().Set("Content-Type", "application/json")
-	w.Write(jsonResponse)
+
+	c.JSON(http.StatusCreated, gin.H{
+		"status":  "success",
+		"message": "User registered successfully",
+	})
 }

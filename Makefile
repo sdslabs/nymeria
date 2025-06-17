@@ -57,17 +57,19 @@ test-short:
 install-tools: install-golangci-lint install-goimports install-air
 
 install-golangci-lint:
+	@echo "Installing golangci-lint..."
 	@if [ ! -f $(GOLANGCI_LINT) ]; then \
-		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
-		sh -s -- -b $(GOPATH_BIN) v2.1.6; \
+		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(GOPATH_BIN) v2.1.6; \
 	fi
 
 install-goimports:
+	@echo "Installing goimports..."
 	@if [ ! -f $(GOIMPORTS) ]; then \
 		$(GO) install golang.org/x/tools/cmd/goimports@latest; \
 	fi
 
 install-air:
+	@echo "Installing air..."
 	@if [ ! -f $(AIR) ]; then \
 		curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(GOPATH_BIN); \
 	fi
