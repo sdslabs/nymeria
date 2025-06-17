@@ -36,3 +36,5 @@ target/
 *.sql
 
 config.docker.yaml
+
+logs
