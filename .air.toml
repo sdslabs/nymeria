@@ -11,7 +11,7 @@ cmd = "make build"
 # Binary file yields from `cmd`.
 bin = "nymeria"
 # Customize binary.
-full_bin = "APP_USER=air ./nymeria"
+full_bin = "APP_USER=air ./build/nymeria"
 # Watch these filename extensions.
 include_ext = ["go"]
 # Ignore these filename extensions or directories.

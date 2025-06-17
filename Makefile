@@ -20,15 +20,6 @@ AIR := $(GOPATH_BIN)/air
 SRC := $(shell find . -type f -name '*.go' -not -path "./vendor/*" -not -path "./build/*")
 GO_PACKAGES := $(shell go list ./... | grep -v vendor)
 
-DB_HOST := $(shell grep -A6 "^db:" config.yaml | grep "host:" | head -1 | cut -d'"' -f2)
-DB_PORT := $(shell grep -A6 "^db:" config.yaml | grep "port:" | head -1 | awk '{print $$2}')
-DB_USER := $(shell grep -A6 "^db:" config.yaml | grep "user:" | head -1 | cut -d'"' -f2)
-DB_PASS := $(shell grep -A6 "^db:" config.yaml | grep "password:" | head -1 | cut -d'"' -f2)
-DB_NAME := $(shell grep -A6 "^db:" config.yaml | grep "db_name:" | head -1 | cut -d'"' -f2)
-
-UP_MIGRATION_FILE := db/migrations/000001_init_schema.up.sql
-DOWN_MIGRATION_FILE := db/migrations/000001_init_schema.down.sql
-
 .PHONY: help all vendor build run dev test lint format clean install-tools verify verify-format
 
 .DEFAULT_GOAL := help
@@ -68,7 +59,7 @@ install-tools: install-golangci-lint install-goimports install-air
 install-golangci-lint:
 	@if [ ! -f $(GOLANGCI_LINT) ]; then \
 		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/master/install.sh | \
-		sh -s -- -b $(GOPATH_BIN) v1.62.2; \
+		sh -s -- -b $(GOPATH_BIN) v2.1.6; \
 	fi
 
 install-goimports:
@@ -101,7 +92,6 @@ verify-format: install-goimports
 clean:
 	@rm -rf $(BUILD_DIR)/
 	@rm -rf vendor/
-	@rm -f coverage.out coverage.html
 
 info:
 	@echo "Project: $(PROJECT_NAME)"
@@ -109,9 +99,3 @@ info:
 	@echo "Commit: $(COMMIT)"
 	@echo "Build Time: $(BUILD_TIME)"
 	@echo "Go Version: $(shell $(GO) version)"
-
-apply-migration:
-	@PGPASSWORD=$(DB_PASS) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(UP_MIGRATION_FILE)
-
-rollback-migration:
-	@PGPASSWORD=$(DB_PASS) psql -h $(DB_HOST) -p $(DB_PORT) -U $(DB_USER) -d $(DB_NAME) -f $(DOWN_MIGRATION_FILE)
