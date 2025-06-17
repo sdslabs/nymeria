@@ -32,7 +32,7 @@ func Start() {
 		AllowCredentials: true,
 		MaxAge:           12 * 3600, // 12 hours in seconds
 	})
-	
+
 	r.Use(config)
 
 	r.GET("/", func(c *gin.Context) {

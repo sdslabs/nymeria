@@ -1,48 +1,53 @@
+version: "2"
 linters:
-  disable-all: true
+  default: none
   enable:
-    - govet
-    - staticcheck
-    - unused
-    - gosimple
-    - revive
-    - unconvert
     - goconst
     - gocyclo
+    - govet
+    - lll
+    - misspell
+    - revive
+    - staticcheck
+    - unconvert
+    - unused
+  settings:
+    errcheck:
+      check-type-assertions: true
+    goconst:
+      min-len: 2
+      min-occurrences: 4
+    gocyclo:
+      min-complexity: 20
+    lll:
+      line-length: 500
+      tab-width: 4
+    misspell:
+      locale: US
+  exclusions:
+    generated: lax
+    presets:
+      - comments
+      - common-false-positives
+      - legacy
+      - std-error-handling
+    paths:
+      - third_party$
+      - builtin$
+      - examples$
+formatters:
+  enable:
     - gofmt
     - goimports
-    - misspell
-    - lll
-
-linters-settings:
-  govet:
-    shadow: true
-
-  errcheck:
-    check-type-assertions: true
-
-  goconst:
-    min-len: 2
-    min-occurrences: 4
-
-  gofmt:
-    simplify: true
-
-  goimports:
-    local-prefixes: github.com/sdslabs/nymeria/*
-
-  misspell:
-    locale: US
-    ignore-words: []
-
-  lll:
-    line-length: 500
-    tab-width: 4
-
-  gocyclo:
-    min-complexity: 20
-
-  revive:
-    ignore-generated-header: true
-    ignore-patterns:
-      - "_"
+  settings:
+    gofmt:
+      simplify: true
+    goimports:
+      local-prefixes:
+        - github.com/sdslabs/nymeria/*
+  exclusions:
+    generated: lax
+    paths:
+      - third_party$
+      - builtin$
+      - examples$

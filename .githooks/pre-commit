@@ -1,0 +1,35 @@
+#!/bin/sh
+set -e
+
+# Set up paths
+GOPATH=$(go env GOPATH)
+GOIMPORTS="$GOPATH/bin/goimports"
+
+# Ensure goimports is installed
+if [ ! -f "$GOIMPORTS" ]; then
+  echo "📦 Installing goimports..."
+  go install golang.org/x/tools/cmd/goimports@latest
+fi
+
+# Get list of staged Go files
+STAGED_GO_FILES=$(git diff --cached --name-only --diff-filter=ACM | grep '\.go$' || true)
+
+if [ -n "$STAGED_GO_FILES" ]; then
+  echo "🔧 Formatting staged Go files..."
+  
+  # Format only staged files
+  for file in $STAGED_GO_FILES; do
+    if [ -f "$file" ]; then
+      "$GOIMPORTS" -l -w -local github.com/sdslabs/nymeria "$file"
+      go fmt "$file"
+      git add "$file"
+    fi
+  done
+  
+  echo "📝 Formatted and re-staged modified files"
+fi
+
+echo "🔍 Running make lint..."
+make lint
+
+echo "✅ Pre-commit checks passed!"

@@ -3,12 +3,22 @@
 
 package api
 
-import "net/http"
+import (
+	"net/http"
 
-func HandleGetRecoveryFlow(w http.ResponseWriter, r *http.Request) {
+	"github.com/gin-gonic/gin"
+)
 
+func HandleGetRecoveryFlow(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "recovery flow",
+	})
 }
 
-func HandlePostRecoveryFlow(w http.ResponseWriter, r *http.Request) {
-
+func HandlePostRecoveryFlow(c *gin.Context) {
+	c.JSON(http.StatusOK, gin.H{
+		"status":  "success",
+		"message": "recovery flow",
+	})
 }

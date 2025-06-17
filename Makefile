@@ -57,28 +57,30 @@ test-short:
 install-tools: install-golangci-lint install-goimports install-air
 
 install-golangci-lint:
-	@echo "Installing golangci-lint..."
 	@if [ ! -f $(GOLANGCI_LINT) ]; then \
+		echo "Installing golangci-lint..."; \
 		curl -sSfL https://raw.githubusercontent.com/golangci/golangci-lint/HEAD/install.sh | sh -s -- -b $(GOPATH_BIN) v2.1.6; \
 	fi
 
 install-goimports:
-	@echo "Installing goimports..."
 	@if [ ! -f $(GOIMPORTS) ]; then \
+		echo "Installing goimports..."; \
 		$(GO) install golang.org/x/tools/cmd/goimports@latest; \
 	fi
 
 install-air:
-	@echo "Installing air..."
 	@if [ ! -f $(AIR) ]; then \
+		echo "Installing air..."; \
 		curl -sSfL https://raw.githubusercontent.com/cosmtrek/air/master/install.sh | sh -s -- -b $(GOPATH_BIN); \
 	fi
 
 lint: install-golangci-lint
+	@echo "Linting code..."
 	@$(GO) vet $(GO_PACKAGES)
 	@$(GOLANGCI_LINT) run -c golangci.yaml
 
 format: install-goimports
+	@echo "Formatting code..."
 	@$(GOIMPORTS) -l -w -local $(PACKAGE_BASE) $(SRC)
 	@$(GO) fmt $(GO_PACKAGES)
 
@@ -101,3 +103,9 @@ info:
 	@echo "Commit: $(COMMIT)"
 	@echo "Build Time: $(BUILD_TIME)"
 	@echo "Go Version: $(shell $(GO) version)"
+
+setup-git-hooks:
+	@echo "Setting up git hooks..."
+	@git config core.hooksPath .githooks
+	@chmod +x .githooks/*
+	@echo "✅ Git hooks set up!"
