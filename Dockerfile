@@ -7,6 +7,7 @@ ENV GOPROXY=direct
 RUN apk add --no-cache make postgresql-client git curl
 
 COPY go.mod go.sum ./
+RUN go mod tidy
 RUN go mod download
 
 # Development Mode

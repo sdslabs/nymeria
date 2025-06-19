@@ -1,7 +1,7 @@
 // Copyright (c) 2025 SDSLabs
 // SPDX-License-Identifier: MIT
 
-package log
+package logger
 
 import (
 	"errors"
@@ -47,7 +47,7 @@ func initLogger(isProd bool) *zerolog.Logger {
 	return &l
 }
 
-func LoggerMiddleware(logger *zerolog.Logger) gin.HandlerFunc {
+func Middleware(logger *zerolog.Logger) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		log := logger.With().Logger()
 
@@ -92,3 +92,36 @@ func LoggerMiddleware(logger *zerolog.Logger) gin.HandlerFunc {
 }
 
 var Logger = initLogger(false)
+
+// Convenience functions for direct logging without accessing Logger field
+func Info() *zerolog.Event {
+	return Logger.Info()
+}
+
+func Error() *zerolog.Event {
+	return Logger.Error()
+}
+
+func Err(err error) *zerolog.Event {
+	return Logger.Err(err)
+}
+
+func Debug() *zerolog.Event {
+	return Logger.Debug()
+}
+
+func Warn() *zerolog.Event {
+	return Logger.Warn()
+}
+
+func Fatal() *zerolog.Event {
+	return Logger.Fatal()
+}
+
+func Panic() *zerolog.Event {
+	return Logger.Panic()
+}
+
+func Trace() *zerolog.Event {
+	return Logger.Trace()
+}

@@ -6,44 +6,26 @@ package database
 import (
 	"fmt"
 	"log"
-	"os"
 
 	"gorm.io/driver/postgres"
 	"gorm.io/gorm"
 	"gorm.io/gorm/logger"
+
+	"github.com/sdslabs/nymeria/internal/config"
+	"github.com/sdslabs/nymeria/internal/database/schema"
 )
 
 // The global database instance
 var DB *gorm.DB
 
-// loadConfig loads database configuration from environment variables
-func loadConfig() *Config {
-	return &Config{
-		// TODO: update this
-		Host:     getEnvOrDefault("DB_HOST", "localhost"),
-		User:     getEnvOrDefault("DB_USER", "nymeria"),
-		Password: getEnvOrDefault("DB_PASS", "password"),
-		DBName:   getEnvOrDefault("DB_NAME", "nymeria"),
-		Port:     getEnvOrDefault("DB_PORT", "5432"),
-	}
-}
-
-// getEnvOrDefault retrieves the value of the environment variable named by key.
-func getEnvOrDefault(key, defaultValue string) string {
-	if value := os.Getenv(key); value != "" {
-		return value
-	}
-	return defaultValue
-}
-
 // connect establishes a connection to the PostgreSQL database using GORM
-func connect(config *Config) (*gorm.DB, error) {
-	if config.Password == "" {
+func connect() (*gorm.DB, error) {
+	if config.AppConfig.DBPassword == "" {
 		return nil, fmt.Errorf("DB_PASS environment variable is required")
 	}
 
 	dsn := fmt.Sprintf("host=%s user=%s password=%s dbname=%s port=%s sslmode=disable",
-		config.Host, config.User, config.Password, config.DBName, config.Port)
+		config.AppConfig.DBHost, config.AppConfig.DBUser, config.AppConfig.DBPassword, config.AppConfig.DBName, config.AppConfig.DBPort)
 
 	db, err := gorm.Open(postgres.Open(dsn), &gorm.Config{
 		Logger: logger.Default.LogMode(logger.Silent),
@@ -52,7 +34,12 @@ func connect(config *Config) (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to connect to database: %w", err)
 	}
 
-	if err := db.AutoMigrate(&User{}, &Organization{}, &Application{}); err != nil {
+	// Enable uuid-ossp extension for uuid_generate_v4() function
+	if err := db.Exec("CREATE EXTENSION IF NOT EXISTS \"uuid-ossp\"").Error; err != nil {
+		return nil, fmt.Errorf("failed to create uuid-ossp extension: %w", err)
+	}
+
+	if err := db.AutoMigrate(&schema.User{}, &schema.Organization{}, &schema.Application{}, &schema.OTP{}); err != nil {
 		return nil, fmt.Errorf("failed to auto migrate database: %w", err)
 	}
 
@@ -61,9 +48,7 @@ func connect(config *Config) (*gorm.DB, error) {
 
 // Init initializes the database connection
 func Init() error {
-	config := loadConfig()
-
-	db, err := connect(config)
+	db, err := connect()
 	if err != nil {
 		return fmt.Errorf("database initialization failed: %w", err)
 	}
