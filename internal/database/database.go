@@ -39,7 +39,7 @@ func connect() (*gorm.DB, error) {
 		return nil, fmt.Errorf("failed to create uuid-ossp extension: %w", err)
 	}
 
-	if err := db.AutoMigrate(&schema.User{}, &schema.Organization{}, &schema.Application{}); err != nil {
+	if err := db.AutoMigrate(&schema.User{}, &schema.Organization{}, &schema.Application{}, &schema.OTP{}); err != nil {
 		return nil, fmt.Errorf("failed to auto migrate database: %w", err)
 	}
 

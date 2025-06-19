@@ -7,6 +7,8 @@ services:
       - "9898:9898"
     depends_on:
       - db
+    env_file:
+      - .env
     environment:
       - DB_HOST=db
       - DB_USER=${DB_USER:-nymeria}

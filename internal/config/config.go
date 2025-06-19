@@ -43,6 +43,12 @@ func LoadConfig() *Config {
 		JWTMaxAge:  ParseIntGetEnvOrDefault("JWT_MAX_AGE", "2"),
 
 		EnvMode: GetEnvOrDefault("ENV_MODE", "development"),
+
+		MailFrom:     GetEnvOrDefault("MAIL_FROM", "noreply@accounts.sdslabs.co"),
+		MailPassword: GetEnvOrDefault("MAIL_PASSWORD", "password"),
+		SMTPHost:     GetEnvOrDefault("SMTP_HOST", "smtp.gmail.com"),
+		SMTPPort:     GetEnvOrDefault("SMTP_PORT", "587"),
+		OTPExpiry:    ParseIntGetEnvOrDefault("OTP_EXPIRY", "5"),
 	}
 }
 

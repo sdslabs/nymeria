@@ -14,4 +14,10 @@ type Config struct {
 	JWTMaxAge  int    `env:"JWT_MAX_AGE"` // in days
 
 	EnvMode string `env:"ENV_MODE"`
+
+	MailFrom     string `env:"MAIL_FROM"`
+	MailPassword string `env:"MAIL_PASSWORD"`
+	SMTPHost     string `env:"SMTP_HOST"`
+	SMTPPort     string `env:"SMTP_PORT"`
+	OTPExpiry    int    `env:"OTP_EXPIRY"` // in minutes
 }
