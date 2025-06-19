@@ -10,7 +10,8 @@ import (
 	"github.com/gin-gonic/gin"
 
 	"github.com/sdslabs/nymeria/internal/database"
-	"github.com/sdslabs/nymeria/internal/log"
+	"github.com/sdslabs/nymeria/internal/database/schema"
+	"github.com/sdslabs/nymeria/internal/logger"
 )
 
 // HandleGetRegistrationFlow handles the GET request for the registration flow.
@@ -26,7 +27,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 	var req RegistrationRequest
 	err := c.ShouldBindJSON(&req)
 	if err != nil {
-		log.Logger.Err(err).Msg("invalid json")
+		logger.Err(err).Msg("invalid json")
 		c.JSON(http.StatusBadRequest, gin.H{
 			"status":  "error",
 			"message": err.Error(),
@@ -63,7 +64,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 		return
 	}
 
-	user := database.User{
+	user := schema.User{
 		Username: req.Username,
 		Password: req.Password,
 		Email:    req.Email,
@@ -77,7 +78,7 @@ func HandlePostRegistrationFlow(c *gin.Context) {
 				"message": "GitHub ID already exists",
 			})
 		} else {
-			log.Logger.Err(result.Error).Msg("failed to insert user")
+			logger.Err(result.Error).Msg("failed to insert user")
 		}
 		return
 	}

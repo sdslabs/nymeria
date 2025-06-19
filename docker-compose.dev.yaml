@@ -1,6 +1,6 @@
 services:
   app:
-    build: 
+    build:
       context: .
       target: dev
     ports:
@@ -31,4 +31,4 @@ services:
     restart: unless-stopped
 
 volumes:
-  postgres_data_dev: 
+  postgres_data_dev:
