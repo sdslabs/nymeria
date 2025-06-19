@@ -63,6 +63,10 @@ func Start() {
 	r.GET("/login", HandleGetLoginFlow)
 	r.POST("/login", middlewares.CSRFMiddleware(), HandlePostLoginFlow)
 
+	r.GET("/verification", HandleGetVerificationFlow)
+	r.POST("/verification", HandlePostVerificationCodeFlow)
+	r.POST("/verification/code", HandlePostVerifyEmailFlow)
+
 	r.GET("/applications", HandleGetApplicationFlow)
 	r.POST("/applications", HandleFetchAllApplicationsFlow)
 	r.POST("/applications/:id", HandleFetchApplicationByIDFlow)

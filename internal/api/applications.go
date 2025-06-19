@@ -5,7 +5,7 @@ import (
 
 	"github.com/gin-gonic/gin"
 
-	"github.com/sdslabs/nymeria/internal/database/applications"
+	database "github.com/sdslabs/nymeria/internal/database/applications"
 	"github.com/sdslabs/nymeria/internal/database/schema"
 	"github.com/sdslabs/nymeria/internal/utils"
 )
@@ -28,7 +28,7 @@ func HandleGetApplicationFlow(c *gin.Context) {
 }
 
 func HandleFetchAllApplicationsFlow(c *gin.Context) {
-	apps, err := applications.GetAllApplications()
+	apps, err := database.GetAllApplications()
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -48,7 +48,7 @@ func HandleFetchAllApplicationsFlow(c *gin.Context) {
 func HandleFetchApplicationByIDFlow(c *gin.Context) {
 	id := c.Param("id")
 
-	app, err := applications.GetApplicationByID(id)
+	app, err := database.GetApplicationByID(id)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
@@ -103,7 +103,7 @@ func HandleCreateApplicationFlow(c *gin.Context) {
 		ClientSecret:   clientSecret,
 	}
 
-	err = applications.CreateApplication(app)
+	err = database.CreateApplication(app)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "error",
@@ -122,7 +122,7 @@ func HandleCreateApplicationFlow(c *gin.Context) {
 func HandleDeleteApplicationFlow(c *gin.Context) {
 	id := c.Param("id")
 
-	err := applications.DeleteApplication(id)
+	err := database.DeleteApplication(id)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "error",
@@ -149,7 +149,7 @@ func HandleUpdateApplicationFlow(c *gin.Context) {
 		return
 	}
 
-	app, err := applications.GetApplicationByID(req.ApplicationID)
+	app, err := database.GetApplicationByID(req.ApplicationID)
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{
 			"status":  "error",
@@ -193,7 +193,7 @@ func HandleUpdateApplicationFlow(c *gin.Context) {
 		app.RedirectURIs = req.RedirectURIs
 	}
 
-	err = applications.UpdateApplication(req.ApplicationID, app)
+	err = database.UpdateApplication(req.ApplicationID, app)
 
 	if err != nil {
 		c.JSON(http.StatusInternalServerError, gin.H{

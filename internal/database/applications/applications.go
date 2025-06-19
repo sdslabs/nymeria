@@ -1,4 +1,4 @@
-package applications
+package database
 
 import (
 	"github.com/sdslabs/nymeria/internal/database"

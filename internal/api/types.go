@@ -15,16 +15,24 @@ type LoginRequest struct {
 type CreateApplicationRequest struct {
 	Name           string   `json:"name" binding:"required"`
 	ApplicationURL string   `json:"application_url" binding:"required"`
-	CSRFToken      string   `json:"csrf_token" binding:"required"`
 	AllowedOrigins []string `json:"allowed_origins" binding:"required"`
 	RedirectURIs   []string `json:"redirect_uris" binding:"required"`
 }
 
 type UpdateApplicationRequest struct {
 	ApplicationID  string   `json:"application_id" binding:"required"`
-	CSRFToken      string   `json:"csrf_token" binding:"required"`
 	ApplicationURL string   `json:"application_url" binding:"omitempty"`
 	AllowedOrigins []string `json:"allowed_origins" binding:"omitempty"`
 	RedirectURIs   []string `json:"redirect_uris" binding:"omitempty"`
 	NewKeyFlag     bool     `json:"new_key_flag" binding:"omitempty"`
+}
+
+type VerifyEmailRequest struct {
+	Email       string `json:"email" binding:"required"`
+	IsIITRCheck bool   `json:"is_iitr_check" binding:"omitempty"`
+}
+
+type VerifyEmailCodeRequest struct {
+	Email string `json:"email" binding:"required"`
+	Code  string `json:"code" binding:"required"`
 }
